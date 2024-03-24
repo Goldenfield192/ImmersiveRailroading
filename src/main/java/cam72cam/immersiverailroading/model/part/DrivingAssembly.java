@@ -17,11 +17,16 @@ public class DrivingAssembly {
     private final ValveGear left;
     private final ModelComponent steamChest;
 
-    public static DrivingAssembly get(ValveGearConfig type, ComponentProvider provider, ModelState state, float angleOffset, WheelSet... backups) {
-        return get(type, provider, state, null, angleOffset, backups);
+    public static DrivingAssembly get(ValveGearConfig type, ComponentProvider provider, ModelState state, float angleOffset, boolean isLeftFirst, WheelSet... backups) {
+        return get(type, provider, state, null, angleOffset, isLeftFirst, backups);
     }
 
+
     public static DrivingAssembly get(ValveGearConfig type, ComponentProvider provider, ModelState state, ModelPosition pos, float angleOffset, WheelSet... backups) {
+        return get(type, provider, state, null, angleOffset, true, backups);
+    }
+
+    public static DrivingAssembly get(ValveGearConfig type, ComponentProvider provider, ModelState state, ModelPosition pos, float angleOffset, boolean isLeftFirst, WheelSet... backups) {
         WheelSet wheels = WheelSet.get(provider, state, pos == null ? ModelComponentType.WHEEL_DRIVER_X : ModelComponentType.WHEEL_DRIVER_POS_X, pos, angleOffset);
         if (wheels == null) {
             for (WheelSet backup : backups) {
@@ -35,11 +40,25 @@ public class DrivingAssembly {
             return null;
         }
 
-        ValveGear left = ValveGear.get(wheels, type, provider, state, ModelPosition.LEFT.and(pos), 0);
-        ValveGear inner_left = ValveGear.get(wheels, type, provider, state, ModelPosition.INNER_LEFT.and(pos), 180);
-        ValveGear center = ValveGear.get(wheels, type, provider, state, ModelPosition.CENTER.and(pos), -120);
-        ValveGear inner_right = ValveGear.get(wheels, type, provider, state, ModelPosition.INNER_RIGHT.and(pos), 90);
-        ValveGear right = ValveGear.get(wheels, type, provider, state, ModelPosition.RIGHT.and(pos), center == null ? -90 : -240);
+        ValveGear left,
+                inner_left,
+                center,
+                inner_right,
+                right;
+
+        if(isLeftFirst) {
+            left = ValveGear.get(wheels, type, provider, state, ModelPosition.LEFT.and(pos), 0);
+            inner_left = ValveGear.get(wheels, type, provider, state, ModelPosition.INNER_LEFT.and(pos), 180);
+            center = ValveGear.get(wheels, type, provider, state, ModelPosition.CENTER.and(pos), -120);
+            inner_right = ValveGear.get(wheels, type, provider, state, ModelPosition.INNER_RIGHT.and(pos), 90);
+            right = ValveGear.get(wheels, type, provider, state, ModelPosition.RIGHT.and(pos), center == null ? -90 : -240);
+        }else {
+            left = ValveGear.get(wheels, type, provider, state, ModelPosition.LEFT.and(pos), 0);
+            inner_left = ValveGear.get(wheels, type, provider, state, ModelPosition.INNER_LEFT.and(pos), -180);
+            center = ValveGear.get(wheels, type, provider, state, ModelPosition.CENTER.and(pos), 120);
+            inner_right = ValveGear.get(wheels, type, provider, state, ModelPosition.INNER_RIGHT.and(pos), -90);
+            right = ValveGear.get(wheels, type, provider, state, ModelPosition.RIGHT.and(pos), center == null ? 90 : 240);
+        }
 
         ModelComponent steamChest = pos == null ?
                 provider.parse(ModelComponentType.STEAM_CHEST) :
@@ -59,6 +78,7 @@ public class DrivingAssembly {
         this.left = left;
         this.steamChest = steamChest;
     }
+
 
     public boolean isEndStroke(EntityMoveableRollingStock stock) {
         boolean isEndStroke = right != null && right.isEndStroke(stock);
