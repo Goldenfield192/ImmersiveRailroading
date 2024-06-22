@@ -11,6 +11,7 @@ import cam72cam.immersiverailroading.library.Gauge;
 import cam72cam.immersiverailroading.library.GuiText;
 import cam72cam.immersiverailroading.multiblock.CastingMultiblock;
 import cam72cam.immersiverailroading.multiblock.CastingMultiblock.CastingInstance;
+import cam72cam.immersiverailroading.multiblock.CustomCrafterMultiblock;
 import cam72cam.immersiverailroading.registry.EntityRollingStockDefinition;
 import cam72cam.immersiverailroading.tile.TileMultiblock;
 import cam72cam.immersiverailroading.util.ItemCastingCost;
@@ -43,7 +44,7 @@ public class CastingGUI implements IScreen {
 	
 	public CastingGUI(TileMultiblock te) {
 		this.tile = te;
-		currentItem = ((CastingInstance) te.getMultiblock()).getCraftItem();
+		currentItem = ((CustomCrafterMultiblock.CrafterMbInstance)te.getMultiblock()).getCraftItem();
 		
 		gauge = new ItemRollingStockComponent.Data(currentItem).gauge;
 	}
@@ -61,7 +62,8 @@ public class CastingGUI implements IScreen {
 		pickerButton = new Button(screen, -100, -20 - 10, GuiText.SELECTOR_TYPE.toString("")) {
 			@Override
 			public void onClick(Player.Hand hand) {
-				CraftPicker.showCraftPicker(screen, currentItem, CraftingType.CASTING, (ItemStack item) -> {
+				CraftPicker.showCraftPicker(screen, currentItem, CraftingType.CASTING,
+                        ((CustomCrafterMultiblock.CrafterMbInstance)tile.getMultiblock()).def.packs, (ItemStack item) -> {
 					if (item != null) {
 						currentItem = item;
 						EntityRollingStockDefinition def =

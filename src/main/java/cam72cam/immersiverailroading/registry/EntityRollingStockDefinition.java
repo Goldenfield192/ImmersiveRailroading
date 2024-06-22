@@ -900,4 +900,7 @@ public abstract class EntityRollingStockDefinition {
         return brakeCoefficient;
     }
 
+    public String getPackName() {
+        return packName;
+    }
 }

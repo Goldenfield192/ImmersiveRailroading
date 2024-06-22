@@ -26,8 +26,10 @@
     "input":{
         "item_input_point":["2,0,0"],
         "fluid_input_point":["2,0,0"],
+        "energy_input_point":["2,0,0"],
         "allow_throw":true,
-        "power_limit_rf": 100000
+        "power_limit_rf": 100000,
+        "tank_capability_mb": 20000
     },
 
     "output":{
@@ -41,6 +43,8 @@
 
     "properties":{
         "enable_manual_interact": false,
+        "crafting_type": "casting",
+        "packs": ["all"],
         "gui": "immersiverailroading:gui/multiblock/craft.caml"
     }
 }

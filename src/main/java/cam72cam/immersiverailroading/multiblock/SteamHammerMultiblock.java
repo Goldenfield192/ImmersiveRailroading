@@ -94,6 +94,11 @@ public class SteamHammerMultiblock extends Multiblock {
         }
 
         @Override
+        public int getEnergyLimit(Vec3i offset) {
+            return 0;
+        }
+
+        @Override
 		public void tick(Vec3i offset) {
 			if (!isCenter(offset)) {
 				return;
@@ -179,7 +184,7 @@ public class SteamHammerMultiblock extends Multiblock {
 		}
 
 		@Override
-		public boolean canRecievePower(Vec3i offset) {
+		public boolean canReceivePower(Vec3i offset) {
 			return offset.equals(power);
 		}
 

@@ -1,5 +1,6 @@
 package cam72cam.immersiverailroading.registry;
 
+import cam72cam.immersiverailroading.library.CraftingType;
 import cam72cam.immersiverailroading.library.MultiblockTypes;
 import cam72cam.immersiverailroading.model.MultiblockModel;
 import cam72cam.immersiverailroading.render.multiblock.CustomRender;
@@ -8,6 +9,7 @@ import cam72cam.immersiverailroading.util.DataBlock;
 import cam72cam.mod.math.Vec3d;
 import cam72cam.mod.math.Vec3i;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -34,7 +36,9 @@ public class MultiblockDefinition {
     public final int tankCapability;
     //For CRAFTER
     public final List<Vec3i> energyInputPoints;
-    public final int powerMaximumValue;
+    public final int energyLimit;
+    public final CraftingType craftingType;
+    public final List<String> packs;
     public final DataBlock gui;
 
     public final Vec3i outputPoint;
@@ -90,9 +94,9 @@ public class MultiblockDefinition {
             this.inventoryHeight = input.getValue("inventory_height").asInteger();
             this.inventoryWidth = input.getValue("inventory_width").asInteger(10);//TODO use caml
             this.tankCapability = input.getValue("tank_capability_mb").asInteger();
-            this.powerMaximumValue = 0;
+            this.energyLimit = 0;
         }else if(this.type == CRAFTER){
-            this.powerMaximumValue = input.getValue("power_limit_rf").asInteger();
+            this.energyLimit = input.getValue("power_limit_rf").asInteger();
             this.inventoryHeight = 0;
             this.inventoryWidth = 0;
             this.tankCapability = 0;
@@ -100,7 +104,7 @@ public class MultiblockDefinition {
             this.inventoryHeight = 0;
             this.inventoryWidth = 0;
             this.tankCapability = 0;
-            this.powerMaximumValue = 0;
+            this.energyLimit = 0;
         }
 
         DataBlock output = object.getBlock("output");
@@ -144,11 +148,16 @@ public class MultiblockDefinition {
         }
 
         DataBlock properties = object.getBlock("properties");
+        this.packs = new ArrayList<>();
         if(this.type == CRAFTER){
-            this.gui = CAML.parse(properties.getValue("gui").asIdentifier().getResourceStream());
+            //I still have to figure out how to properly imply guis
+//            this.gui = CAML.parse(properties.getValue("gui").asIdentifier().getResourceStream());
+            this.craftingType = CraftingType.valueOf(properties.getValue("crafting_type").asString().toUpperCase());
+            properties.getValues("packs").forEach(value -> packs.add(value.asString()));
         }else{
-            this.gui = null;
+            this.craftingType = null;
         }
+        this.gui = null;
     }
 
     private static Vec3i parseString(String origin){

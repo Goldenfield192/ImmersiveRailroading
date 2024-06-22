@@ -85,8 +85,8 @@ public class PlateRollerMultiblock extends Multiblock {
 					
 					if (!outputTe.getContainer().get(0).isEmpty()) {
 						if (world.isServer) {
-							ItemStack outstack = outputTe.getContainer().get(0);
-							world.dropItem(outstack, player.getPosition());
+							ItemStack outStack = outputTe.getContainer().get(0);
+							world.dropItem(outStack, player.getPosition());
 							outputTe.getContainer().set(0, ItemStack.EMPTY);
 						}
 						return true;
@@ -133,6 +133,11 @@ public class PlateRollerMultiblock extends Multiblock {
         }
 
         @Override
+        public int getEnergyLimit(Vec3i offset) {
+            return 0;
+        }
+
+        @Override
 		public void tick(Vec3i offset) {
 			if (!offset.equals(crafter)) {
 				return;
@@ -157,9 +162,9 @@ public class PlateRollerMultiblock extends Multiblock {
 				return;
 			}
 			
-			if (!hasPower()) {
-				return;
-			}
+//			if (!hasPower()) {
+//				return;
+//			}
 			
 			if (world.isClient) {
 				if (craftingTe.getRenderTicks() % 10 == 0 && craftingTe.getCraftProgress() != 0) {
@@ -223,17 +228,17 @@ public class PlateRollerMultiblock extends Multiblock {
 		}
 
 		@Override
-		public boolean canRecievePower(Vec3i offset) {
+		public boolean canReceivePower(Vec3i offset) {
 			return offset.equals(power);
 		}
 
-		public boolean hasPower() {
-			TileMultiblock powerTe = getTile(power);
-			if (powerTe == null) {
-				return false;
-			}
-			return powerTe.getEnergy(null).getCurrent() >= powerRequired();
-		}
+//		public boolean hasPower() {
+//			TileMultiblock powerTe = getTile(power);
+//			if (powerTe == null) {
+//				return false;
+//			}
+//			return powerTe.getEnergy(null).getCurrent() >= powerRequired();
+//		}
 		private int powerRequired() {
 			return (int) Math.ceil(32 * Config.ConfigBalance.machinePowerFactor);
 		}

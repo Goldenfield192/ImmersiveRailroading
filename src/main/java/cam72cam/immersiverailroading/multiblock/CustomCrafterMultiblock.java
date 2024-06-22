@@ -1,8 +1,9 @@
 package cam72cam.immersiverailroading.multiblock;
 
-import cam72cam.immersiverailroading.gui.container.MbGuiHandler;
+import cam72cam.immersiverailroading.Config;
 import cam72cam.immersiverailroading.library.GuiTypes;
 import cam72cam.immersiverailroading.registry.MultiblockDefinition;
+import cam72cam.immersiverailroading.tile.TileMultiblock;
 import cam72cam.mod.entity.Player;
 import cam72cam.mod.entity.boundingbox.IBoundingBox;
 import cam72cam.mod.item.Fuzzy;
@@ -67,17 +68,31 @@ public class CustomCrafterMultiblock extends Multiblock {
 
         @Override
         public boolean onBlockActivated(Player player, Player.Hand hand, Vec3i offset) {
-            if (world.isServer) {
-                Vec3i pos = getPos(Vec3i.ZERO);
-                MbGuiHandler.playerGUi.put(player.getUUID(), 2);
-                GuiTypes.CUSTOM_MULTIBLOCK.open(player, pos);
+            Vec3i pos = getPos(Vec3i.ZERO);
+//            if (world.isServer) {
+//                GuiTypes.CUSTOM_MULTIBLOCK_CRAFT.open(player, pos);
+//            }
+            System.out.println(this.def.craftingType);
+            if(world.isServer){
+                switch (this.def.craftingType){
+                    case CASTING:
+                        GuiTypes.CASTING.open(player, pos);
+                        break;
+                    case CASTING_HAMMER:
+                        GuiTypes.STEAM_HAMMER.open(player,pos);
+                        break;
+                    case PLATE_SMALL:
+                    case PLATE_MEDIUM:
+                    case PLATE_LARGE:
+                        GuiTypes.PLATE_ROLLER.open(player,pos);
+                }
             }
             return true;
         }
 
         @Override
         public int getInvSize(Vec3i offset) {
-            if(this.def.gui.getBlocks("slot") == null)
+            if(this.def.gui == null || this.def.gui.getBlocks("slot") == null)
                 return 0;
             return this.def.gui.getBlocks("slot").size();
         }
@@ -85,6 +100,11 @@ public class CustomCrafterMultiblock extends Multiblock {
         @Override
         public int getTankCapability(Vec3i offset) {
             return this.def.tankCapability;
+        }
+
+        @Override
+        public int getEnergyLimit(Vec3i offset) {
+            return this.def.energyLimit;
         }
 
         @Override
@@ -179,8 +199,24 @@ public class CustomCrafterMultiblock extends Multiblock {
         }
 
         @Override
-        public boolean canRecievePower(Vec3i offset) {
+        public boolean canReceivePower(Vec3i offset) {
             return def.energyInputPoints.stream().anyMatch(offset::equals);
+        }
+
+        public boolean hasPower() {
+            return getTile(Vec3i.ZERO).getEnergyContainer().getCurrent() > 0;
+        }
+
+        public boolean isCrafting() {
+            return getTile(Vec3i.ZERO).getCraftProgress() > 0;
+        }
+
+        public ItemStack getCraftItem() {
+            return getTile(Vec3i.ZERO).getCraftItem();
+        }
+
+        private int powerRequired() {
+            return (int) Math.ceil(32 * Config.ConfigBalance.machinePowerFactor);
         }
 
         //Helpers

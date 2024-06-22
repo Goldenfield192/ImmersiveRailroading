@@ -12,9 +12,6 @@ import cam72cam.mod.energy.Energy;
 import cam72cam.mod.energy.IEnergy;
 import cam72cam.mod.entity.Player;
 import cam72cam.mod.entity.boundingbox.IBoundingBox;
-import cam72cam.mod.entity.sync.TagSync;
-import cam72cam.mod.fluid.Fluid;
-import cam72cam.mod.fluid.FluidStack;
 import cam72cam.mod.fluid.FluidTank;
 import cam72cam.mod.fluid.ITank;
 import cam72cam.mod.item.IInventory;
@@ -69,6 +66,7 @@ public class TileMultiblock extends BlockEntityTickable {
         if(!this.offset.equals(Vec3i.ZERO)){
             this.container = getWorld().getBlockEntity(getMultiblock().getOrigin(), TileMultiblock.class).container;
             this.tank = getWorld().getBlockEntity(getMultiblock().getOrigin(), TileMultiblock.class).tank;
+            this.energy = getWorld().getBlockEntity(getMultiblock().getOrigin(), TileMultiblock.class).energy;
         }
 
         //Call this to refresh status
@@ -142,6 +140,19 @@ public class TileMultiblock extends BlockEntityTickable {
         }
 
         return this.tank;
+    }
+
+    public Energy getEnergyContainer() {
+        if (energy.getMax() != getMultiblock().getEnergyLimit(offset)) {
+            int i = getMultiblock().getEnergyLimit(offset);
+            energy = new Energy(energy.getCurrent(), i);
+        }
+
+        if(!this.offset.equals(Vec3i.ZERO)){
+            this.energy = getWorld().getBlockEntity(getMultiblock().getOrigin(), TileMultiblock.class).energy;
+        }
+
+        return this.energy;
     }
 
 	/*
@@ -237,15 +248,15 @@ public class TileMultiblock extends BlockEntityTickable {
 			return null;
 		}
 
-        if(!this.offset.equals(Vec3i.ZERO)){
-            this.container = getWorld().getBlockEntity(getMultiblock().getOrigin(), TileMultiblock.class).container;
-        }
-
 		if (container.getSlotCount() != getMultiblock().getInvSize(offset)) {
 			container.setSize(getMultiblock().getInvSize(offset));
 		}
 
-        CustomTransporterMultiblock.TransporterMbInstance instance = (CustomTransporterMultiblock.TransporterMbInstance)getMultiblock();
+        if(!this.offset.equals(Vec3i.ZERO)){
+            this.container = getWorld().getBlockEntity(getMultiblock().getOrigin(), TileMultiblock.class).container;
+        }
+
+       MultiblockInstance instance = getMultiblock();
 		return instance.canInsertItem(offset,0,null) ? this.container : null;
 	}
 
@@ -254,22 +265,36 @@ public class TileMultiblock extends BlockEntityTickable {
         if (this.getMultiblock() == null || this.getMultiblock().getTankCapability(offset) == 0) {
             return null;
         }
+        if (tank.getCapacity() != getMultiblock().getTankCapability(offset)) {
+            tank.setCapacity(getMultiblock().getTankCapability(offset));
+        }
 
         if(!this.offset.equals(Vec3i.ZERO)){
             this.tank = getWorld().getBlockEntity(getMultiblock().getOrigin(), TileMultiblock.class).tank;
         }
 
-        if (tank.getCapacity() != getMultiblock().getTankCapability(offset)) {
-            tank.setCapacity(getMultiblock().getTankCapability(offset));
-        }
 
-        CustomTransporterMultiblock.TransporterMbInstance instance = (CustomTransporterMultiblock.TransporterMbInstance)getMultiblock();
+        MultiblockInstance instance = getMultiblock();
         return instance.canReceiveFluid(offset) ? this.tank : null;
     }
 
     @Override
 	public IEnergy getEnergy(Facing facing) {
-		return this.isLoaded() && this.getMultiblock().canRecievePower(offset) ? energy : null;
+        if (this.getMultiblock() == null || this.getMultiblock().getEnergyLimit(offset) == 0) {
+            return null;
+        }
+
+        if (energy.getMax() != getMultiblock().getEnergyLimit(offset)) {
+            getWorld().getBlockEntity(getMultiblock().getOrigin(), TileMultiblock.class).energy =
+                    new Energy(energy.getCurrent(), getMultiblock().getEnergyLimit(offset));
+        }
+
+        if(!this.offset.equals(Vec3i.ZERO)){
+            this.energy = getWorld().getBlockEntity(getMultiblock().getOrigin(), TileMultiblock.class).energy;
+        }
+
+        MultiblockInstance instance = getMultiblock();
+        return instance.canReceivePower(offset) ? this.energy : null;
 	}
 
 	@Override

@@ -228,6 +228,7 @@ public abstract class Multiblock {
 		public abstract boolean onBlockActivated(Player player, Player.Hand hand, Vec3i offset);
 		public abstract int getInvSize(Vec3i offset);
         public abstract int getTankCapability(Vec3i offset);
+        public abstract int getEnergyLimit(Vec3i offset);
 		public abstract boolean isRender(Vec3i offset);
 		public abstract void tick(Vec3i offset);
 		public abstract boolean canInsertItem(Vec3i offset, int slot, ItemStack stack);
@@ -235,7 +236,7 @@ public abstract class Multiblock {
 		public abstract boolean isItemOutputSlot(Vec3i offset, int slot);
         public abstract boolean isFluidOutputSlot(Vec3i offset);
 		public abstract int getSlotLimit(Vec3i offset, int slot);
-		public abstract boolean canRecievePower(Vec3i offset);
+		public abstract boolean canReceivePower(Vec3i offset);
 		public void onBreak() {
 			for (Vec3i offset : componentPositions) {
 				Vec3i pos = getPos(offset);

@@ -74,7 +74,7 @@ public class CustomTransporterMultiblock extends Multiblock {
         public boolean onBlockActivated(Player player, Player.Hand hand, Vec3i offset) {
             if (world.isServer) {
                 Vec3i pos = getPos(Vec3i.ZERO);
-                GuiTypes.CUSTOM_MULTIBLOCK.open(player, pos);
+                GuiTypes.CUSTOM_MULTIBLOCK_TRANS.open(player, pos);
             }
             return true;
         }
@@ -87,6 +87,11 @@ public class CustomTransporterMultiblock extends Multiblock {
         @Override
         public int getTankCapability(Vec3i offset) {
             return this.def.tankCapability;
+        }
+
+        @Override
+        public int getEnergyLimit(Vec3i offset) {
+            return 0;
         }
 
         @Override
@@ -181,7 +186,7 @@ public class CustomTransporterMultiblock extends Multiblock {
         }
 
         @Override
-        public boolean canRecievePower(Vec3i offset) {
+        public boolean canReceivePower(Vec3i offset) {
             return false;
         }
 

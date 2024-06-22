@@ -1,6 +1,7 @@
 package cam72cam.immersiverailroading.gui;
 
 import cam72cam.immersiverailroading.IRItems;
+import cam72cam.immersiverailroading.entity.EntityRollingStock;
 import cam72cam.immersiverailroading.items.ItemPlate;
 import cam72cam.immersiverailroading.items.ItemRollingStock;
 import cam72cam.immersiverailroading.items.ItemRollingStockComponent;
@@ -8,6 +9,7 @@ import cam72cam.immersiverailroading.items.ItemTabs;
 import cam72cam.immersiverailroading.library.CraftingType;
 import cam72cam.immersiverailroading.library.ItemComponentType;
 import cam72cam.immersiverailroading.library.PlateType;
+import cam72cam.immersiverailroading.registry.EntityRollingStockDefinition;
 import cam72cam.immersiverailroading.util.IRFuzzy;
 import cam72cam.mod.gui.screen.IScreenBuilder;
 import cam72cam.mod.gui.helpers.ItemPickerGUI;
@@ -17,6 +19,7 @@ import cam72cam.mod.item.ItemStack;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Consumer;
+import java.util.stream.Collectors;
 
 public class CraftPicker {
 	private final boolean enableItemPicker;
@@ -24,18 +27,30 @@ public class CraftPicker {
 	private ItemPickerGUI itemSelector;
 	private List<ItemStack> items;
 	private Consumer<ItemStack> onChoose;
+    public static void showCraftPicker(IScreenBuilder screen, ItemStack current, CraftingType craftType, Consumer<ItemStack> onChoose) {
+        new CraftPicker(screen, current, craftType, null, onChoose);
+    }
 
-	public static void showCraftPicker(IScreenBuilder screen, ItemStack current, CraftingType craftType, Consumer<ItemStack> onChoose) {
-		new CraftPicker(screen, current, craftType, onChoose);
+	public static void showCraftPicker(IScreenBuilder screen, ItemStack current, CraftingType craftType,
+                                       List<String> packs, Consumer<ItemStack> onChoose) {
+		new CraftPicker(screen, current, craftType, packs, onChoose);
 	}
 	
-	private CraftPicker(IScreenBuilder screen, ItemStack current, CraftingType craftType, Consumer<ItemStack> onChoose) {
+	private CraftPicker(IScreenBuilder screen, ItemStack current, CraftingType craftType, List<String> packs, Consumer<ItemStack> onChoose) {
 		this.enableItemPicker = craftType.isCasting();
 		this.onChoose = stack -> {
 			screen.show();
 			onChoose.accept(stack);
 		};
-		this.items = new ArrayList<>(IRItems.ITEM_ROLLING_STOCK_COMPONENT.getItemVariants());
+        if(packs == null || packs.isEmpty()) {
+            this.items = new ArrayList<>(IRItems.ITEM_ROLLING_STOCK_COMPONENT.getItemVariants());
+        }else{
+            this.items = IRItems.ITEM_ROLLING_STOCK_COMPONENT.getItemVariants().stream().filter(itemStack -> {
+                ItemRollingStock.Data data = new ItemRollingStock.Data(itemStack);
+                EntityRollingStockDefinition definition = data.def;
+                return packs.contains(definition.getPackName());
+            }).collect(Collectors.toList());
+        }
 
         List<ItemStack> stock = new ArrayList<>();
 
