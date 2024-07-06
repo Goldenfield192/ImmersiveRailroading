@@ -257,7 +257,7 @@ public abstract class Locomotive extends FreightTank {
 	}
 
 	@Override
-	protected float defaultControlPosition(Control<?> control) {
+	public float defaultControlPosition(Control<?> control) {
 		switch (control.part.type) {
 			case THROTTLE_BRAKE_X:
 			case REVERSER_X:
@@ -307,7 +307,7 @@ public abstract class Locomotive extends FreightTank {
 				data.write();
 			}
 			else {
-				player.sendMessage(ChatText.RADIO_CANT_LINK.getMessage(this.getDefinition().name()));;
+				player.sendMessage(ChatText.RADIO_CANT_LINK.getMessage(this.getDefinition().name()));
 			}
 			return ClickResult.ACCEPTED;
 		}
