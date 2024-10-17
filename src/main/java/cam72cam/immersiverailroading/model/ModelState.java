@@ -3,6 +3,7 @@ package cam72cam.immersiverailroading.model;
 import cam72cam.immersiverailroading.entity.EntityMoveableRollingStock;
 import cam72cam.immersiverailroading.library.ModelComponentType;
 import cam72cam.immersiverailroading.model.components.ModelComponent;
+import cam72cam.immersiverailroading.model.script.ScriptAnimator;
 import cam72cam.mod.render.obj.OBJRender;
 import org.apache.commons.lang3.tuple.Pair;
 import util.Matrix4;
@@ -18,6 +19,7 @@ public class ModelState {
     private final GroupAnimator groupAnimator;
     private final GroupVisibility groupVisibility;
     private final Lighter lighter;
+    private final ScriptAnimator scriptAnimator;
     private final List<ModelComponent> components;
 
     private final List<ModelState> children = new ArrayList<>();
@@ -26,13 +28,15 @@ public class ModelState {
             Animator animator,
             GroupAnimator groupAnimator,
             GroupVisibility groupVisibility,
-            Lighter lighter
+            Lighter lighter,
+            ScriptAnimator scriptAnimator
     ) {
         this.components = new ArrayList<>();
         this.animator = animator;
         this.groupAnimator = groupAnimator;
         this.groupVisibility = groupVisibility;
         this.lighter = lighter;
+        this.scriptAnimator = scriptAnimator;
     }
 
 
@@ -168,12 +172,14 @@ public class ModelState {
         private GroupAnimator groupAnimator;
         private GroupVisibility groupVisibility;
         private Lighter lighter;
+        private ScriptAnimator scriptAnimator;
 
         private Builder() {
             this.animator = null;
             this.groupAnimator = null;
             this.groupVisibility = null;
             this.lighter = null;
+            this.scriptAnimator = null;
         }
 
         private Builder(ModelState parent) {
@@ -199,13 +205,18 @@ public class ModelState {
             this.lighter = this.lighter != null ? this.lighter.merge(lighter) : lighter;
             return this;
         }
+        public Builder add(ScriptAnimator scriptAnimator) {
+            this.scriptAnimator = scriptAnimator;
+            return this;
+        }
 
         private ModelState build() {
             return new ModelState(
                     animator,
                     groupAnimator,
                     groupVisibility,
-                    lighter
+                    lighter,
+                    scriptAnimator
             );
         }
    }
@@ -255,6 +266,14 @@ public class ModelState {
                 if (m != null) {
                     animatedGroups.put(group, m);
                 }
+            }
+        }
+
+        if(scriptAnimator != null){
+            HashMap<String, Matrix4> matrices = scriptAnimator.getMatrices(stock.getUUID().toString());
+            for(Map.Entry<String, Matrix4> entry : matrices.entrySet()){
+                matrices.computeIfPresent(entry.getKey(), (s, matrix4) -> matrix4.multiply(entry.getValue()));
+                matrices.putIfAbsent(entry.getKey(), entry.getValue());
             }
         }
 

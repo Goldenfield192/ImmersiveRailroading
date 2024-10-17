@@ -13,6 +13,8 @@ import cam72cam.immersiverailroading.model.components.ComponentProvider;
 import cam72cam.immersiverailroading.model.components.ModelComponent;
 import cam72cam.immersiverailroading.model.part.*;
 import cam72cam.immersiverailroading.model.part.TrackFollower.TrackFollowers;
+import cam72cam.immersiverailroading.model.script.ScriptAnimator;
+import cam72cam.immersiverailroading.model.script.ScriptManager;
 import cam72cam.immersiverailroading.registry.EntityRollingStockDefinition;
 import cam72cam.immersiverailroading.registry.EntityRollingStockDefinition.SoundDefinition;
 import cam72cam.mod.MinecraftClient;
@@ -125,7 +127,8 @@ public class StockModel<ENTITY extends EntityMoveableRollingStock, DEFINITION ex
             }
             return m;
         };
-        this.base = ModelState.construct(settings -> settings.add(animators).add(interiorLit));
+
+        this.base = ModelState.construct(settings -> settings.add(animators).add(interiorLit).add(ScriptManager.getScriptAnimator(this.def)));
 
         ComponentProvider provider = new ComponentProvider(this, def.internal_model_scale, def.widgetConfig);
         initStates();
@@ -315,7 +318,7 @@ public class StockModel<ENTITY extends EntityMoveableRollingStock, DEFINITION ex
 
         Binder binder = binder().texture(stock.getTexture()).lod(lod_level);
         try (
-                OBJRender.Binding bound = binder.bind(state);
+                OBJRender.Binding bound = binder.bind(state)
         ) {
             double backup = stock.distanceTraveled;
 

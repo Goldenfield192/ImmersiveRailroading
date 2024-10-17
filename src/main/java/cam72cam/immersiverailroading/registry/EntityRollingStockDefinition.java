@@ -59,6 +59,7 @@ public abstract class EntityRollingStockDefinition {
     public Identifier flange_sound;
     public Identifier collision_sound;
     public double flange_min_yaw;
+    public Identifier renderScript;
     double internal_inv_scale;
     private String name;
     private String modelerName;
@@ -394,6 +395,7 @@ public abstract class EntityRollingStockDefinition {
         modelerName = data.getValue("modeler").asString();
         packName = data.getValue("pack").asString();
         darken = data.getValue("darken_model").asFloat();
+        renderScript = data.getValue("render_script").asIdentifier();
         internal_model_scale = 1;
         internal_inv_scale = 1;
         // TODO Gauge.from(Gauge.STANDARD).value() what happens when != Gauge.STANDARD
