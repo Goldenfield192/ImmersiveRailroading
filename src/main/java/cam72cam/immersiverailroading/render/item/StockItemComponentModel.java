@@ -59,7 +59,7 @@ public class StockItemComponentModel implements ItemRender.IItemModel {
 
 
         state.blend(BlendMode.OPAQUE)
-                .cull_face(false)
+                .cull_face(data.def.shouldCull)
                 .lighting(false)
                 .translate(0.5, 0.5, 0.5)
                 .scale(scale, scale, scale)

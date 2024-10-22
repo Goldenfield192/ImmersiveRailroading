@@ -32,7 +32,7 @@ public class StockItemModel implements ItemRender.ISpriteItemModel {
 			return;
 		}
 
-		state.cull_face(false)
+		state.cull_face(data.def.shouldCull)
 				.translate(0.5, 0, 0)
 				.rotate(-90, 0, 1, 0)
 				.scale(scale, scale, scale);

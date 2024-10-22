@@ -287,7 +287,7 @@ public class StockModel<ENTITY extends EntityMoveableRollingStock, DEFINITION ex
                 .collect(Collectors.toList());
 
         state.lighting(true)
-                .cull_face(false)
+                .cull_face(stock.getDefinition().shouldCull)
                 .rescale_normal(true)
                 .scale(stock.gauge.scale(), stock.gauge.scale(), stock.gauge.scale());
 

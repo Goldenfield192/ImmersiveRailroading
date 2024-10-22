@@ -31,7 +31,6 @@ import java.awt.geom.Path2D;
 import java.awt.geom.Rectangle2D;
 import java.io.IOException;
 import java.io.InputStream;
-import java.nio.file.Files;
 import java.util.*;
 import java.util.function.Function;
 import java.util.function.Supplier;
@@ -66,6 +65,7 @@ public abstract class EntityRollingStockDefinition {
     private ValveGearConfig valveGear;
     public float darken;
     public Identifier modelLoc;
+    public boolean shouldCull;
     protected StockModel<?, ?> model;
     private Vec3d passengerCenter;
     private float bogeyFront;
@@ -439,7 +439,14 @@ public abstract class EntityRollingStockDefinition {
             ImmersiveRailroading.catching(ex);
         }
 
-        modelLoc = data.getValue("model").asIdentifier();
+        if(data.getValue("model").asIdentifier() == null){
+            DataBlock model = data.getBlock("model");
+            modelLoc = model.getValue("location").asIdentifier();
+            shouldCull = model.getValue("cull_face").asBoolean() != null && model.getValue("cull_face").asBoolean();
+        } else {
+            modelLoc = data.getValue("model").asIdentifier();
+            shouldCull = false;
+        }
 
         DataBlock passenger = data.getBlock("passenger");
         passengerCenter = new Vec3d(0, passenger.getValue("center_y").asDouble() - 0.35, passenger.getValue("center_x").asDouble()).scale(internal_model_scale);

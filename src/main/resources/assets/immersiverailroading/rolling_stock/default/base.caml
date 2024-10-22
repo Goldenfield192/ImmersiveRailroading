@@ -5,7 +5,9 @@ pack = "N/A"     # Optional: Pack Name
 
 # Model information
 darken_model = 0            # Deprecated: legacy feature
-model = null                # Required: Location of the obj model, "immersiverailroading:..."
+model = # Required
+    location = null # Required: Location of the obj model, "immersiverailroading:..."
+    cull_face = false # Optional: Should we render the back of faces? false is render
 model_gauge_m = null        # Optional: Gauge in meters that the model is scaled to, defaults to standard gauge
 recommended_gauge_m = null  # Optional: Gauge to show as the default for the piece of stock
 tex_variants =              # Optional: List of texture variants for this stock
