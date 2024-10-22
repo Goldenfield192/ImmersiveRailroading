@@ -439,12 +439,11 @@ public abstract class EntityRollingStockDefinition {
             ImmersiveRailroading.catching(ex);
         }
 
-        if(data.getValue("model").asIdentifier() == null){
+        if((modelLoc = data.getValue("model").asIdentifier()) == null){
             DataBlock model = data.getBlock("model");
             modelLoc = model.getValue("location").asIdentifier();
             shouldCull = model.getValue("cull_face").asBoolean() != null && model.getValue("cull_face").asBoolean();
         } else {
-            modelLoc = data.getValue("model").asIdentifier();
             shouldCull = false;
         }
 
