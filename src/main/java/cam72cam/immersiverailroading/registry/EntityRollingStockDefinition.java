@@ -439,6 +439,7 @@ public abstract class EntityRollingStockDefinition {
             ImmersiveRailroading.catching(ex);
         }
 
+        //Have no use at all
         if((modelLoc = data.getValue("model").asIdentifier()) == null){
             DataBlock model = data.getBlock("model");
             modelLoc = model.getValue("location").asIdentifier();
