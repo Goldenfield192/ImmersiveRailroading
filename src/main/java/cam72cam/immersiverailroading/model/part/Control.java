@@ -5,6 +5,7 @@ import cam72cam.immersiverailroading.entity.EntityMoveableRollingStock;
 import cam72cam.immersiverailroading.entity.EntityRollingStock;
 import cam72cam.immersiverailroading.library.ModelComponentType;
 import cam72cam.immersiverailroading.library.ModelComponentType.ModelPosition;
+import cam72cam.immersiverailroading.library.ToggleType;
 import cam72cam.immersiverailroading.model.ModelState;
 import cam72cam.immersiverailroading.model.components.ComponentProvider;
 import cam72cam.immersiverailroading.model.components.ModelComponent;
@@ -19,6 +20,7 @@ import cam72cam.mod.model.obj.OBJGroup;
 import cam72cam.mod.render.GlobalRender;
 import cam72cam.mod.render.opengl.RenderState;
 import cam72cam.mod.text.TextColor;
+import cam72cam.mod.text.TextUtil;
 import cam72cam.mod.util.Axis;
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.text.WordUtils;
@@ -34,6 +36,8 @@ public class Control<T extends EntityMoveableRollingStock> extends Interactable<
     public final String controlGroup;
     public final String label;
     public final boolean toggle;
+    public final ToggleType toggleType;
+    public final int toggleTicks;
     public final boolean press;
     public final boolean global;
     protected final boolean invert;
@@ -91,12 +95,58 @@ public class Control<T extends EntityMoveableRollingStock> extends Interactable<
         }).filter(Objects::nonNull).findFirst().orElse(null));
 
         Predicate<String> hasKey = s -> config.getValue(s).asBoolean(part.modelIDs.stream().anyMatch(g -> g.contains("_" + s + "_") || g.startsWith(s + "_") || g.endsWith("_" + s)));
-        this.toggle = hasKey.test("TOGGLE");
         this.press = hasKey.test("PRESS");
         this.global = hasKey.test("GLOBAL");
         this.invert = hasKey.test("INVERT");
         this.hide = hasKey.test("HIDE");
         this.noInteract = hasKey.test("NOTOUCH") || hasKey.test("NOINTERACT");
+
+        if(hasKey.test("TOGGLE")){
+            this.toggle = true;
+            //Then try to find complex definition
+            String temp = null;
+            Pattern with = Pattern.compile("TOGGLE_([^_]+)_(\\d+)");
+            Pattern without = Pattern.compile("TOGGLE_([^_]+)");
+            for (String pattern : part.modelIDs) {
+                //First find def with duration
+                Matcher matcher = with.matcher(pattern);
+                if(matcher.find()){
+                    temp = matcher.group(1);
+                    break;
+                }
+                //Otherwise find no duration version
+                matcher = without.matcher(pattern);
+                if(matcher.find()){
+                    //Storage the state
+                    temp = matcher.group(1);
+                }
+            }
+
+            if(temp != null){
+                //TOGGLE_[type]_[duration in ticks]
+                String[] parts = temp.split("_");
+                ToggleType type;
+                try{
+                    type = ToggleType.valueOf(parts[1]);
+                }catch (IllegalArgumentException e){
+                    type = ToggleType.LINEAR;
+                }
+                this.toggleType = type;
+
+                if(parts.length == 3){
+                    this.toggleTicks = Integer.parseInt(parts[2]);
+                } else {
+                    this.toggleTicks = 0;
+                }
+            } else{
+                this.toggleType = ToggleType.INSTANT;
+                this.toggleTicks = 0;
+            }
+        } else {
+            this.toggle = false;
+            this.toggleType = ToggleType.INSTANT;
+            this.toggleTicks = 0;
+        }
 
         this.offset = config.getValue("OFFSET").asFloat(part.modelIDs.stream().map(group -> {
             Matcher matcher = Pattern.compile("_OFFSET_([^_]+)").matcher(group);
@@ -313,6 +363,7 @@ public class Control<T extends EntityMoveableRollingStock> extends Interactable<
                 }
         }
         String str = (label != null ? label : formatLabel(part.type)) + labelstate;
+        TextUtil.translate(label);
         if (isPressed) {
             str = TextColor.BOLD.wrap(str);
         }

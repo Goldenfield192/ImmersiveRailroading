@@ -113,6 +113,8 @@ public class EntityRollingStock extends CustomEntity implements ITickable, IClic
 				this.kill();
 			}
 		}
+
+		//TODO handle toggle widget
 	}
 
 	/*
