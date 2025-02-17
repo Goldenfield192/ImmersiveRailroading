@@ -3,6 +3,7 @@
 	"name": "A1 Peppercorn",
 	"works": "A1 Steam Locomotive Trust",
 	"model": "immersiverailroading:models/rolling_stock/locomotives/a1_peppercorn/a1_peppercorn.obj",
+	"script": "immersiverailroading:models/rolling_stock/locomotives/a1_peppercorn/a.lua",
 	"tex_variants": {
 		"Dark Blue": "dark_blue"
 	},
