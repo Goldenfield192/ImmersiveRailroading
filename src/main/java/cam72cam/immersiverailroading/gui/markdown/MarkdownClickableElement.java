@@ -1,5 +1,7 @@
 package cam72cam.immersiverailroading.gui.markdown;
 
+import cam72cam.mod.math.Vec3d;
+
 import java.awt.geom.Rectangle2D;
 
 /**
@@ -12,7 +14,9 @@ public abstract class MarkdownClickableElement extends MarkdownElement{
     /**
      * Called upon click inside the detect section
      */
-    public abstract void click();
+    public abstract void click(MarkdownDocument context);
+
+    public abstract void updateSection(Vec3d offset);
 
     /**
      * Render a specific string as tooltip

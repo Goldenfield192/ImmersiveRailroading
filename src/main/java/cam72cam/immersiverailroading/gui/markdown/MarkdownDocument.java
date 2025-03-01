@@ -25,9 +25,9 @@ public class MarkdownDocument {
     private static final HashMap<Identifier, MarkdownDocument> DOCUMENTS = new HashMap<>();
 
     public final Identifier page;
-    protected final List<MarkdownLine> originalLines;
-    protected final List<MarkdownLine> brokenLines;
     private final HashMap<String, Integer> pageProperties;
+    protected List<MarkdownLine> originalLines;
+    protected List<MarkdownLine> brokenLines;
     private Rectangle2D scrollRegion;
     private double scrollSpeed;
     private double verticalOffset;
@@ -85,7 +85,7 @@ public class MarkdownDocument {
      * @return The stored value, or -1 if not present
      */
     public int getProperty(String name){
-        return this.pageProperties.getOrDefault(name, -1);
+        return this.pageProperties.getOrDefault(name, 0);
     }
 
     /**
@@ -146,12 +146,9 @@ public class MarkdownDocument {
 
                 //Dynamically update clickable elements' pos(for now only url is included)
                 if(element instanceof MarkdownClickableElement){
-                    MarkdownClickableElement clickable = (MarkdownClickableElement) element;
-                    clickable.section = new Rectangle((int) offset.x, (int) offset.y,
-                            GUIHelpers.getTextWidth(str), 10);
-
-                    if(this.scrollRegion.contains(ManualHoverRenderer.mouseX, ManualHoverRenderer.mouseY)
-                           && clickable.section.contains(ManualHoverRenderer.mouseX, ManualHoverRenderer.mouseY)){
+                    ((MarkdownClickableElement) element).updateSection(offset);
+                    if (this.scrollRegion.contains(ManualHoverRenderer.mouseX, ManualHoverRenderer.mouseY)
+                            && ((MarkdownClickableElement) element).section.contains(ManualHoverRenderer.mouseX, ManualHoverRenderer.mouseY)) {
                         hoveredElement = (MarkdownClickableElement) element;
                     }
                 }
@@ -200,8 +197,8 @@ public class MarkdownDocument {
     }
 
     private void clearCache(){
-        this.originalLines.clear();
-        this.brokenLines.clear();
+        this.originalLines = new LinkedList<>();
+        this.brokenLines = new LinkedList<>();
     }
 
     public int getPageWidth() {
@@ -260,7 +257,7 @@ public class MarkdownDocument {
             this.brokenLines.forEach(line -> line.elements.stream().filter(e -> e instanceof MarkdownClickableElement)
                     .forEach(element -> {
                 if(((MarkdownClickableElement) element).section.contains(releaseEvent.x, releaseEvent.y)){
-                    ((MarkdownClickableElement) element).click();
+                    ((MarkdownClickableElement) element).click(this);
                 }
             }));
         }

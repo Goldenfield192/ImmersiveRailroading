@@ -5,3 +5,8 @@
 It adds a new transport system (item, fluids, players, animals, villagers) to the game. It is based on real world physics (where possible) and uses life-size models to convey the true scale and grandeur of Railroading.
 ***
 Want new looks and more detailed textures? Come check out the [resource packs](immersiverailroading:wiki/en_us/resource_packs_outside_sources.md)
+***
+All loaded stocks:
+[list_selector][stock]{Sort by stock name,Sort by modeler name,Sort by pack name}
+
+[list_stock_page]

@@ -2,6 +2,8 @@ package cam72cam.immersiverailroading.gui.markdown;
 
 import cam72cam.mod.render.opengl.RenderState;
 
+import java.util.HashMap;
+
 /**
  * Abstract element class
  * @see MarkdownTitle
@@ -12,6 +14,8 @@ import cam72cam.mod.render.opengl.RenderState;
  */
 public abstract class MarkdownElement {
     public String text;
+
+    public HashMap<String, Object> extra = new HashMap<>();
 
     /**
      * Apply this element to Renderable string

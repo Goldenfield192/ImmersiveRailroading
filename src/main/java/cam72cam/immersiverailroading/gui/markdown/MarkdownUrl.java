@@ -3,11 +3,13 @@ package cam72cam.immersiverailroading.gui.markdown;
 import cam72cam.immersiverailroading.gui.ManualGui;
 import cam72cam.mod.MinecraftClient;
 import cam72cam.mod.gui.helpers.GUIHelpers;
+import cam72cam.mod.math.Vec3d;
 import cam72cam.mod.render.opengl.RenderState;
 import cam72cam.mod.resource.Identifier;
 import cam72cam.mod.text.PlayerMessage;
 import cam72cam.mod.text.TextColor;
 
+import java.awt.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Matcher;
@@ -104,7 +106,7 @@ public class MarkdownUrl extends MarkdownClickableElement {
     }
 
     @Override
-    public void click() {
+    public void click(MarkdownDocument document) {
         if(this.destination.canLoad() && this.destination.getPath().endsWith(".md")){
             ManualGui.pushContent(this.destination);
         } else if(this.destination.getDomain().equals("https")){
@@ -112,6 +114,12 @@ public class MarkdownUrl extends MarkdownClickableElement {
         } else {
             //What should we do?
         }
+    }
+
+    @Override
+    public void updateSection(Vec3d offset) {
+        this.section = new Rectangle((int) offset.x, (int) offset.y,
+                GUIHelpers.getTextWidth(this.apply()), 10);
     }
 
     //TODO Translation file

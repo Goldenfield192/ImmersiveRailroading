@@ -1,12 +1,15 @@
 package cam72cam.immersiverailroading.gui.markdown;
 
+import cam72cam.immersiverailroading.gui.manual.StockDescriptionProvider;
+import cam72cam.immersiverailroading.gui.manual.StockListProvider;
+import cam72cam.mod.ModCore;
 import cam72cam.mod.resource.Identifier;
 
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.*;
-import java.util.function.Function;
+import java.util.function.BiFunction;
 
 import static cam72cam.immersiverailroading.gui.markdown.MarkdownStyledText.*;
 
@@ -20,7 +23,13 @@ import static cam72cam.immersiverailroading.gui.markdown.MarkdownStyledText.*;
  * @see MarkdownDocument
  */
 public class MarkdownBuilder {
-    private static final HashMap<String, Function<String, List<MarkdownDocument.MarkdownLine>>> SPECIAL_MATCHER = new HashMap<>();
+    private static final HashMap<String, BiFunction<String, MarkdownDocument, List<MarkdownDocument.MarkdownLine>>> SPECIAL_MATCHER
+            = new HashMap<>();
+
+    static {
+        register(StockListProvider.SYNTAX, StockListProvider::parse);
+        register(StockDescriptionProvider.SYNTAX, StockDescriptionProvider::parse);
+    }
 
     /**
      * Builds a MarkdownDocument from the given resource identifier
@@ -51,10 +60,10 @@ public class MarkdownBuilder {
         while ((currentLine = reader.readLine()) != null){
             //Deal with custom parser logic first
             String finalStr = currentLine.trim();
-            Optional<Map.Entry<String, Function<String, List<MarkdownDocument.MarkdownLine>>>> optionalFunc =
+            Optional<Map.Entry<String, BiFunction<String, MarkdownDocument, List<MarkdownDocument.MarkdownLine>>>> optionalFunc =
                     SPECIAL_MATCHER.entrySet().stream().filter(entry -> finalStr.startsWith(entry.getKey())).findFirst();
             if(optionalFunc.isPresent()){
-                document.addLines(optionalFunc.get().getValue().apply(currentLine));
+                document.addLines(optionalFunc.get().getValue().apply(currentLine, document));
                 continue;
             }
 
@@ -98,6 +107,13 @@ public class MarkdownBuilder {
                 document.addLine(MarkdownDocument.MarkdownLine.create(new MarkdownStyledText("")).isTipStart(true));
                 document.addLine(MarkdownDocument.MarkdownLine.create(parse(currentLine.substring(Math.min(2, currentLine.length() - 1)))));
                 isInTips = true;
+            } else if(currentLine.startsWith("[list_selector]")){
+                ModCore.info("tet");
+                MarkdownListSelector selector = new MarkdownListSelector(currentLine.substring(15));
+                if(document.getProperty(selector.getName()) != 0){
+                    selector.setCurrentState(document.getProperty(selector.getName()));
+                }
+                document.addLine(selector);
             } else if(MarkdownSplitLine.validate(currentLine)){
                 //Split line
                 document.addLine(new MarkdownSplitLine());
@@ -124,7 +140,7 @@ public class MarkdownBuilder {
      * @param syntaxPrefix Syntax prefix to trigger this handler
      * @param handler Function to process matching lines
      */
-    public static void register(String syntaxPrefix, Function<String, List<MarkdownDocument.MarkdownLine>> handler){
+    public static void register(String syntaxPrefix, BiFunction<String, MarkdownDocument, List<MarkdownDocument.MarkdownLine>> handler){
         SPECIAL_MATCHER.put(syntaxPrefix, handler);
     }
 

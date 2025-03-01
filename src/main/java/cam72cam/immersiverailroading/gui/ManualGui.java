@@ -21,6 +21,8 @@ import java.util.Stack;
 import static cam72cam.immersiverailroading.gui.markdown.Colors.*;
 
 public class ManualGui implements IScreen {
+    public static String currentDefID;
+
     private static ManualGui currentOpeningManual;
     //                                        page     page's mainOffset
     private static final Stack<MutablePair<Identifier, Double>> historyPageStack = new Stack<>();
@@ -101,22 +103,6 @@ public class ManualGui implements IScreen {
         sidebar.render(state.clone().translate(57, 27, 0));
         content.render(state.clone().translate(180, 30, 0));
 
-        //Tooltip
-        //Currently only MarkdownUrl inherits MarkdownClickableElement, need change when more types are added
-        for(MarkdownDocument screen : new MarkdownDocument[]{sidebar, content}){
-            if(screen.getHoveredElement() != null){
-                MarkdownUrl clickable = (MarkdownUrl) screen.getHoveredElement();
-                if (sidebarNameMap.containsKey(clickable.destination)) {
-                    clickable.renderTooltip("Open page: "
-                                    + sidebarNameMap.getOrDefault(clickable.destination, "UNDEFINED"),
-                            (int) screen.getScrollRegion().getMaxY());
-                } else {
-                    clickable.renderTooltip((int) screen.getScrollRegion().getMaxY());
-                }
-                break;
-            }
-        }
-
         //Footer
         int lineCount = footer.getLineCount();
         GUIHelpers.drawRect(50, height - (10 * lineCount), width - 100, 10 * lineCount, FOOTER_COLOR);
@@ -133,6 +119,22 @@ public class ManualGui implements IScreen {
                 historyPageStack.size() != 1 ? BUTTON_COLOR : BUTTON_DISABLED_COLOR);
         GUIHelpers.drawString(TextColor.BOLD.wrap("->"), 80, 5,
                 !futurePageStack.isEmpty() ? BUTTON_COLOR : BUTTON_DISABLED_COLOR);
+
+        //Tooltip
+        //Currently only MarkdownUrl inherits MarkdownClickableElement, need change when more types are added
+        for(MarkdownDocument screen : new MarkdownDocument[]{sidebar, content}){
+            if(screen.getHoveredElement() != null && screen.getHoveredElement() instanceof MarkdownUrl){
+                MarkdownUrl clickable = (MarkdownUrl) screen.getHoveredElement();
+                if (sidebarNameMap.containsKey(clickable.destination)) {
+                    clickable.renderTooltip("Open page: "
+                                    + sidebarNameMap.getOrDefault(clickable.destination, "UNDEFINED"),
+                            (int) screen.getScrollRegion().getMaxY());
+                } else {
+                    clickable.renderTooltip((int) screen.getScrollRegion().getMaxY());
+                }
+                break;
+            }
+        }
     }
 
     public static void pushContent(Identifier identifier){
