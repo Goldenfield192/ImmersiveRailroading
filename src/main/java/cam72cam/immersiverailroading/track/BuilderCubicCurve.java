@@ -235,15 +235,15 @@ public class BuilderCubicCurve extends BuilderIterator {
 	}
 
 	@Override
-	public List<VecYawPitch> getRenderData() {
+	public List<VecYawPitchRoll> getRenderData() {
 		if (subBuilders == null) {
 			return super.getRenderData();
 		} else {
-			List<VecYawPitch> data = new ArrayList<>();
+			List<VecYawPitchRoll> data = new ArrayList<>();
 			for (BuilderBase curve : subBuilders.subList(0, Math.min(subBuilders.size(), 3))) {
 				Vec3d offset = new Vec3d(curve.pos.subtract(pos));
-				for (VecYawPitch rd : curve.getRenderData()) {
-					rd = new VecYawPitch(rd.x + offset.x, rd.y + offset.y, rd.z + offset.z, rd.yaw, rd.pitch, rd.length);
+				for (VecYawPitchRoll rd : curve.getRenderData()) {
+					rd = new VecYawPitchRoll(rd.x + offset.x, rd.y + offset.y, rd.z + offset.z, rd.yaw, rd.pitch, rd.length);
 					data.add(rd);
 				}
 			}

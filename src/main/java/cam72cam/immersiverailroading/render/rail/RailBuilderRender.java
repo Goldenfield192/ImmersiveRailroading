@@ -7,10 +7,9 @@ import cam72cam.immersiverailroading.render.ExpireableMap;
 import cam72cam.mod.MinecraftClient;
 import cam72cam.mod.render.opengl.VBO;
 import cam72cam.mod.render.obj.OBJRender;
-import cam72cam.immersiverailroading.track.BuilderBase.VecYawPitch;
+import cam72cam.immersiverailroading.track.BuilderBase.VecYawPitchRoll;
 import cam72cam.immersiverailroading.util.RailInfo;
 import cam72cam.mod.render.opengl.RenderState;
-import cam72cam.mod.world.World;
 import util.Matrix4;
 
 import java.util.List;
@@ -24,7 +23,7 @@ public class RailBuilderRender {
         }
     };
 
-    public static void renderRailBuilder(RailInfo info, List<VecYawPitch> renderData, RenderState state) {
+    public static void renderRailBuilder(RailInfo info, List<VecYawPitchRoll> renderData, RenderState state) {
         TrackModel model = DefinitionManager.getTrack(info.settings.track, info.settings.gauge.value());
         if (model == null) {
             return;
@@ -34,12 +33,14 @@ public class RailBuilderRender {
         if (cached == null) {
             OBJRender.Builder builder = model.binder().builder();
 
-            for (VecYawPitch piece : renderData) {
+            for (VecYawPitchRoll piece : renderData) {
                 Matrix4 m = new Matrix4();
                 //m.rotate(Math.toRadians(info.placementInfo.yaw), 0, 1, 0);
                 m.translate(piece.x, piece.y, piece.z);
                 m.rotate(Math.toRadians(piece.getYaw()), 0, 1, 0);
                 m.rotate(Math.toRadians(piece.getPitch()), 1, 0, 0);
+                //TODO 外轨超高入口点
+                m.rotate(Math.toRadians(info.settings.roll),0,0,1);
                 m.rotate(Math.toRadians(-90), 0, 1, 0);
 
                 if (piece.getLength() != -1) {

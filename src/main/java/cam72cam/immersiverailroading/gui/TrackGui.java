@@ -35,12 +35,12 @@ public class TrackGui implements IScreen {
 	long frame;
 
 	private TileRailPreview te;
+
 	private Button typeButton;
 	private TextField lengthInput;
 	private Slider degreesSlider;
 	private Slider curvositySlider;
-	private CheckBox isPreviewCB;
-	private CheckBox isGradeCrossingCB;
+	private Slider rollSlider;
 	private Button gaugeButton;
 	private Button trackButton;
 	private Button posTypeButton;
@@ -48,6 +48,8 @@ public class TrackGui implements IScreen {
 	private Button directionButton;
 	private Button bedTypeButton;
 	private Button bedFillButton;
+	private CheckBox isPreviewCB;
+	private CheckBox isGradeCrossingCB;
 
 	private final List<ItemStack> oreDict;
 
@@ -206,10 +208,21 @@ public class TrackGui implements IScreen {
 		curvositySlider.onSlider();
 		ytop += height;
 
+		this.rollSlider = new Slider(screen, 25+xtop, ytop, "", -20, 20, settings.roll, true) {
+			@Override
+			public void onSlider() {
+				settings.roll = (float) this.getValue();
+				rollSlider.setText(String.format("%.2f", settings.roll));
+			}
+		};
+		rollSlider.onSlider();
+		ytop += height;
+
 		directionButton.setVisible(settings.type.hasDirection());
 		degreesSlider.setVisible(settings.type.hasQuarters());
 		curvositySlider.setVisible(settings.type.hasCurvosity());
 		smoothingButton.setVisible(settings.type.hasSmoothing());
+		rollSlider.setVisible(true);
 
 
 

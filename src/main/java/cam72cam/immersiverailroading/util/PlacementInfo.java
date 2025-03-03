@@ -19,11 +19,20 @@ public class PlacementInfo {
 	public final float yaw;
 	public final Vec3d control;
 
+	public final float ctrl1Roll;
+	public final float ctrl2Roll;
+
 	public PlacementInfo(Vec3d placementPosition, TrackDirection direction, float yaw, Vec3d control) {
+		this(placementPosition, direction, yaw, control, 0, 0);
+	}
+
+	public PlacementInfo(Vec3d placementPosition, TrackDirection direction, float yaw, Vec3d control, float ctrl1Roll, float ctrl2Roll) {
 		this.placementPosition = placementPosition;
 		this.direction = direction;
 		this.yaw = yaw;
 		this.control = control;
+		this.ctrl1Roll = ctrl1Roll;
+		this.ctrl2Roll = ctrl2Roll;
 	}
 
 	public static int segmentation() {
@@ -33,6 +42,9 @@ public class PlacementInfo {
 	public PlacementInfo(ItemStack stack, float yawHead, Vec3d hit) {
 		yawHead = ((- yawHead % 360) + 360) % 360;
 		this.yaw = ((int)((yawHead + 90/(segmentation() * 2f)) * segmentation())) / 90 * 90 / (segmentation() * 1f);
+
+		this.ctrl1Roll = 0;
+		this.ctrl2Roll = 0;
 
 		RailSettings settings = RailSettings.from(stack);
 		TrackDirection direction = settings.direction;

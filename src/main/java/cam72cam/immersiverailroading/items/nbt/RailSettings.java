@@ -14,6 +14,7 @@ public class RailSettings {
     public final int length;
     public final float degrees;
     public final float curvosity;
+    public final float roll;
     public final TrackPositionType posType;
     public final TrackSmoothing smoothing;
     public final TrackDirection direction;
@@ -23,7 +24,7 @@ public class RailSettings {
     public final boolean isGradeCrossing;
     public final String track;
 
-    public RailSettings(Gauge gauge, String track, TrackItems type, int length, float degrees, float curvosity, TrackPositionType posType, TrackSmoothing smoothing, TrackDirection direction, ItemStack railBed, ItemStack railBedFill, boolean isPreview, boolean isGradeCrossing) {
+    public RailSettings(Gauge gauge, String track, TrackItems type, int length, float degrees, float curvosity, TrackPositionType posType, TrackSmoothing smoothing, TrackDirection direction, ItemStack railBed, ItemStack railBedFill, boolean isPreview, boolean isGradeCrossing, float roll) {
         this.gauge = gauge;
         this.track = track;
         this.type = type;
@@ -37,6 +38,7 @@ public class RailSettings {
         this.isPreview = isPreview;
         this.isGradeCrossing = isGradeCrossing;
         this.curvosity = curvosity;
+        this.roll = roll;
     }
 
     public void write(ItemStack stack) {
@@ -115,6 +117,8 @@ public class RailSettings {
         public float degrees;
         @TagField("curvosity")
         public float curvosity;
+        @TagField("roll")
+        public float roll;
         @TagField("pos_type")
         public TrackPositionType posType;
         @TagField(value = "smoothing", mapper = SmoothingMapper.class)
@@ -139,6 +143,7 @@ public class RailSettings {
             this.length = settings.length;
             this.degrees = settings.degrees;
             this.curvosity = settings.curvosity;
+            this.roll = settings.roll;
             this.posType = settings.posType;
             this.smoothing = settings.smoothing;
             this.direction = settings.direction;
@@ -155,6 +160,7 @@ public class RailSettings {
             track = "default";
             length = 10;
             degrees = 90;
+            roll = 0;
             posType = TrackPositionType.FIXED;
             smoothing = TrackSmoothing.BOTH;
             direction = TrackDirection.NONE;
@@ -181,7 +187,8 @@ public class RailSettings {
                     railBed,
                     railBedFill,
                     isPreview,
-                    isGradeCrossing
+                    isGradeCrossing,
+                    roll
             );
         }
     }

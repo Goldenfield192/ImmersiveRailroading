@@ -11,7 +11,6 @@ import cam72cam.mod.item.ItemStack;
 import cam72cam.mod.math.Vec3d;
 import cam72cam.mod.math.Vec3i;
 import cam72cam.mod.util.Facing;
-import cam72cam.mod.serialization.TagCompound;
 import cam72cam.immersiverailroading.thirdparty.trackapi.ITrack;
 import cam72cam.mod.world.World;
 
@@ -42,23 +41,28 @@ public abstract class BuilderBase {
 		parent_pos = pos;
 	}
 
-	public class VecYawPitch extends Vec3d {
+	public class VecYawPitchRoll extends Vec3d {
 		public final float yaw;
 		public final float pitch;
+		public final float roll;
 		public final float length;
 		public final List<String> groups;
 		
-		public VecYawPitch(double xIn, double yIn, double zIn, float yaw, String... groups) {
+		public VecYawPitchRoll(double xIn, double yIn, double zIn, float yaw, String... groups) {
 			this(xIn, yIn, zIn, yaw, 0, groups);
 		}
-		public VecYawPitch(double xIn, double yIn, double zIn, float yaw, float pitch, String... groups) {
-			this(xIn, yIn, zIn, yaw, pitch, -1, groups);
+		public VecYawPitchRoll(double xIn, double yIn, double zIn, float yaw, float pitch, String... groups) {
+			this(xIn, yIn, zIn, yaw, pitch, -1, 0, groups);
 		}
-		public VecYawPitch(double xIn, double yIn, double zIn, float yaw, float pitch, float length, String... groups) {
+		public VecYawPitchRoll(double xIn, double yIn, double zIn, float yaw, float pitch, float length, String... groups) {
+			this(xIn, yIn, zIn, yaw, pitch, length, 0, groups);
+		}
+		public VecYawPitchRoll(double xIn, double yIn, double zIn, float yaw, float pitch, float length, float roll, String... groups) {
 			super(xIn, yIn, zIn);
 			this.yaw = yaw;
 			this.groups = Arrays.asList(groups);
 			this.pitch = pitch;
+			this.roll = roll;
 			this.length = length;
 		}
 		public float getYaw() {
@@ -66,6 +70,9 @@ public abstract class BuilderBase {
 		}
 		public float getPitch() {
 			return this.pitch;
+		}
+		public float getRoll(){
+			return this.roll;
 		}
 		public float getLength() {
 			return this.length;
@@ -75,7 +82,7 @@ public abstract class BuilderBase {
 		}
 	}
 	
-	public abstract List<VecYawPitch> getRenderData();
+	public abstract List<VecYawPitchRoll> getRenderData();
 
 	public boolean canBuild() {
 		for(TrackBase track : tracks) {
