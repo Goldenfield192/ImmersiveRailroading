@@ -1,11 +1,11 @@
-The Detector Augment is used to check what locomotive/stock is passing overhead.  Right-click on a track segment to apply the augment. Like any augment, it may be removed from the track by right-clicking with the wrench. It can be filtered by right-clicking on the augment with a locomotive or rolling stock item.
+The Detector Augment is used to check the locomotive/stock overhead's properties.
 
-Right-click on the augment with a redstone torch in your hand will switch it between a few modes:
-* Stock: Outputs a signal of 15 if there's a stock on the detector and it matches the filter (if set), otherwise outputs no signal (this is the default mode).
-* Speed: Outputs a signal with strength equal to `floor(speedInKmh / 10)` of the stock on the detector if it matches the filter (if set), otherwise outputs no signal.
-* Number of passengers: Outputs a signal with strength equal to the `min(15, numberOfPassengersRiding)` the stock on the detector if it matches the filter (if set), otherwise outputs no signal.
-* Freight Cargo Fullness: Outputs a signal with strength proportional to the `numberOfNonEmptyItemSlots / totalNumberOfItemSlots` of the stock on the detector if it matches the filter (if set), otherwise outputs no signal.
-* Liquid Cargo Fullness: Outputs a signal with strength proportional to the `amountOfFluid / maxAmountOfFluid` of the stock on the detector if it matches the filter (if set), otherwise outputs no signal.
+Right-click on the augment redstone torch/redstone dust/piston in your main hand will switch it between a few modes:
+* Stock: Outputs a signal of 15 if there's a stock on the detector, otherwise outputs no signal.
+* Speed: Outputs a signal equal to the minimum value of (speed(kph) divided by 10) rounded down and 15.
+* Number of passengers: Outputs a signal with strength equal to the minimum value of the number of passengers on the stock and 15.
+* Freight Cargo Fullness: Outputs a signal with strength proportional to the ratio of non-empty item slots to total item slots of the stock on the detector.
+* Liquid Cargo Fullness: Outputs a signal with strength proportional to the ratio of current liquid amount to the max amount of liquid the stock on the detector can hold.
 
 ## Examples:
 A plain detector:

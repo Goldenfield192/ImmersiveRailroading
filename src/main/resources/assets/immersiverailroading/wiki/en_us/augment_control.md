@@ -1,11 +1,12 @@
-The Locomotive Control Augment is used to set the throttle or brake of locomotives overhead.  Right-click on a track segment to apply the augment. Like any augment, it may be removed from the track by right\-clicking with the wrench. It can be filtered by right-clicking on the augment with a locomotive item.
+The Locomotive Control Augment is used to control the locomotive overhead.
 
-Right\-click on the augment with a redstone torch in your hand will switch it between a few modes:
-* Throttle Forward: Sets the throttle forward proportional to the redstone signal
-* Throttle Reverse: Sets the throttle reverse proportional to the redstone signal
-* Brake: Sets the brake proportional to the redstone signal
-* Horn: Fires off the whistle or horn regardless of redstone level
-* Computer: see [Open Computers Integration](https://github.com/cam72cam/ImmersiveRailroading/wiki/Open-Computers)
+Right\-click on the augment with a redstone torch/redstone dust/piston in your hand will switch it between a few modes:
+* Throttle: Sets the throttle size proportional to the redstone signal level.
+* Reverser: Sets locomotive's reverser to reverse for redstone signal levels below 7, to neutral at 7, and to forward above 7.
+* Brake: Sets the train brake proportional to the redstone signal level.
+* Horn: Fires off the whistle or horn for 2 seconds if redstone signal present, and if present sets it volume proportional to the redstone signal level.
+* Bell: Fires off the bell, and for each level of redstone signal, the ring duration increases by 0.5 seconds.
+* Computer: Not available currently.
 
 Example:
 

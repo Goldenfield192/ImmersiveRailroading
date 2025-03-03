@@ -1,4 +1,4 @@
-Before establishing a railroad empire, it's a good idea to ensure a robust supply of Steel, Treated Wood, and electrical power.
+Before establishing a railroad empire, it's a good idea to ensure a robust supply of steel, treated wood, and electrical power.
 
 When ready, create a [Blueprint Book](immersiverailroading:wiki/en_us/blueprint_book.md), a [Large Wrench](immersiverailroading:wiki/en_us/large_wrench.md), and a [Track Blueprint](immersiverailroading:wiki/en_us/track_blueprint.md). These three tools are essential to progress and construction through the mod.
 
@@ -10,4 +10,4 @@ Continuing on with the creation of an A1 Peppercorn, we don't need another machi
 
 A word of warning: Steam Engines require a constant water supply when fueled, and if they boil off 75% or more of their water, there is a chance that they will explode. As such, it's a good idea to remove any fuel from idle Steam Engines, or ensure they have a constant supply of water through a Loader and fluid piping.
 
-Locomotives and cars can be instantly removed and picked up by using sneak and click on them.
+Locomotives and cars can be instantly removed and picked up by using shift and left-click on them.
