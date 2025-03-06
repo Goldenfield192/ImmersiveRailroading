@@ -1,12 +1,10 @@
-One of the core tools in Immersive Railroading. The Blueprint Book contains the blueprints for the machine present in the mod, and is the tool used to place them.  It also opens up an in-game wiki when right-click.
+The book you are reading, one of the core tools in Immersive Railroading. 
 
-Craft with a book and six steel ingots in an H-shape, with the book in the center like so:
+The Blueprint Book contains the blueprints for the machine present in the mod, and is the tool used to place them.
 
-![Blueprint Book Crafting Recipe](immersiverailroading:wiki/images/book1.png)
+While holding the book with your hand, press shift and right-click in air to toggle between the different machines. Currently, there are five types of machine in the game: [Casting Basin](immersiverailroading:wiki/en_us/casting_basin.md), [Track Roller](immersiverailroading:wiki/en_us/track_roller.md), [Steam Hammer](immersiverailroading:wiki/en_us/steam_hammer.md), [Boiler Roller](immersiverailroading:wiki/en_us/boiler_roller.md) and [Plate Rolling Machine](immersiverailroading:wiki/en_us/plate_rolling_machine.md).
 
-While holding the book with your crosshair in midair, sneak and right-click to toggle between the different machines. Currently, they are the Plate Rolling Machine, Boiler Machine, Steam Hammer, Casting Basin, and Rail Machine.
-
-To place these machines, right-click on the ground with book in hand. The book will display if you are missing the blocks required, and will also alert you to the coordinates of any blocks which must be removed to place the chosen machine.
+To place these machines, right-click on the ground with the book in hand. The book will display if you are missing the blocks required, and will also alert you to the coordinates of any blocks which must be removed to place the chosen machine.
 
 Preview shown when looking at the ground with the book:
 

@@ -1,1 +1,0 @@
-[stock_description_provider]

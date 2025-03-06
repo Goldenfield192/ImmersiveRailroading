@@ -63,6 +63,7 @@ public abstract class EntityRollingStockDefinition {
     public String name;
     public String modelerName;
     public String packName;
+    public Identifier description;
     private ValveGearConfig valveGear;
     public float darken;
     public Identifier modelLoc;
@@ -393,6 +394,7 @@ public abstract class EntityRollingStockDefinition {
         name = data.getValue("name").asString();
         modelerName = data.getValue("modeler").asString();
         packName = data.getValue("pack").asString();
+        description = data.getValue("description").asIdentifier();
         darken = data.getValue("darken_model").asFloat();
         internal_model_scale = 1;
         internal_inv_scale = 1;

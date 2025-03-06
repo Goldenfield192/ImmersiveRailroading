@@ -1,4 +1,4 @@
-The Detector Augment is used to check the locomotive/stock overhead's properties.
+The Detector Augment is displayed as red block under rail and is used to check the locomotive/stock overhead's properties.
 
 Right-click on the augment redstone torch/redstone dust/piston in your main hand will switch it between a few modes:
 * Stock: Outputs a signal of 15 if there's a stock on the detector, otherwise outputs no signal.

@@ -1,10 +1,11 @@
-package cam72cam.immersiverailroading.gui.markdown;
+package cam72cam.immersiverailroading.gui.markdown.element;
 
+import cam72cam.immersiverailroading.gui.markdown.MarkdownDocument;
+import cam72cam.immersiverailroading.gui.markdown.MarkdownPageManager;
 import cam72cam.mod.ModCore;
 import cam72cam.mod.gui.helpers.GUIHelpers;
 import cam72cam.mod.math.Vec3d;
 import cam72cam.mod.render.opengl.RenderState;
-import util.Matrix4;
 
 import java.awt.*;
 import java.util.Arrays;
@@ -81,7 +82,7 @@ public class MarkdownListSelector extends MarkdownClickableElement{
         ModCore.info(String.valueOf(currentState));
         currentState = currentState == choices.size() -1 ? 0 : currentState + 1;
         context.changeProperty(name, currentState);
-        MarkdownDocument.refreshByID(context.page);
+        MarkdownPageManager.refreshByID(context.page);
     }
 
     @Override

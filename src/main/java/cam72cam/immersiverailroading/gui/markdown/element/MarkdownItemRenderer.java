@@ -1,0 +1,78 @@
+package cam72cam.immersiverailroading.gui.markdown.element;
+
+import cam72cam.immersiverailroading.IRItems;
+import cam72cam.immersiverailroading.gui.markdown.MarkdownDocument;
+import cam72cam.immersiverailroading.items.ItemRollingStock;
+import cam72cam.immersiverailroading.items.ItemTabs;
+import cam72cam.immersiverailroading.registry.EntityRollingStockDefinition;
+import cam72cam.mod.gui.helpers.GUIHelpers;
+import cam72cam.mod.item.ItemStack;
+import cam72cam.mod.math.Vec3d;
+import cam72cam.mod.render.opengl.RenderState;
+
+import java.awt.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
+
+public class MarkdownItemRenderer extends MarkdownClickableElement{
+    public ItemStack stack;
+
+    private static List<ItemStack> stocks;
+
+    static {
+        stocks = new ArrayList<>();
+
+        stocks.addAll(IRItems.ITEM_ROLLING_STOCK.getItemVariants(ItemTabs.LOCOMOTIVE_TAB));
+        stocks.addAll(IRItems.ITEM_ROLLING_STOCK.getItemVariants(ItemTabs.PASSENGER_TAB));
+        stocks.addAll(IRItems.ITEM_ROLLING_STOCK.getItemVariants(ItemTabs.STOCK_TAB));
+    }
+
+    public MarkdownItemRenderer(EntityRollingStockDefinition def){
+        Optional<ItemStack> item =
+                stocks.stream().filter(stack -> new ItemRollingStock.Data(stack).def.equals(def)).findFirst();
+        if(item.isPresent()){
+            this.stack = item.get();
+        } else {
+            throw new IllegalStateException("Can't find definition!");
+        }
+    }
+
+    public MarkdownItemRenderer(ItemStack stack) {
+        this.stack = stack;
+    }
+
+    @Override
+    public String apply() {
+        return "";
+    }
+
+    @Override
+    public MarkdownElement[] split(int splitPos) {
+        return new MarkdownElement[0];
+    }
+
+    @Override
+    public int render(RenderState state, int pageWidth) {
+        RenderState state1 = state.clone();
+        state1.scale(5,5,5);
+        GUIHelpers.drawItem(stack, 0, 0, state1.model_view());
+        state.translate(0,100,0);
+        return 100;
+    }
+
+    @Override
+    public void click(MarkdownDocument context) {
+
+    }
+
+    @Override
+    public void updateSection(Vec3d offset) {
+        this.section = new Rectangle((int) offset.x, (int) offset.y, 10, 10);
+    }
+
+    @Override
+    public void renderTooltip(int bottomBound) {
+
+    }
+}

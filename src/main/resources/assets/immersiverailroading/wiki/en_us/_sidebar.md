@@ -1,14 +1,14 @@
- [Home](immersiverailroading:wiki/en_us/home.md)
+[Home](immersiverailroading:wiki/en_us/home.md)
 # Getting started
- [Getting Started](immersiverailroading:wiki/en_us/getting_started.md)
- [Blueprint Book](immersiverailroading:wiki/en_us/blueprint_book.md)
+[Overview](immersiverailroading:wiki/en_us/getting_started.md)
+[Blueprint Book](immersiverailroading:wiki/en_us/blueprint_book.md)
 # Industry
 ## Machines
-[Track Roller](immersiverailroading:wiki/en_us/track_roller.md)
 [Casting Basin](immersiverailroading:wiki/en_us/casting_basin.md)
+[Track Roller](immersiverailroading:wiki/en_us/track_roller.md)
 [Steam Hammer](immersiverailroading:wiki/en_us/steam_hammer.md)
-[Plate Rolling Machine](immersiverailroading:wiki/en_us/plate_rolling_machine.md)
 [Boiler Roller](immersiverailroading:wiki/en_us/boiler_roller.md)
+[Plate Rolling Machine](immersiverailroading:wiki/en_us/plate_rolling_machine.md)
 ## Tools
 [Large Wrench](immersiverailroading:wiki/en_us/large_wrench.md)
 # Trains and rails
@@ -27,9 +27,11 @@
 [Automated Driving](immersiverailroading:wiki/en_us/opencomputers_train_radio_control_card.md)
 [Open Computers](immersiverailroading:wiki/en_us/open_computers.md)
 [Computer APIs](immersiverailroading:wiki/en_us/computer_apis.md)
-# Technical info
-[StockName.json](immersiverailroading:wiki/en_us/stockname.json.md)
+# Helps
 [Performance](immersiverailroading:wiki/en_us/rolling_stock_performance.md)
 [Customizing IR](immersiverailroading:wiki/en_us/customizing_ir.md)
-[Known Conflicts](immersiverailroading:wiki/en_us/known_conflicts.md)
+[Config](OBJECT PROMISE)
+[Known Conflicts with other mods](immersiverailroading:wiki/en_us/known_conflicts.md)
+# Technical info
+[StockName.json](immersiverailroading:wiki/en_us/stockname.json.md)
 [Resource Pack List](immersiverailroading:wiki/en_us/resource_packs_outside_sources.md)

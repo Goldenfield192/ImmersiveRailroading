@@ -1,4 +1,4 @@
-package cam72cam.immersiverailroading.gui.markdown;
+package cam72cam.immersiverailroading.gui.markdown.element;
 
 import cam72cam.mod.render.opengl.RenderState;
 

@@ -1,5 +1,8 @@
 package cam72cam.immersiverailroading.gui.markdown;
 
+import cam72cam.immersiverailroading.gui.markdown.element.MarkdownElement;
+import cam72cam.immersiverailroading.gui.markdown.element.MarkdownStyledText;
+import cam72cam.immersiverailroading.gui.markdown.element.MarkdownTitle;
 import cam72cam.mod.gui.helpers.GUIHelpers;
 
 import java.util.*;
@@ -17,7 +20,7 @@ public class MarkdownLineBreaker {
      * @param screenWidth Target rendering width
      * @return The document itself, with refreshed brokenLines
      */
-    protected static MarkdownDocument breakDocument(MarkdownDocument document, int screenWidth){
+    public static MarkdownDocument breakDocument(MarkdownDocument document, int screenWidth){
         document.brokenLines.clear();
         boolean codeBlockFlag = false;
         boolean tipsFlag = false;

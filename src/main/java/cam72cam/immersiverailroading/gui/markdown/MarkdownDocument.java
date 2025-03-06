@@ -1,5 +1,6 @@
 package cam72cam.immersiverailroading.gui.markdown;
 
+import cam72cam.immersiverailroading.gui.markdown.element.*;
 import cam72cam.mod.event.ClientEvents;
 import cam72cam.mod.gui.helpers.GUIHelpers;
 import cam72cam.mod.math.Vec3d;
@@ -7,9 +8,7 @@ import cam72cam.mod.render.opengl.RenderState;
 import cam72cam.mod.resource.Identifier;
 
 import javax.annotation.Nonnull;
-import java.awt.*;
 import java.awt.geom.Rectangle2D;
-import java.io.IOException;
 import java.util.*;
 import java.util.List;
 
@@ -20,10 +19,6 @@ import static cam72cam.immersiverailroading.gui.markdown.Colors.*;
  */
 @SuppressWarnings("unused")
 public class MarkdownDocument {
-    //All cached document
-    //TODO Maybe we should to use ExpireableMap?
-    private static final HashMap<Identifier, MarkdownDocument> DOCUMENTS = new HashMap<>();
-
     public final Identifier page;
     private final HashMap<String, Integer> pageProperties;
     protected List<MarkdownLine> originalLines;
@@ -39,35 +34,11 @@ public class MarkdownDocument {
      * Internal constructor class
      * @param page This page's content location
      */
-    private MarkdownDocument(Identifier page) {
+    public MarkdownDocument(Identifier page) {
         this.page = page;
         this.originalLines = new LinkedList<>();
         this.brokenLines = new LinkedList<>();
         this.pageProperties = new HashMap<>();
-    }
-
-    /**
-     * Try to get a cached page
-     * @param id The page's content location
-     * @return The cached page or a new page if not present
-     */
-    public static synchronized MarkdownDocument getOrComputePageByID(Identifier id){
-        return DOCUMENTS.computeIfAbsent(id, MarkdownDocument::new);
-    }
-
-    /**
-     * API method for dynamic generated content
-     * @param id The cached page need to be cleared
-     */
-    public static synchronized void refreshByID(Identifier id){
-        Optional.ofNullable(DOCUMENTS.get(id)).ifPresent(document -> {
-            document.clearCache();
-            try {
-                MarkdownBuilder.build(id, document.getPageWidth());
-            } catch (IOException e) {
-                throw new RuntimeException(e);
-            }
-        });
     }
 
     /**
@@ -131,6 +102,7 @@ public class MarkdownDocument {
             for(MarkdownElement element : line.elements){
                 //Show current matrix result
                 offset = state.model_view().apply(Vec3d.ZERO);
+
                 height += element.render(state, pageWidth);
 
                 String str = element.apply();
@@ -196,7 +168,7 @@ public class MarkdownDocument {
         return this.originalLines.isEmpty();
     }
 
-    private void clearCache(){
+    public void clearCache(){
         this.originalLines = new LinkedList<>();
         this.brokenLines = new LinkedList<>();
     }

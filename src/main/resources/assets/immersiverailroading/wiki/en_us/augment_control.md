@@ -1,6 +1,6 @@
-The Locomotive Control Augment is used to control the locomotive overhead.
+The Locomotive Control Augment is displayed as black block under rail and is used to control the locomotive overhead.
 
-Right\-click on the augment with a redstone torch/redstone dust/piston in your hand will switch it between a few modes:
+Right-click on the augment with a redstone torch/redstone dust/piston in your hand will switch it between a few modes:
 * Throttle: Sets the throttle size proportional to the redstone signal level.
 * Reverser: Sets locomotive's reverser to reverse for redstone signal levels below 7, to neutral at 7, and to forward above 7.
 * Brake: Sets the train brake proportional to the redstone signal level.

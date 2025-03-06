@@ -1,7 +1,7 @@
 package cam72cam.immersiverailroading.gui.markdown;
 
-import cam72cam.immersiverailroading.gui.manual.StockDescriptionProvider;
 import cam72cam.immersiverailroading.gui.manual.StockListProvider;
+import cam72cam.immersiverailroading.gui.markdown.element.*;
 import cam72cam.mod.ModCore;
 import cam72cam.mod.resource.Identifier;
 
@@ -11,7 +11,7 @@ import java.io.InputStreamReader;
 import java.util.*;
 import java.util.function.BiFunction;
 
-import static cam72cam.immersiverailroading.gui.markdown.MarkdownStyledText.*;
+import static cam72cam.immersiverailroading.gui.markdown.element.MarkdownStyledText.*;
 
 /**
  * Beginning of markdown
@@ -23,36 +23,24 @@ import static cam72cam.immersiverailroading.gui.markdown.MarkdownStyledText.*;
  * @see MarkdownDocument
  */
 public class MarkdownBuilder {
-    private static final HashMap<String, BiFunction<String, MarkdownDocument, List<MarkdownDocument.MarkdownLine>>> SPECIAL_MATCHER
-            = new HashMap<>();
+    private static final HashMap<String, BiFunction<String, MarkdownDocument, List<MarkdownDocument.MarkdownLine>>>
+            SPECIAL_MATCHER = new HashMap<>();
 
     static {
         register(StockListProvider.SYNTAX, StockListProvider::parse);
-        register(StockDescriptionProvider.SYNTAX, StockDescriptionProvider::parse);
     }
 
     /**
      * Builds a MarkdownDocument from the given resource identifier
      * @param id The identifier containing markdown content
-     * @param screenWidth Target rendering width for line breaking
      * @return Built MarkdownDocument instance
      * @throws IOException If resource reading fails
      */
-    public static MarkdownDocument build(Identifier id, int screenWidth) throws IOException {
+    public static MarkdownDocument build(Identifier id) throws IOException {
         //We want to detect line by line
         BufferedReader reader = new BufferedReader(new InputStreamReader(id.getResourceStream()));
 
-        MarkdownDocument document = MarkdownDocument.getOrComputePageByID(id);
-        //If it's already loaded, just get from cache(and re-break the line) then return
-        if(!document.isEmpty()){
-            if(document.getPageWidth() == screenWidth){
-                return document;
-            } else {
-                document.setPageWidth(screenWidth);
-                return MarkdownLineBreaker.breakDocument(document, screenWidth);
-            }
-        }
-        //Otherwise we need to parse it
+        MarkdownDocument document = new MarkdownDocument(id);
         String currentLine;
         //Interline state storage
         boolean isInTips = false;
@@ -77,8 +65,8 @@ public class MarkdownBuilder {
                     } else {//Only one '>', just marks tips block hasn't end
                         document.addLine(MarkdownDocument.MarkdownLine.create(new MarkdownStyledText("")));
                     }
+                    continue;
                 }
-                continue;
             }
 
             //Deal with escapes
@@ -130,9 +118,8 @@ public class MarkdownBuilder {
         if(isInTips){
             document.addLine(MarkdownDocument.MarkdownLine.create(new MarkdownStyledText("")).isTipEnd(true));
         }
-        document.setPageWidth(screenWidth);
         //Deal wit line break
-        return MarkdownLineBreaker.breakDocument(document, screenWidth);
+        return document;
     }
 
     /**
@@ -149,7 +136,7 @@ public class MarkdownBuilder {
      * @param input Raw markdown line
      * @return Parsed MarkdownElement line
      */
-    protected static List<MarkdownElement> parse(String input){
+    public static List<MarkdownElement> parse(String input){
         List<Set<MarkdownStyledText.MarkdownTextStyle>> stateMap = new ArrayList<>(input.length());
         Deque<Set<MarkdownStyledText.MarkdownTextStyle>> styleStack = new ArrayDeque<>();
         int currentPos = 0;
