@@ -3,6 +3,7 @@ package cam72cam.immersiverailroading.gui.markdown.element;
 import cam72cam.immersiverailroading.gui.markdown.ManualHoverRenderer;
 import cam72cam.immersiverailroading.gui.markdown.MarkdownDocument;
 import cam72cam.mod.math.Vec3d;
+import cam72cam.mod.resource.Identifier;
 
 import java.awt.geom.Rectangle2D;
 
@@ -32,5 +33,5 @@ public abstract class MarkdownClickableElement extends MarkdownElement{
      * Called when mouse is hovering
      * @param bottomBound Param for internal use
      */
-    public abstract void renderTooltip(int bottomBound);
+    public abstract void renderTooltip(Identifier id, int bottomBound);
 }

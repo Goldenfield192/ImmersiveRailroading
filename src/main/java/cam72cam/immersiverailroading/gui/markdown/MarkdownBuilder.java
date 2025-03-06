@@ -2,7 +2,6 @@ package cam72cam.immersiverailroading.gui.markdown;
 
 import cam72cam.immersiverailroading.gui.manual.StockListProvider;
 import cam72cam.immersiverailroading.gui.markdown.element.*;
-import cam72cam.mod.ModCore;
 import cam72cam.mod.resource.Identifier;
 
 import java.io.BufferedReader;
@@ -11,7 +10,8 @@ import java.io.InputStreamReader;
 import java.util.*;
 import java.util.function.BiFunction;
 
-import static cam72cam.immersiverailroading.gui.markdown.element.MarkdownStyledText.*;
+import static cam72cam.immersiverailroading.gui.markdown.element.MarkdownStyledText.MARKER_PARSE_PRIORITY;
+import static cam72cam.immersiverailroading.gui.markdown.element.MarkdownStyledText.MARKER_STYLES;
 
 /**
  * Beginning of markdown
@@ -96,7 +96,6 @@ public class MarkdownBuilder {
                 document.addLine(MarkdownDocument.MarkdownLine.create(parse(currentLine.substring(Math.min(2, currentLine.length() - 1)))));
                 isInTips = true;
             } else if(currentLine.startsWith("[list_selector]")){
-                ModCore.info("tet");
                 MarkdownListSelector selector = new MarkdownListSelector(currentLine.substring(15));
                 if(document.getProperty(selector.getName()) != 0){
                     selector.setCurrentState(document.getProperty(selector.getName()));
@@ -241,12 +240,12 @@ public class MarkdownBuilder {
      * @return The parsed text and url line
      */
     private static List<MarkdownElement> createElement(String input, int start, int end, Set<MarkdownStyledText.MarkdownTextStyle> styles) {
-        return MarkdownUrl.splitLineByUrl(new MarkdownStyledText(input.substring(start, end), Collections.unmodifiableSet(styles)));
+        return MarkdownUrl.splitLineByUrl(new MarkdownStyledText(input.substring(start, end), styles));
     }
 
     //For some weird edge cases I wrote this, in order not to throw an IndexOutOfBoundException
     private static List<MarkdownElement> createElement(String input, int start, Set<MarkdownStyledText.MarkdownTextStyle> styles) {
-        return MarkdownUrl.splitLineByUrl(new MarkdownStyledText(input.substring(start), Collections.unmodifiableSet(styles)));
+        return MarkdownUrl.splitLineByUrl(new MarkdownStyledText(input.substring(start), styles));
     }
 
     /**

@@ -32,6 +32,6 @@
 [Customizing IR](immersiverailroading:wiki/en_us/customizing_ir.md)
 [Config](OBJECT PROMISE)
 [Known Conflicts with other mods](immersiverailroading:wiki/en_us/known_conflicts.md)
-# Technical info
+# Technical information
 [StockName.json](immersiverailroading:wiki/en_us/stockname.json.md)
 [Resource Pack List](immersiverailroading:wiki/en_us/resource_packs_outside_sources.md)

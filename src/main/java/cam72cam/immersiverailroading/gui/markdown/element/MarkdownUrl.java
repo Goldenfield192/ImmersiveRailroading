@@ -2,6 +2,7 @@ package cam72cam.immersiverailroading.gui.markdown.element;
 
 import cam72cam.immersiverailroading.gui.ManualGui;
 import cam72cam.immersiverailroading.gui.markdown.MarkdownDocument;
+import cam72cam.immersiverailroading.gui.markdown.MarkdownPageManager;
 import cam72cam.mod.MinecraftClient;
 import cam72cam.mod.gui.helpers.GUIHelpers;
 import cam72cam.mod.math.Vec3d;
@@ -16,7 +17,7 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import static cam72cam.immersiverailroading.gui.markdown.Colors.*;
+import static cam72cam.immersiverailroading.gui.markdown.Colors.DEFAULT_TEXT_COLOR;
 
 /**
  * Element class representing a url, which is clickable
@@ -108,7 +109,7 @@ public class MarkdownUrl extends MarkdownClickableElement {
 
     @Override
     public void click(MarkdownDocument document) {
-        if(this.destination.canLoad() && this.destination.getPath().endsWith(".md")){
+        if(MarkdownPageManager.validate(this.destination)){
             ManualGui.pushContent(this.destination);
         } else if(this.destination.getDomain().equals("https")){
             MinecraftClient.getPlayer().sendMessage(PlayerMessage.url(this.destination.toString()));
@@ -125,8 +126,10 @@ public class MarkdownUrl extends MarkdownClickableElement {
 
     //TODO Translation file
     @Override
-    public void renderTooltip(int bottomBound) {
-        if(this.destination.getDomain().equals("https")){
+    public void renderTooltip(Identifier id, int bottomBound) {
+        if(MarkdownPageManager.getPageName(id) != null){
+            renderTooltip("Open page: " + MarkdownPageManager.getPageName(destination), bottomBound);
+        } else if(this.destination.getDomain().equals("https")){
             renderTooltip("Click to send this website to your dialog!", bottomBound);
         } else {
             //What should we do?

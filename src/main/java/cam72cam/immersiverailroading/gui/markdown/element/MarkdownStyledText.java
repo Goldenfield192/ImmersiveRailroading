@@ -6,8 +6,10 @@ import cam72cam.mod.render.opengl.RenderState;
 import cam72cam.mod.text.TextColor;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
-import static cam72cam.immersiverailroading.gui.markdown.Colors.*;
+import static cam72cam.immersiverailroading.gui.markdown.Colors.CODE_BACKGROUND_COLOR;
+import static cam72cam.immersiverailroading.gui.markdown.Colors.DEFAULT_TEXT_COLOR;
 
 /**
  * Element class representing a String with styles
@@ -30,6 +32,11 @@ public class MarkdownStyledText extends MarkdownElement {
 
     public MarkdownStyledText(String text) {
         this(text, Collections.emptySet());
+    }
+
+    public MarkdownStyledText(String text, MarkdownTextStyle... styles) {
+        this.text = text;
+        this.styles = Arrays.stream(styles).collect(Collectors.toSet());
     }
 
     public MarkdownStyledText(String text, Set<MarkdownTextStyle> styles) {

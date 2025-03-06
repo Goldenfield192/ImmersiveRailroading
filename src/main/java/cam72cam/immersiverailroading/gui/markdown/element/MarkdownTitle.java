@@ -5,7 +5,7 @@ import cam72cam.mod.math.Vec3d;
 import cam72cam.mod.render.opengl.RenderState;
 import cam72cam.mod.text.TextColor;
 
-import static cam72cam.immersiverailroading.gui.markdown.Colors.*;
+import static cam72cam.immersiverailroading.gui.markdown.Colors.DEFAULT_TEXT_COLOR;
 
 /**
  * Element class representing a title
@@ -71,7 +71,7 @@ public class MarkdownTitle extends MarkdownElement {
         }
         return new MarkdownElement[]{
                 new MarkdownTitle(this.text.substring(0, splitPos), this.level),
-                new MarkdownTitle(this.text.substring(0, splitPos), this.level)};
+                new MarkdownTitle(this.text.substring(i), this.level)};
     }
 
     @Override

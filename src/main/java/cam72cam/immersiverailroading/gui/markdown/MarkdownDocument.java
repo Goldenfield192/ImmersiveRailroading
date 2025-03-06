@@ -10,9 +10,9 @@ import cam72cam.mod.resource.Identifier;
 import javax.annotation.Nonnull;
 import java.awt.geom.Rectangle2D;
 import java.util.*;
-import java.util.List;
+import java.util.stream.Collectors;
 
-import static cam72cam.immersiverailroading.gui.markdown.Colors.*;
+import static cam72cam.immersiverailroading.gui.markdown.Colors.TIPS_BAR_COLOR;
 
 /**
  * Storage class to store Markdown file's content
@@ -148,6 +148,10 @@ public class MarkdownDocument {
     //Overloads
     public MarkdownDocument addLine(MarkdownElement line){
         return this.addLine(Collections.singletonList(line));
+    }
+
+    public MarkdownDocument addLine(MarkdownElement... line){
+        return this.addLine(Arrays.stream(line).collect(Collectors.toList()));
     }
 
     public MarkdownDocument addLine(List<MarkdownElement> line){

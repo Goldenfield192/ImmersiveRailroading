@@ -7,7 +7,9 @@ import cam72cam.mod.math.Vec3d;
 import cam72cam.mod.render.obj.OBJRender;
 import cam72cam.mod.render.opengl.RenderState;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 import java.util.stream.Collectors;
 
 public class MarkdownStockModelRenderer extends MarkdownElement {
@@ -52,7 +54,7 @@ public class MarkdownStockModelRenderer extends MarkdownElement {
         double scale = pageWidth / (length * COS30 + SIN30 * (height * SIN30 + width * COS30));
         double screenHeight = scale * (height * COS30 + width * SIN30);
         state1.translate(0,0,100);
-        state1.translate(pageWidth / 2d,height * scale * 1.2,0);
+        state1.translate(pageWidth / 2d,height * scale * 1.4,0);
         state1.rotate(180,0,1,0);
         state1.rotate(30,1,0,0);
         state1.rotate(30,0,1,0);
@@ -62,7 +64,7 @@ public class MarkdownStockModelRenderer extends MarkdownElement {
         try(OBJRender.Binding binding = model.binder().bind(state1)){
             binding.draw(groups);
         }
-        state.translate(0,screenHeight * 1.6,0);
-        return (int) (screenHeight * 1.6);
+        state.translate(0,screenHeight * 1.8,0);
+        return (int) (screenHeight * 1.8);
     }
 }

@@ -2,10 +2,10 @@ package cam72cam.immersiverailroading.gui.markdown.element;
 
 import cam72cam.immersiverailroading.gui.markdown.MarkdownDocument;
 import cam72cam.immersiverailroading.gui.markdown.MarkdownPageManager;
-import cam72cam.mod.ModCore;
 import cam72cam.mod.gui.helpers.GUIHelpers;
 import cam72cam.mod.math.Vec3d;
 import cam72cam.mod.render.opengl.RenderState;
+import cam72cam.mod.resource.Identifier;
 
 import java.awt.*;
 import java.util.Arrays;
@@ -37,7 +37,6 @@ public class MarkdownListSelector extends MarkdownClickableElement{
                 choices.add(str);
                 maxLength = Math.max(GUIHelpers.getTextWidth(str), maxLength);
             });
-            ModCore.info(choices.toString());
             currentState = 0;
         } else {
             throw new RuntimeException();
@@ -79,7 +78,6 @@ public class MarkdownListSelector extends MarkdownClickableElement{
 
     @Override
     public void click(MarkdownDocument context) {
-        ModCore.info(String.valueOf(currentState));
         currentState = currentState == choices.size() -1 ? 0 : currentState + 1;
         context.changeProperty(name, currentState);
         MarkdownPageManager.refreshByID(context.page);
@@ -92,7 +90,7 @@ public class MarkdownListSelector extends MarkdownClickableElement{
     }
 
     @Override
-    public void renderTooltip(int bottomBound) {
+    public void renderTooltip(Identifier id, int bottomBound) {
 
     }
 }

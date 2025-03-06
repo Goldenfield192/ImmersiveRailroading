@@ -9,6 +9,7 @@ import cam72cam.mod.gui.helpers.GUIHelpers;
 import cam72cam.mod.item.ItemStack;
 import cam72cam.mod.math.Vec3d;
 import cam72cam.mod.render.opengl.RenderState;
+import cam72cam.mod.resource.Identifier;
 
 import java.awt.*;
 import java.util.ArrayList;
@@ -18,19 +19,19 @@ import java.util.Optional;
 public class MarkdownItemRenderer extends MarkdownClickableElement{
     public ItemStack stack;
 
-    private static List<ItemStack> stocks;
+    private static final List<ItemStack> ITEM_STOCKS;
 
     static {
-        stocks = new ArrayList<>();
+        ITEM_STOCKS = new ArrayList<>();
 
-        stocks.addAll(IRItems.ITEM_ROLLING_STOCK.getItemVariants(ItemTabs.LOCOMOTIVE_TAB));
-        stocks.addAll(IRItems.ITEM_ROLLING_STOCK.getItemVariants(ItemTabs.PASSENGER_TAB));
-        stocks.addAll(IRItems.ITEM_ROLLING_STOCK.getItemVariants(ItemTabs.STOCK_TAB));
+        ITEM_STOCKS.addAll(IRItems.ITEM_ROLLING_STOCK.getItemVariants(ItemTabs.LOCOMOTIVE_TAB));
+        ITEM_STOCKS.addAll(IRItems.ITEM_ROLLING_STOCK.getItemVariants(ItemTabs.PASSENGER_TAB));
+        ITEM_STOCKS.addAll(IRItems.ITEM_ROLLING_STOCK.getItemVariants(ItemTabs.STOCK_TAB));
     }
 
     public MarkdownItemRenderer(EntityRollingStockDefinition def){
         Optional<ItemStack> item =
-                stocks.stream().filter(stack -> new ItemRollingStock.Data(stack).def.equals(def)).findFirst();
+                ITEM_STOCKS.stream().filter(stack -> new ItemRollingStock.Data(stack).def.equals(def)).findFirst();
         if(item.isPresent()){
             this.stack = item.get();
         } else {
@@ -57,8 +58,8 @@ public class MarkdownItemRenderer extends MarkdownClickableElement{
         RenderState state1 = state.clone();
         state1.scale(5,5,5);
         GUIHelpers.drawItem(stack, 0, 0, state1.model_view());
-        state.translate(0,100,0);
-        return 100;
+        state.translate(0,80,0);
+        return 80;
     }
 
     @Override
@@ -72,7 +73,7 @@ public class MarkdownItemRenderer extends MarkdownClickableElement{
     }
 
     @Override
-    public void renderTooltip(int bottomBound) {
+    public void renderTooltip(Identifier id, int bottomBound) {
 
     }
 }
