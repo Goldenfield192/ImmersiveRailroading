@@ -1,4 +1,4 @@
-The Boiler Roller turns Boiler Plates created in the [Plate Rolling Machine](immersiverailroading:wiki/en_us/plate_rolling_machine.md) into the needed boiler pieces for a given steam locomotive.
+The Boiler Roller turns Boiler Plates created in the [Plate Rolling Machine](immersiverailroading:wiki/en_us/machines/plate_rolling_machine.md) into the needed boiler pieces for a given steam locomotive.
 
 It is built from:
 * 24 x Stone Slab

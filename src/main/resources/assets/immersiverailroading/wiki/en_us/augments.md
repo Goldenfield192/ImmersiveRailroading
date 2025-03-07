@@ -11,10 +11,10 @@ By right-clicking on the augment with a name tag or a stock item, it can be set 
 
 Note that although there's an augment named water through, it has no function.
 All available augments:
-* [Detector](immersiverailroading:wiki/en_us/augment_detector.md)
-* [Locomotive Control](immersiverailroading:wiki/en_us/augment_control.md)
-* [Item Loader/Unloader](immersiverailroading:wiki/en_us/augment_item.md)
-* [Fluid Loader/Unloader](immersiverailroading:wiki/en_us/augment_fluid.md)
-* [Speed Retarder](immersiverailroading:wiki/en_us/augment_speed_retarder.md)
-* [Coupler](immersiverailroading:wiki/en_us/augment_coupler.md)
-* [Actuator](immersiverailroading:wiki/en_us/augment_actuator.md)
+* [Detector](immersiverailroading:wiki/en_us/augments/augment_detector.md)
+* [Locomotive Control](immersiverailroading:wiki/en_us/augments/augment_control.md)
+* [Item Loader/Unloader](immersiverailroading:wiki/en_us/augments/augment_item.md)
+* [Fluid Loader/Unloader](immersiverailroading:wiki/en_us/augments/augment_fluid.md)
+* [Speed Retarder](immersiverailroading:wiki/en_us/augments/augment_speed_retarder.md)
+* [Coupler](immersiverailroading:wiki/en_us/augments/augment_coupler.md)
+* [Actuator](immersiverailroading:wiki/en_us/augments/augment_actuator.md)

@@ -1,6 +1,6 @@
 ## Overview
 
-The Basin creates different parts for rolling stock, specifically wheels and frames, as well as the Rail Cast for use with the [Track Roller](immersiverailroading:wiki/en_us/track_roller.md). The Gauge selector changes between gauges.
+The Basin creates different parts for rolling stock, specifically wheels and frames, as well as the Rail Cast for use with the [Track Roller](immersiverailroading:wiki/en_us/machines/track_roller.md). The Gauge selector changes between gauges.
 
 ## Construction
 It is built from:

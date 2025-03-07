@@ -4,7 +4,7 @@ This tool is used to lay down rails for rolling stock to travel on. It is crafte
 
 ![craft](immersiverailroading:wiki/images/track1.png)
 
-With the blueprint in hand, right-click in midair to change its settings. Right-click a block to place the railbed, which requires Track Segments from the [Track Roller](immersiverailroading:wiki/en_us/track_roller.md) and Treated Wood Planks (Normal planks if IE is not installed).
+With the blueprint in hand, right-click in midair to change its settings. Right-click a block to place the railbed, which requires Track Segments from the [Track Roller](immersiverailroading:wiki/en_us/machines/track_roller.md) and Treated Wood Planks (Normal planks if IE is not installed).
 
 ## In game UI
 

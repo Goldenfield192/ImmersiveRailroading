@@ -10,4 +10,4 @@ Since ViveCraft messes with the minecraft graphics internals, a lot of the funct
 
 ## Oculus
 
-Don't support for now, use OptiFine instead.
+Immersive Railroading doesn't support Oculus and almost everything in IR won't show up if Oculus is installed and shader pack is enabled. You can use OptiFine instead.
