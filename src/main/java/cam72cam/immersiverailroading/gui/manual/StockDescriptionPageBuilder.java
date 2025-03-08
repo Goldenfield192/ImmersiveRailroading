@@ -21,7 +21,7 @@ public class StockDescriptionPageBuilder implements IPageBuilder {
         MarkdownDocument document = new MarkdownDocument(id);
         EntityRollingStockDefinition def = DefinitionManager.getDefinition(id.getPath());
 
-        if(def.description.canLoad()){
+        if(def.description != null && def.description.canLoad()){
             return MarkdownBuilder.INSTANCE.build(def.description);
         }
 
