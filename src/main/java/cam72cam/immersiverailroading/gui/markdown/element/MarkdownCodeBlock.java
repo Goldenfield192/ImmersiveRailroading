@@ -1,6 +1,6 @@
 package cam72cam.immersiverailroading.gui.markdown.element;
 
-import cam72cam.immersiverailroading.gui.markdown.MarkdownBuilder;
+import cam72cam.immersiverailroading.gui.markdown.MarkdownPageBuilder;
 import cam72cam.immersiverailroading.gui.markdown.MarkdownDocument;
 import cam72cam.immersiverailroading.gui.markdown.BufferReaderAdapter;
 import cam72cam.mod.gui.helpers.GUIHelpers;
@@ -13,8 +13,8 @@ import static cam72cam.immersiverailroading.gui.markdown.Colors.CODE_BACKGROUND_
 import static cam72cam.immersiverailroading.gui.markdown.Colors.DEFAULT_TEXT_COLOR;
 
 /**
- * Proxy class to simplify MarkdownBuilder's build logic and MarkdownDocument's render logic
- * @see MarkdownBuilder
+ * Proxy class to simplify MarkdownPageBuilder's build logic and MarkdownDocument's render logic
+ * @see MarkdownPageBuilder
  * @see MarkdownDocument
  */
 public class MarkdownCodeBlock {
@@ -40,7 +40,7 @@ public class MarkdownCodeBlock {
                 document.addLine(MarkdownDocument.MarkdownLine.create(new MarkdownStyledText("")).isCodeBlockEnd(true));
                 return;
             }
-            document.addLine(MarkdownBuilder.parse(str));
+            document.addLine(MarkdownPageBuilder.parse(str));
         }
         document.addLine(MarkdownDocument.MarkdownLine.create(new MarkdownStyledText("")).isCodeBlockEnd(true));
     }

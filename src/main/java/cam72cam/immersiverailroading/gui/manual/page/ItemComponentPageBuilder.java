@@ -1,4 +1,4 @@
-package cam72cam.immersiverailroading.gui.manual;
+package cam72cam.immersiverailroading.gui.manual.page;
 
 import cam72cam.immersiverailroading.IRItems;
 import cam72cam.immersiverailroading.gui.markdown.IPageBuilder;
@@ -37,15 +37,15 @@ public class ItemComponentPageBuilder implements IPageBuilder {
 
         document.addLine(new MarkdownStyledText("Item component for "), new MarkdownUrl(d.def.name(), new Identifier("irstock", defID)));
         if(d.componentType.crafting == CraftingType.CASTING || d.componentType.crafting == CraftingType.CASTING_HAMMER){
-            document.addLine(new MarkdownStyledText("Can be crafted in "), new MarkdownUrl("Casting Basin", "immersiverailroading:wiki/en_us/casting_basin.md"));
+            document.addLine(new MarkdownStyledText("Can be crafted in "), new MarkdownUrl("Casting Basin", "immersiverailroading:wiki/en_us/machines/casting_basin.md"));
         } else {
             document.addLine(new MarkdownStyledText("Can be crafted in "),
-                    new MarkdownUrl("Plate Rolling Machine", "immersiverailroading:wiki/en_us/plate_rolling_machine.md"),
+                    new MarkdownUrl("Plate Rolling Machine", "immersiverailroading:wiki/en_us/machines/plate_rolling_machine.md"),
                     new MarkdownStyledText(" and "),
-                    new MarkdownUrl("Boiler Roller", "immersiverailroading:wiki/en_us/boiler_roller.md"));
+                    new MarkdownUrl("Boiler Roller", "immersiverailroading:wiki/en_us/machines/boiler_roller.md"));
         }
         if(d.requiresHammering()){
-            document.addLine(new MarkdownStyledText("And this component requires the following in the "), new MarkdownUrl("Steam Hammer", "immersiverailroading:wiki/en_us/steam_hammer.md"));
+            document.addLine(new MarkdownStyledText("And this component requires the following in the "), new MarkdownUrl("Steam Hammer", "immersiverailroading:wiki/en_us/machines/steam_hammer.md"));
         }
         return document;
     }

@@ -12,7 +12,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
-public class MarkdownStockModelRenderer extends MarkdownElement {
+public class MDStockModelRenderer extends MarkdownElement {
     public StockModel<?,?> model;
     public List<String> groups;
     public double length;
@@ -23,7 +23,7 @@ public class MarkdownStockModelRenderer extends MarkdownElement {
     public static final double SIN30 = Math.sin(Math.toRadians(30));
     public static final double COS30 = Math.cos(Math.toRadians(30));
 
-    public MarkdownStockModelRenderer(EntityRollingStockDefinition definition, String... groups) {
+    public MDStockModelRenderer(EntityRollingStockDefinition definition, String... groups) {
         this.model = definition.getModel();
         this.def = definition;
         if(groups.length != 0){

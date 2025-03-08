@@ -14,8 +14,8 @@ import static cam72cam.immersiverailroading.gui.markdown.element.MarkdownStyledT
  * Load Markdown from existing file
  * @see MarkdownDocument
  */
-public class MarkdownBuilder implements IPageBuilder{
-    public static final IPageBuilder INSTANCE = new MarkdownBuilder();
+public class MarkdownPageBuilder implements IPageBuilder{
+    public static final IPageBuilder INSTANCE = new MarkdownPageBuilder();
     private static final HashMap<String, BiFunction<String, MarkdownDocument, List<MarkdownDocument.MarkdownLine>>>
             SPECIAL_MATCHER = new HashMap<>();
 

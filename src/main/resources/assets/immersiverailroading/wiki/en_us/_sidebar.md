@@ -1,24 +1,23 @@
 [Home](immersiverailroading:wiki/en_us/home.md)
-# Industry
-[Tools](immersiverailroading:wiki/en_us/tools.md)
-[Machines](immersiverailroading:wiki/en_us/machines.md)
-# Trains
+### Industry
+[Machines and Tools](immersiverailroading:wiki/en_us/machines.md)
+### Trains
 [Overview](immersiverailroading:wiki/en_us/trains_overview.md)
 [All loaded stocks](immersiverailroading:wiki/en_us/all_loaded_stocks.md)
 [Resource Pack List](immersiverailroading:wiki/en_us/resource_packs_outside_sources.md)
-# Rails
+### Rails
 [Track Blueprint](immersiverailroading:wiki/en_us/track_blueprint.md)
 [Golden Spike](immersiverailroading:wiki/en_us/golden_spike.md)
-[Custom Curves](immersiverailroading:wiki/en_us/custom_curves.md)
-# Automatic
+[Build custom Curves](immersiverailroading:wiki/en_us/custom_curves.md)
+### Automatic
 [Augments](immersiverailroading:wiki/en_us/augments.md)
 [Automated Driving](immersiverailroading:wiki/en_us/opencomputers_train_radio_control_card.md)
 [Open Computers](immersiverailroading:wiki/en_us/open_computers.md)
 [Computer APIs](immersiverailroading:wiki/en_us/computer_apis.md)
-# Helps
+### Helps
 [Performance](immersiverailroading:wiki/en_us/rolling_stock_performance.md)
 [Customizing IR](immersiverailroading:wiki/en_us/customizing_ir.md)
 [Config](OBJECT PROMISE)
 [Known Conflicts with other mods](immersiverailroading:wiki/en_us/known_conflicts.md)
-# Technical information
+### Technical information
 [StockName.json](immersiverailroading:wiki/en_us/stockname.json.md)

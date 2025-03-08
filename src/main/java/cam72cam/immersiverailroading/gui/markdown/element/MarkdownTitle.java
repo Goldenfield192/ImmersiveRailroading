@@ -3,7 +3,6 @@ package cam72cam.immersiverailroading.gui.markdown.element;
 import cam72cam.mod.gui.helpers.GUIHelpers;
 import cam72cam.mod.math.Vec3d;
 import cam72cam.mod.render.opengl.RenderState;
-import cam72cam.mod.text.TextColor;
 
 import static cam72cam.immersiverailroading.gui.markdown.Colors.DEFAULT_TEXT_COLOR;
 
@@ -25,8 +24,9 @@ public class MarkdownTitle extends MarkdownElement {
     //Starting from 1
     public final int level;
 
-    public static final double LEVEL1 = 1/1.35;
-    public static final double LEVEL2 = 1/1.15;
+    public static final double LEVEL1 = 1/1.8;
+    public static final double LEVEL2 = 1/1.5;
+    public static final double LEVEL3 = 1/1.2;
 
     public MarkdownTitle(String text) {
         label: {
@@ -53,7 +53,7 @@ public class MarkdownTitle extends MarkdownElement {
         if(level == -1){//Invalid
             return "";
         } else {
-            return TextColor.ITALIC.wrap(text);
+            return text;
         }
     }
 
@@ -81,32 +81,46 @@ public class MarkdownTitle extends MarkdownElement {
         if(this.level == 1){
             //Scale matrix
             state.translate(-offset.x, -offset.y, 0);
-            state.scale(1.35, 1.35, 1.35);
-            state.translate(offset.x * MarkdownTitle.LEVEL1, offset.y * MarkdownTitle.LEVEL1, 0);
+            state.scale(1.8, 1.8, 1.8);
+            state.translate(offset.x * LEVEL1, offset.y * LEVEL1, 0);
             GUIHelpers.drawString(str, 0, 0, DEFAULT_TEXT_COLOR, state.model_view());
 
             //Revert matrix
-            state.translate(-offset.x * MarkdownTitle.LEVEL1, -offset.y * MarkdownTitle.LEVEL1, 0);
-            state.scale(MarkdownTitle.LEVEL1, MarkdownTitle.LEVEL1, MarkdownTitle.LEVEL1);
+            state.translate(-offset.x * LEVEL1, -offset.y * LEVEL1, 0);
+            state.scale(LEVEL1, LEVEL1, LEVEL1);
             state.translate(offset.x, offset.y, 0);
 
             //Move down
-            state.translate(0, 14, 0);
-            return 14;
+            state.translate(0, 18, 0);
+            return 18;
         } else if(this.level == 2){
             //Scale matrix
             state.translate(-offset.x, -offset.y, 0);
-            state.scale(1.15, 1.15, 1.15);
-            state.translate(offset.x * MarkdownTitle.LEVEL2, offset.y * MarkdownTitle.LEVEL2, 0);
+            state.scale(1.5, 1.5, 1.5);
+            state.translate(offset.x * LEVEL2, offset.y * LEVEL2, 0);
             GUIHelpers.drawString(str, 0, 0, DEFAULT_TEXT_COLOR, state.model_view());
 
             //Revert matrix
-            state.translate(-offset.x * MarkdownTitle.LEVEL2, -offset.y * MarkdownTitle.LEVEL2, 0);
-            state.scale(MarkdownTitle.LEVEL2, MarkdownTitle.LEVEL2, MarkdownTitle.LEVEL2);
+            state.translate(-offset.x * LEVEL2, -offset.y * LEVEL2, 0);
+            state.scale(LEVEL2, LEVEL2, LEVEL2);
+            state.translate(offset.x, offset.y, 0);
+            //Move down
+            state.translate(0, 15, 0);
+            return 15;
+        } else if (this.level == 3) {
+            //Scale matrix
+            state.translate(-offset.x, -offset.y, 0);
+            state.scale(1.2, 1.2, 1.2);
+            state.translate(offset.x * LEVEL3, offset.y * LEVEL3, 0);
+            GUIHelpers.drawString(str, 0, 0, DEFAULT_TEXT_COLOR, state.model_view());
+
+            //Revert matrix
+            state.translate(-offset.x * LEVEL3, -offset.y * LEVEL3, 0);
+            state.scale(LEVEL3, LEVEL3, LEVEL3);
             state.translate(offset.x, offset.y, 0);
             //Move down
             state.translate(0, 12, 0);
-            return 2;
+            return 12;
         } else {
             GUIHelpers.drawString(str, 0, 0, DEFAULT_TEXT_COLOR, state.model_view());
             state.translate(0, 10, 0);
