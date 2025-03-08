@@ -4,9 +4,6 @@ import cam72cam.immersiverailroading.gui.manual.StockListProvider;
 import cam72cam.immersiverailroading.gui.markdown.element.*;
 import cam72cam.mod.resource.Identifier;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
 import java.util.*;
 import java.util.function.BiFunction;
 
@@ -14,15 +11,11 @@ import static cam72cam.immersiverailroading.gui.markdown.element.MarkdownStyledT
 import static cam72cam.immersiverailroading.gui.markdown.element.MarkdownStyledText.MARKER_STYLES;
 
 /**
- * Beginning of markdown
- * <p>
- * To use it, call build and get your MarkdownDocument
- * <p>
- * If you are a Markdown writer, please see the document at immersiverailroading:wiki/en_us/__READ_ME_BEFORE_CONTRIBUTING.txt
- *
+ * Load Markdown from existing file
  * @see MarkdownDocument
  */
-public class MarkdownBuilder {
+public class MarkdownBuilder implements IPageBuilder{
+    public static final IPageBuilder INSTANCE = new MarkdownBuilder();
     private static final HashMap<String, BiFunction<String, MarkdownDocument, List<MarkdownDocument.MarkdownLine>>>
             SPECIAL_MATCHER = new HashMap<>();
 
@@ -34,11 +27,11 @@ public class MarkdownBuilder {
      * Builds a MarkdownDocument from the given resource identifier
      * @param id The identifier containing markdown content
      * @return Built MarkdownDocument instance
-     * @throws IOException If resource reading fails
      */
-    public static MarkdownDocument build(Identifier id) throws IOException {
+    @Override
+    public MarkdownDocument build(Identifier id){
         //We want to detect line by line
-        BufferedReader reader = new BufferedReader(new InputStreamReader(id.getResourceStream()));
+        BufferReaderAdapter reader = new BufferReaderAdapter(id);
 
         MarkdownDocument document = new MarkdownDocument(id);
         String currentLine;
@@ -246,6 +239,16 @@ public class MarkdownBuilder {
     //For some weird edge cases I wrote this, in order not to throw an IndexOutOfBoundException
     private static List<MarkdownElement> createElement(String input, int start, Set<MarkdownStyledText.MarkdownTextStyle> styles) {
         return MarkdownUrl.splitLineByUrl(new MarkdownStyledText(input.substring(start), styles));
+    }
+
+    @Override
+    public boolean validatePath(Identifier id) {
+        return id.canLoad() && id.getPath().endsWith(".md");
+    }
+
+    @Override
+    public String getPageTooltipName(Identifier id) {
+        return id.getPath().split("/")[id.getPath().split("/").length - 1];
     }
 
     /**

@@ -1,6 +1,6 @@
 package cam72cam.immersiverailroading.gui.markdown.element;
 
-import cam72cam.immersiverailroading.gui.markdown.ManualHoverRenderer;
+import cam72cam.immersiverailroading.gui.manual.ManualHoverRenderer;
 import cam72cam.immersiverailroading.gui.markdown.MarkdownDocument;
 import cam72cam.mod.math.Vec3d;
 import cam72cam.mod.resource.Identifier;

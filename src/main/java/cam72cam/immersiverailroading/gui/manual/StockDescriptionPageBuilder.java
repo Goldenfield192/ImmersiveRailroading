@@ -1,5 +1,6 @@
 package cam72cam.immersiverailroading.gui.manual;
 
+import cam72cam.immersiverailroading.gui.markdown.IPageBuilder;
 import cam72cam.immersiverailroading.gui.markdown.MarkdownBuilder;
 import cam72cam.immersiverailroading.gui.markdown.MarkdownDocument;
 import cam72cam.immersiverailroading.gui.markdown.element.MarkdownElement;
@@ -10,20 +11,18 @@ import cam72cam.immersiverailroading.registry.DefinitionManager;
 import cam72cam.immersiverailroading.registry.EntityRollingStockDefinition;
 import cam72cam.mod.resource.Identifier;
 
-import java.io.IOException;
 import java.util.*;
 
-public class StockDescriptionPageBuilder {
-    public static MarkdownDocument build(Identifier id){
+public class StockDescriptionPageBuilder implements IPageBuilder {
+    public static final IPageBuilder INSTANCE = new StockDescriptionPageBuilder();
+
+    @Override
+    public MarkdownDocument build(Identifier id){
         MarkdownDocument document = new MarkdownDocument(id);
         EntityRollingStockDefinition def = DefinitionManager.getDefinition(id.getPath());
 
         if(def.description.canLoad()){
-            try {
-                return MarkdownBuilder.build(def.description);
-            } catch (IOException e) {
-                throw new RuntimeException(e);
-            }
+            return MarkdownBuilder.INSTANCE.build(def.description);
         }
 
         document.addLine(MarkdownDocument.MarkdownLine.create(new MarkdownStockModelRenderer(def)));
@@ -51,5 +50,18 @@ public class StockDescriptionPageBuilder {
         });
 
         return document;
+    }
+
+    @Override
+    public boolean validatePath(Identifier id) {
+        return id.getDomain().equals("irstock") && DefinitionManager.getDefinition(id.getPath()) != null;
+    }
+
+    @Override
+    public String getPageTooltipName(Identifier id) {
+        if(validatePath(id)){
+            return id.getPath().split("/")[id.getPath().split("/").length - 1];
+        }
+        return "";
     }
 }

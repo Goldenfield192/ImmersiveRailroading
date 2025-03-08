@@ -1,5 +1,6 @@
 package cam72cam.immersiverailroading.gui.markdown;
 
+import cam72cam.immersiverailroading.gui.manual.ManualHoverRenderer;
 import cam72cam.immersiverailroading.gui.markdown.element.*;
 import cam72cam.mod.event.ClientEvents;
 import cam72cam.mod.gui.helpers.GUIHelpers;

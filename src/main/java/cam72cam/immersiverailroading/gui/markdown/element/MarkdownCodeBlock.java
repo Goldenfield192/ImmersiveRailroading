@@ -2,12 +2,11 @@ package cam72cam.immersiverailroading.gui.markdown.element;
 
 import cam72cam.immersiverailroading.gui.markdown.MarkdownBuilder;
 import cam72cam.immersiverailroading.gui.markdown.MarkdownDocument;
+import cam72cam.immersiverailroading.gui.markdown.BufferReaderAdapter;
 import cam72cam.mod.gui.helpers.GUIHelpers;
 import cam72cam.mod.math.Vec3d;
 import cam72cam.mod.render.opengl.RenderState;
 
-import java.io.BufferedReader;
-import java.io.IOException;
 import java.util.Iterator;
 
 import static cam72cam.immersiverailroading.gui.markdown.Colors.CODE_BACKGROUND_COLOR;
@@ -24,9 +23,8 @@ public class MarkdownCodeBlock {
      * @param reader Markdown file's reader
      * @param document Given document
      * @param firstLine The line contains beginning syntax
-     * @throws IOException If internal I/O error occurs
      */
-    public static void parse(BufferedReader reader, MarkdownDocument document, String firstLine) throws IOException {
+    public static void parse(BufferReaderAdapter reader, MarkdownDocument document, String firstLine){
         if(firstLine.length() > 3){
             //Meaning it has language mark
             document.addLine(MarkdownDocument.MarkdownLine.create(new MarkdownStyledText(firstLine.substring(3)))
