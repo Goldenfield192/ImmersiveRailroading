@@ -1,6 +1,6 @@
-Many users have made resource packs of rolling stock and engines. This list is (unfortuantly) incomplete, and comprised of those listed in the Discord "Resouce-Packs" channel. 
+Many users have made resource packs of rolling stock and engines. 
 
-**For the most-frequently-updated list, visit this spreadsheet**: [Resource Pack Spreadsheet](https://docs.google.com/spreadsheets/d/1ZEEnS38f-yqivuQdI2UxbXebxnH4wPGVTPdsTTQNK1E/edit?usp=sharing)
+Unfortunately, this list is incomplete. For those packs not documented here, please visit the [discord channel](https://discord.com/channels/355731184157720578/416318597875367956).
 
 [America Cabooses - zip file](https://cdn.discordapp.com/attachments/416318597875367956/468970499763077146/American_Caboose_Pack_v1.0.zip)
 * Warning: This is a Discord link, so it may not work in the future.
@@ -10,7 +10,6 @@ Many users have made resource packs of rolling stock and engines. This list is (
 * Contains: American cabooses
 * Texture Variants: Supported
 * Tags: North American Stock, USA Stock, Cabooses, No Locomotives
-
 
 [Amtrak\+](https://minecraft.curseforge.com/projects/amtrak-plus)
 * Description: At last, modern North American passenger stock is realized in Minecraft. This pack aims to add modern standard-gauge stock

@@ -11,11 +11,13 @@ import static cam72cam.immersiverailroading.gui.markdown.Colors.DEFAULT_TEXT_COL
  * <p>
  * Text will be scale by level:
  * <p>
- * 1 -> scale to 1.35x and italicize
+ * 1 -> scale to 1.8x
  * <p>
- * 2 -> scale to 1.15x and italicize
+ * 2 -> scale to 1.5x
  * <p>
- * 3+ -> Italic regular text
+ * 3 -> scale to 1.2x
+ * <p>
+ * 4+ -> normal text
  * <p>
  * CANNOT CONTAIN URL
  * @see MarkdownElement
@@ -24,6 +26,7 @@ public class MarkdownTitle extends MarkdownElement {
     //Starting from 1
     public final int level;
 
+    //Store reciprocals to avoid division
     public static final double LEVEL1 = 1/1.8;
     public static final double LEVEL2 = 1/1.5;
     public static final double LEVEL3 = 1/1.2;

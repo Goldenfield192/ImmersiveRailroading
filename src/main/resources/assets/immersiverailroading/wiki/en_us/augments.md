@@ -13,7 +13,7 @@ All available augments:
 * [Locomotive Control](immersiverailroading:wiki/en_us/augments/augment_control.md)
 * [Item Loader](immersiverailroading:wiki/en_us/augments/augment_item_loader.md)
 * [Item Unloader](immersiverailroading:wiki/en_us/augments/augment_item_unloader.md)
-* [Fluid Loader/Unloader](immersiverailroading:wiki/en_us/augments/augment_fluid_loader.md)
+* [Fluid Loader](immersiverailroading:wiki/en_us/augments/augment_fluid_loader.md)
 * [Fluid Unloader](immersiverailroading:wiki/en_us/augments/augment_fluid_unloader.md)
 * [Detector](immersiverailroading:wiki/en_us/augments/augment_detector.md)
 * [Coupler](immersiverailroading:wiki/en_us/augments/augment_coupler.md)

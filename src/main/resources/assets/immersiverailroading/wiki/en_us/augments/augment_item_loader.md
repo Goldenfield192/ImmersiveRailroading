@@ -16,3 +16,6 @@ Besides, this augment also has 4 redstone modes that can be toggled by holding a
 # Example
 An Item Loader Augment which is feeding items from a hopper to the inventory of the stock:
 ![Loader](immersiverailroading:wiki/images/augments/item_loader_example.png)
+
+# Linked Pages
+[Item Unloader](immersiverailroading:wiki/en_us/augments/augment_item_unloader.md)

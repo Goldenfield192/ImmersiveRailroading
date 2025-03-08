@@ -16,3 +16,6 @@ Besides, this augment also has 4 redstone modes that can be toggled by holding a
 # Example
 A Fluid Loader Augment which is feeding water from a pipe to the tank of the stock:
 ![](immersiverailroading:wiki/images/augments/fluid_loader_example.png)
+
+# Linked Pages
+[Fluid Unloader](immersiverailroading:wiki/en_us/augments/augment_fluid_unloader.md)

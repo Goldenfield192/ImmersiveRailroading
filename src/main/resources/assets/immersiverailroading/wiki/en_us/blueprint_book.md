@@ -6,6 +6,5 @@ While holding the book with your hand, press shift and right-click in air to tog
 
 To place these machines, right-click on the ground with the book in hand. The book will display if you are missing the blocks required, and will also alert you to the coordinates of any blocks which must be removed to place the chosen machine.
 
-Preview shown when looking at the ground with the book:
-
+Preview shown when looking at the ground with the book like this:
 ![Preview](immersiverailroading:wiki/images/book2.png)

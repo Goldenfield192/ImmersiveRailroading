@@ -1,13 +1,12 @@
 [Home](immersiverailroading:wiki/en_us/home.md)
 ### Industry
-[Machines and Tools](immersiverailroading:wiki/en_us/machines.md)
+[Machines and Tools](immersiverailroading:wiki/en_us/industry.md)
 ### Trains
 [Overview](immersiverailroading:wiki/en_us/trains_overview.md)
 [All loaded stocks](immersiverailroading:wiki/en_us/all_loaded_stocks.md)
 [Resource Pack List](immersiverailroading:wiki/en_us/resource_packs_outside_sources.md)
 ### Rails
 [Track Blueprint](immersiverailroading:wiki/en_us/track_blueprint.md)
-[Golden Spike](immersiverailroading:wiki/en_us/golden_spike.md)
 [Build custom Curves](immersiverailroading:wiki/en_us/custom_curves.md)
 ### Automatic
 [Augments](immersiverailroading:wiki/en_us/augments.md)
@@ -19,5 +18,5 @@
 [Customizing IR](immersiverailroading:wiki/en_us/customizing_ir.md)
 [Config](OBJECT PROMISE)
 [Known Conflicts with other mods](immersiverailroading:wiki/en_us/known_conflicts.md)
-### Technical information
+### Technical information(Waiting for removal)
 [StockName.json](immersiverailroading:wiki/en_us/stockname.json.md)
