@@ -1,5 +1,6 @@
 package cam72cam.immersiverailroading.gui.markdown.element;
 
+import cam72cam.immersiverailroading.ConfigGraphics;
 import cam72cam.mod.gui.helpers.GUIHelpers;
 import cam72cam.mod.math.Vec3d;
 import cam72cam.mod.render.opengl.RenderState;
@@ -44,7 +45,7 @@ public class MarkdownPicture extends MarkdownElement {
         Vec3d offset = state.model_view().apply(Vec3d.ZERO);
         int picHeight = (int) (pageWidth * this.ratio);
         GUIHelpers.texturedRect(this.picture, (int) offset.x, (int) offset.y, pageWidth, picHeight);
-        state.translate(0, picHeight, 0);
-        return picHeight;
+        state.translate(0, picHeight / ConfigGraphics.ManualFontSize, 0);
+        return (int) (picHeight / ConfigGraphics.ManualFontSize);
     }
 }

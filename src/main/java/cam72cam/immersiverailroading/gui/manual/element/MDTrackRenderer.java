@@ -1,12 +1,10 @@
 package cam72cam.immersiverailroading.gui.manual.element;
 
+import cam72cam.immersiverailroading.ConfigGraphics;
 import cam72cam.immersiverailroading.gui.markdown.element.MarkdownElement;
-import cam72cam.immersiverailroading.items.nbt.RailSettings;
-import cam72cam.immersiverailroading.library.Gauge;
 import cam72cam.immersiverailroading.model.TrackModel;
 import cam72cam.immersiverailroading.registry.DefinitionManager;
 import cam72cam.immersiverailroading.registry.TrackDefinition;
-import cam72cam.immersiverailroading.render.rail.RailRender;
 import cam72cam.mod.render.StandardModel;
 import cam72cam.mod.render.obj.OBJRender;
 import cam72cam.mod.render.opengl.RenderState;
@@ -49,7 +47,7 @@ public class MDTrackRenderer extends MarkdownElement {
     @Override
     public int render(RenderState state, int pageWidth) {
         RenderState state1 = state.clone();
-        double scale = pageWidth / 4.0;
+        double scale = pageWidth / 4.0 / ConfigGraphics.ManualFontSize;
         state1.translate(scale * 2,scale,100);
         state1.rotate(180,0,0,1);
         state1.rotate(30,1,0,0);
@@ -59,6 +57,6 @@ public class MDTrackRenderer extends MarkdownElement {
         state1.lightmap(1,1);
         model.render(state1);
         state.translate(0,scale * 2,0);
-        return (int) (scale * 2);
+        return (int) (scale * 2 / ConfigGraphics.ManualFontSize);
     }
 }

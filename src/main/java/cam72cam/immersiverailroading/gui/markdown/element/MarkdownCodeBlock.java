@@ -1,8 +1,9 @@
 package cam72cam.immersiverailroading.gui.markdown.element;
 
+import cam72cam.immersiverailroading.ConfigGraphics;
+import cam72cam.immersiverailroading.gui.markdown.BufferReaderAdapter;
 import cam72cam.immersiverailroading.gui.markdown.DefaultPageBuilder;
 import cam72cam.immersiverailroading.gui.markdown.MarkdownDocument;
-import cam72cam.immersiverailroading.gui.markdown.BufferReaderAdapter;
 import cam72cam.mod.gui.helpers.GUIHelpers;
 import cam72cam.mod.math.Vec3d;
 import cam72cam.mod.render.opengl.RenderState;
@@ -60,8 +61,9 @@ public class MarkdownCodeBlock {
         //Draw header line
         //Code blocks have a gray background and start with a language specification mark
         GUIHelpers.drawRect((int) offset.x, (int) offset.y,
-                document.getPageWidth(), 10, CODE_BACKGROUND_COLOR);
-        int delta = document.getPageWidth() - GUIHelpers.getTextWidth(currentLine.getElements().get(0).apply());
+                document.getPageWidth(), (int) (10 * ConfigGraphics.ManualFontSize), CODE_BACKGROUND_COLOR);
+        int delta = (int) ((document.getPageWidth() - GUIHelpers.getTextWidth(currentLine.getElements().get(0).apply())* ConfigGraphics.ManualFontSize)
+                / ConfigGraphics.ManualFontSize);
         state.translate(delta, 0, 0);
         GUIHelpers.drawString(currentLine.getElements().get(0).apply(), 0, 0, DEFAULT_TEXT_COLOR, state.model_view());
         state.translate(-delta, 10, 0);
@@ -73,14 +75,14 @@ public class MarkdownCodeBlock {
             if(line.codeBlockEnd){
                 //Draw footer line
                 GUIHelpers.drawRect((int) offset.x, (int) offset.y,
-                        document.getPageWidth(), 5, CODE_BACKGROUND_COLOR);
+                        document.getPageWidth(), (int) (5 * ConfigGraphics.ManualFontSize), CODE_BACKGROUND_COLOR);
                 state.translate(0, 5, 0);
                 height += 5;
                 return height;
             }
             //Otherwise draw content
             GUIHelpers.drawRect((int) offset.x , (int) offset.y ,
-                    document.getPageWidth(), 10, CODE_BACKGROUND_COLOR);
+                    document.getPageWidth(), (int) (10 * ConfigGraphics.ManualFontSize), CODE_BACKGROUND_COLOR);
             GUIHelpers.drawString(line.getElements().get(0).apply(), 0, 0, DEFAULT_TEXT_COLOR, state.model_view());
             state.translate(0, 10, 0);
             height += 10;

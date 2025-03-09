@@ -1,5 +1,6 @@
 package cam72cam.immersiverailroading.gui.manual.element;
 
+import cam72cam.immersiverailroading.ConfigGraphics;
 import cam72cam.immersiverailroading.gui.markdown.element.MarkdownElement;
 import cam72cam.immersiverailroading.model.StockModel;
 import cam72cam.immersiverailroading.registry.EntityRollingStockDefinition;
@@ -51,10 +52,10 @@ public class MDStockModelRenderer extends MarkdownElement {
     @Override
     public int render(RenderState state, int pageWidth) {
         RenderState state1 = state.clone();
-        double scale = pageWidth / (length * COS30 + SIN30 * (height * SIN30 + width * COS30));
+        double scale = pageWidth / (length * COS30 + SIN30 * (height * SIN30 + width * COS30)) / ConfigGraphics.ManualFontSize;
         double screenHeight = scale * (height * COS30 + width * SIN30);
         state1.translate(0,0,100);
-        state1.translate(pageWidth / 2d,height * scale * 1.4,0);
+        state1.translate(pageWidth / 2d / ConfigGraphics.ManualFontSize,height * scale * 1.4,0);
         state1.rotate(180,0,1,0);
         state1.rotate(30,1,0,0);
         state1.rotate(30,0,1,0);

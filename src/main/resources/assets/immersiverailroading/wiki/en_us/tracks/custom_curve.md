@@ -19,7 +19,6 @@ Current options are:
 ![UI](immersiverailroading:wiki/images/track/track_neither.png)
 
 ### Curvosity
-This setting shows up only for Switch and Custom Curve types.
 [OBJECT PROMISE]
 
 # Relevant Pages

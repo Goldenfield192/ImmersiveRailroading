@@ -1,5 +1,6 @@
 package cam72cam.immersiverailroading.gui.markdown.element;
 
+import cam72cam.immersiverailroading.ConfigGraphics;
 import cam72cam.immersiverailroading.gui.markdown.MarkdownDocument;
 import cam72cam.immersiverailroading.gui.markdown.MarkdownPageManager;
 import cam72cam.mod.gui.helpers.GUIHelpers;
@@ -86,7 +87,8 @@ public class MarkdownListSelector extends MarkdownClickableElement{
     @Override
     public void updateSection(Vec3d offset) {
         this.section = new Rectangle((int) offset.x - 2, (int) offset.y - 1,
-                this.maxLength + 10, 12);
+                (int) ((this.maxLength + 10) * ConfigGraphics.ManualFontSize),
+                (int) (12 * ConfigGraphics.ManualFontSize));
     }
 
     @Override

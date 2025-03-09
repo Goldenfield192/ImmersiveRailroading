@@ -1,5 +1,6 @@
 package cam72cam.immersiverailroading.gui.markdown.element;
 
+import cam72cam.immersiverailroading.ConfigGraphics;
 import cam72cam.mod.gui.helpers.GUIHelpers;
 import cam72cam.mod.math.Vec3d;
 import cam72cam.mod.render.opengl.RenderState;
@@ -84,7 +85,8 @@ public class MarkdownStyledText extends MarkdownElement {
         if(this.hasCode()){
             Vec3d offset = state.model_view().apply(Vec3d.ZERO);
             GUIHelpers.drawRect((int) offset.x - 2, (int) offset.y - 1,
-                    GUIHelpers.getTextWidth(str) + 4, 12, CODE_BACKGROUND_COLOR);
+                    (int) (GUIHelpers.getTextWidth(str) * ConfigGraphics.ManualFontSize + 4),
+                    (int) (12 * ConfigGraphics.ManualFontSize), CODE_BACKGROUND_COLOR);
             GUIHelpers.drawString(str, 0, 0, DEFAULT_TEXT_COLOR, state.model_view());
             state.translate(GUIHelpers.getTextWidth(str) + 2, 0, 0);
         } else {

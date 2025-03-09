@@ -1,5 +1,6 @@
 package cam72cam.immersiverailroading.gui;
 
+import cam72cam.immersiverailroading.ConfigGraphics;
 import cam72cam.immersiverailroading.ImmersiveRailroading;
 import cam72cam.immersiverailroading.gui.manual.ClippedRenderer;
 import cam72cam.immersiverailroading.gui.markdown.MarkdownDocument;
@@ -87,10 +88,10 @@ public class ManualGui implements IScreen {
 
         //Markdown
         ClippedRenderer.renderInRegion(54, 35, 120, height - 50, () -> {
-            sidebar.render(state.clone().translate(57, 40, 0));
+            sidebar.render(state.clone().translate(57, 40, 0).scale(ConfigGraphics.ManualFontSize, ConfigGraphics.ManualFontSize, ConfigGraphics.ManualFontSize));
         });
         ClippedRenderer.renderInRegion(175, 15, GUIHelpers.getScreenWidth() - 220, height - 30, () -> {
-            content.render(state.clone().translate(180, 20, 0));
+            content.render(state.clone().translate(180, 20, 0).scale(ConfigGraphics.ManualFontSize, ConfigGraphics.ManualFontSize, ConfigGraphics.ManualFontSize));
         });
 
         //Middle split line

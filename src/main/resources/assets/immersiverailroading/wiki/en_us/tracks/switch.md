@@ -5,8 +5,6 @@ This mode is used to create track switch, and you can control the target directi
 ### Length
 This setting determines the radius of the turning section. 
 
-The straight section will have a constant length of 31m at standard gauge (1.435m) and will be scaled proportionally to the actual gauge.
-
 ### Direction
 This setting controls whether the direction of switch is forced to be left/right or based on the direction the player is looking.
 

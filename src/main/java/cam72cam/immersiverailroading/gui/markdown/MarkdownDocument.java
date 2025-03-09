@@ -1,5 +1,6 @@
 package cam72cam.immersiverailroading.gui.markdown;
 
+import cam72cam.immersiverailroading.ConfigGraphics;
 import cam72cam.immersiverailroading.gui.manual.ManualHoverRenderer;
 import cam72cam.immersiverailroading.gui.markdown.element.*;
 import cam72cam.mod.event.ClientEvents;
@@ -94,7 +95,8 @@ public class MarkdownDocument {
             }
             if(inTips){
                 GUIHelpers.drawRect((int) offset.x , (int) offset.y ,
-                        MarkdownLine.LIST_PREFIX_WIDTH / 4, 10, TIPS_BAR_COLOR);
+                        MarkdownLine.LIST_PREFIX_WIDTH / 4,
+                        (int) (10 * ConfigGraphics.ManualFontSize), TIPS_BAR_COLOR);
             }
 
             //Should we translate the matrix to next line manually?
@@ -132,8 +134,9 @@ public class MarkdownDocument {
                 height += 10;
             }
         }
-        this.pageHeight = height - 100;
-        return height;
+        /* * ConfigGraphics.ManualFontSize*/
+        this.pageHeight = height - 80;
+        return height - 80;
     }
 
     /**
