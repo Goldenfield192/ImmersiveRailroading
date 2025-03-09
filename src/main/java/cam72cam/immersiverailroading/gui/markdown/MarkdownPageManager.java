@@ -2,6 +2,7 @@ package cam72cam.immersiverailroading.gui.markdown;
 
 import cam72cam.immersiverailroading.gui.manual.page.ItemComponentPageBuilder;
 import cam72cam.immersiverailroading.gui.manual.page.StockDescriptionPageBuilder;
+import cam72cam.immersiverailroading.gui.manual.page.TrackPageBuilder;
 import cam72cam.mod.resource.Identifier;
 
 import java.util.HashMap;
@@ -14,7 +15,8 @@ public class MarkdownPageManager {
     static {
         registerPageBuilder("irstock", StockDescriptionPageBuilder.INSTANCE);
         registerPageBuilder("iritem", ItemComponentPageBuilder.INSTANCE);
-        registerPageBuilder("immersiverailroading", MarkdownPageBuilder.INSTANCE);
+        registerPageBuilder("irtrack", TrackPageBuilder.INSTANCE);
+        registerPageBuilder("immersiverailroading", DefaultPageBuilder.INSTANCE);
     }
 
     public static void registerPageBuilder(String domain, IPageBuilder builder){

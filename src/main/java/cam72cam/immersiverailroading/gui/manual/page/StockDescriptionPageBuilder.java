@@ -1,8 +1,8 @@
 package cam72cam.immersiverailroading.gui.manual.page;
 
-import cam72cam.immersiverailroading.gui.manual.MDStockModelRenderer;
+import cam72cam.immersiverailroading.gui.manual.element.MDStockModelRenderer;
 import cam72cam.immersiverailroading.gui.markdown.IPageBuilder;
-import cam72cam.immersiverailroading.gui.markdown.MarkdownPageBuilder;
+import cam72cam.immersiverailroading.gui.markdown.DefaultPageBuilder;
 import cam72cam.immersiverailroading.gui.markdown.MarkdownDocument;
 import cam72cam.immersiverailroading.gui.markdown.element.MarkdownElement;
 import cam72cam.immersiverailroading.gui.markdown.element.MarkdownStyledText;
@@ -23,7 +23,7 @@ public class StockDescriptionPageBuilder implements IPageBuilder {
         EntityRollingStockDefinition def = DefinitionManager.getDefinition(id.getPath());
 
         if(def.description != null && def.description.canLoad()){
-            return MarkdownPageBuilder.INSTANCE.build(def.description);
+            return DefaultPageBuilder.INSTANCE.build(def.description);
         }
 
         document.addLine(new MDStockModelRenderer(def));

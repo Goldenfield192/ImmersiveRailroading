@@ -17,5 +17,5 @@ Besides, this augment also has 4 redstone modes that can be toggled by holding a
 A Fluid Unloader Augment which is extracting water from the tank of the stock to a pipe:
 ![](immersiverailroading:wiki/images/augments/fluid_unloader_example.png)
 
-# Linked Pages
-[Fluid Loader](immersiverailroading:wiki/en_us/augments/augment_fluid_loader.md)
+# Relevant Pages
+* [Fluid Loader](immersiverailroading:wiki/en_us/augments/augment_fluid_loader.md)

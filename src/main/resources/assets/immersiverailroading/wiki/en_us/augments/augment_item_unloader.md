@@ -17,5 +17,5 @@ Besides, this augment also has 4 redstone modes that can be toggled by holding a
 An Item Unloader Augment which is extracting items from the inventory of the stock to a hopper beneath it:
 ![](immersiverailroading:wiki/images/augments/item_unloader_example.png)
 
-# Linked Pages
-[Item Loader](immersiverailroading:wiki/en_us/augments/augment_item_loader.md)
+# Relevant Pages
+* [Item Loader](immersiverailroading:wiki/en_us/augments/augment_item_loader.md)

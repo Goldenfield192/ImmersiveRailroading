@@ -1,12 +1,10 @@
 package cam72cam.immersiverailroading.items;
 
 import cam72cam.immersiverailroading.ImmersiveRailroading;
-import cam72cam.immersiverailroading.gui.ManualGui;
 import cam72cam.immersiverailroading.library.GuiText;
 import cam72cam.immersiverailroading.library.GuiTypes;
 import cam72cam.immersiverailroading.multiblock.Multiblock;
 import cam72cam.immersiverailroading.multiblock.MultiblockRegistry;
-import cam72cam.immersiverailroading.thirdparty.CompatLoader;
 import cam72cam.immersiverailroading.util.IRFuzzy;
 import cam72cam.mod.entity.Player;
 import cam72cam.mod.item.*;
@@ -67,8 +65,6 @@ public class ItemManual extends CustomItem {
 		} else {
 			if (world.isClient) {
 				GuiTypes.MANUAL.open(player);
-//				if (!CompatLoader.openWiki()) {
-//				}
 			}
 		}
 	}

@@ -1,6 +1,8 @@
 package cam72cam.immersiverailroading.gui.markdown;
 
+import cam72cam.immersiverailroading.gui.manual.GaugeProvider;
 import cam72cam.immersiverailroading.gui.manual.StockListProvider;
+import cam72cam.immersiverailroading.gui.manual.TrackProvider;
 import cam72cam.immersiverailroading.gui.markdown.element.*;
 import cam72cam.mod.resource.Identifier;
 
@@ -14,13 +16,15 @@ import static cam72cam.immersiverailroading.gui.markdown.element.MarkdownStyledT
  * Load Markdown from existing file
  * @see MarkdownDocument
  */
-public class MarkdownPageBuilder implements IPageBuilder{
-    public static final IPageBuilder INSTANCE = new MarkdownPageBuilder();
+public class DefaultPageBuilder implements IPageBuilder{
+    public static final IPageBuilder INSTANCE = new DefaultPageBuilder();
     private static final HashMap<String, BiFunction<String, MarkdownDocument, List<MarkdownDocument.MarkdownLine>>>
             SPECIAL_MATCHER = new HashMap<>();
 
     static {
         register(StockListProvider.SYNTAX, StockListProvider::parse);
+        register(GaugeProvider.SYNTAX, GaugeProvider::parse);
+        register(TrackProvider.SYNTAX, TrackProvider::parse);
     }
 
     /**

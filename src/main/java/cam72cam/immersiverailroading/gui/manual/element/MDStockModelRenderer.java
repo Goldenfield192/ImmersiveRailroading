@@ -1,4 +1,4 @@
-package cam72cam.immersiverailroading.gui.manual;
+package cam72cam.immersiverailroading.gui.manual.element;
 
 import cam72cam.immersiverailroading.gui.markdown.element.MarkdownElement;
 import cam72cam.immersiverailroading.model.StockModel;
