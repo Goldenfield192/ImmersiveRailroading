@@ -43,8 +43,8 @@ public class ManualGui implements IScreen {
     @Override
     public void init(IScreenBuilder screen) {
         currentOpeningManual = this;
-        prevPageButton = new Rectangle(60,20,10,10);
-        nextPageButton = new Rectangle(80,20,10,10);
+        prevPageButton = new Rectangle(60, 15, 20, 20);
+        nextPageButton = new Rectangle(120, 15, 20, 20);
         sidebar = MarkdownPageManager.getOrComputePageByID(new Identifier(ImmersiveRailroading.MODID, "wiki/en_us/_sidebar.md"), 100);
         sidebar.setScrollRegion(new Rectangle(50, 35, 120, screen.getHeight() - 50));
         content = MarkdownPageManager.getOrComputePageByID(historyPageStack.peek().getLeft(), screen.getWidth() - 240);
@@ -99,18 +99,12 @@ public class ManualGui implements IScreen {
 
         //Header
         if(historyPageStack.size() != 1){
-            GUIHelpers.texturedRect(new Identifier("immersiverailroading:gui/wiki/left_button_enabled.png"),
-                    60, 20, 10, 10);
-        } else {
-            GUIHelpers.texturedRect(new Identifier("immersiverailroading:gui/wiki/left_button_disabled.png"),
-                    60, 20, 10, 10);
+            GUIHelpers.texturedRect(new Identifier("immersiverailroading:gui/wiki/left.png"),
+                    60, 15, 20, 20);
         }
         if(!futurePageStack.isEmpty()){
-            GUIHelpers.texturedRect(new Identifier("immersiverailroading:gui/wiki/right_button_enabled.png"),
-                    80, 20, 10, 10);
-        } else {
-            GUIHelpers.texturedRect(new Identifier("immersiverailroading:gui/wiki/right_button_disabled.png"),
-                    80, 20, 10, 10);
+            GUIHelpers.texturedRect(new Identifier("immersiverailroading:gui/wiki/right.png"),
+                    120, 15, 20, 20);
         }
 
         //Tooltip
@@ -167,9 +161,6 @@ public class ManualGui implements IScreen {
             } else if(nextPageButton.contains(event.x, event.y)){
                 if(!futurePageStack.isEmpty()){
                     pushContent(futurePageStack.peek().getLeft(), futurePageStack.peek().getRight());
-                    if(!futurePageStack.isEmpty()) {
-                        futurePageStack.pop();
-                    }
                 }
                 return true;
             }
