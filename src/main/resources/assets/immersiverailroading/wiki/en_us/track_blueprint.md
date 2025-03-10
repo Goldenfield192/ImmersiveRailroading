@@ -71,4 +71,12 @@ This setting determines how the track should be locked to the rail bed.
 Extends the rail bed out to the sides, to have the appearance of a level crossing; such as those used at intersections of roads and railroads tracks in real life.
 
 ### Place Blueprint
-Please see the [Golden Spike](immersiverailroading:wiki/en_us/tracks/golden_spike.md) for more information.
+You can place down a blueprint which renders the track in-world.  This allows you to plan, move and shape the track as you go.
+
+Right-clicking on a placed blueprint will allow you to change the settings without having to replace it.
+
+Shift \+ right-click on a placed blueprint will allow you to change its direction based on your looking direction, and you can also shift its position if it is in any mode except Fixed.
+
+Breaking the block will remove the blueprint.  Shift \+ breaking the block will attempt to place the blueprint.
+
+See the [Golden Spike](immersiverailroading:wiki/en_us/tracks/golden_spike.md) for more information.

@@ -1,6 +1,8 @@
 # Overview
 This mode is used to create track switch, and you can control the target direction by giving redstone signal to the turning block.
 
+By the way, you can use the [Golden Spike](immersiverailroading:wiki/en_us/tracks/golden_spike.md) to make more remarkable effects.
+
 # Settings
 ### Length
 This setting determines the radius of the turning section. 

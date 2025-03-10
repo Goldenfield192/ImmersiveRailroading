@@ -1,20 +1,23 @@
-## Overview
+# Overview
+The Golden Spike allows you to plan, move and shape the track with the [Track Blueprint](immersiverailroading:wiki/en_us/track_blueprint.md)'s blueprint mode.
 
-The Golden Spike is used to configure flex track.
+# Usage
+After placing a blueprint, you can right-click on it with a Golden Spike to bind the item to it. The actual function varies from type to type:
+## Straight & Slope
+Use the bound Golden Spike on the ground will set the track length to the larger absolute difference between the x or z coordinates of the Golden Rail Spike and the track placement position, rounded to the nearest whole number and then increased by 1.
 
-## Usage
+## Turn
+Use the bound Golden Spike on the ground will set the radius of the turn to the result of following algorithm:
+* Take the average of the x-coordinate difference and z-coordinate difference between the Golden Rail Spike and the track placement position;
+* Then increased by 1
+* Then multiplied by 90 and devide by the turn's degree
+* Then rounded to the nearest whole number as the result.
 
-[https://giant.gfycat.com/ShinyCompetentBarnowl.webm](https://giant.gfycat.com/ShinyCompetentBarnowl.webm)
+## Custom Curve
+[OBJECT PROMISE]
 
-See [Custom Curves](immersiverailroading:wiki/en_us/tracks/custom_curves.md) for detailed usage information.
+## Switch
+The straight section will just like the Straight type[TODO WRONG], and turning section will be like the Custom Curve part.
 
-
-### Place Blueprint
-You can place down a blueprint which renders the track in-world.  This allows you to plan, move and shape the track as you go.
-
-Right-clicking on a placed blueprint will allow you to change the settings without having to replace it.
-
-Shift \+ right-clicking on a placed blueprint will allow you to shift its position if it is in any mode except Fixed.
-
-Breaking the block will remove the blueprint.  Shift \+ breaking the block will attempt to place the blueprint.
-
+## Turntable
+[OBJECT PROMISE]

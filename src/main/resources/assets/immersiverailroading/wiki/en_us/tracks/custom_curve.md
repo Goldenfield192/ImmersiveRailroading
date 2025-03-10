@@ -1,6 +1,8 @@
 # Overview
 This mode is used to place customizable curve track.
 
+By the way, you can use the [Golden Spike](immersiverailroading:wiki/en_us/tracks/golden_spike.md) to make more remarkable effects.
+
 # Settings
 ### Length
 This setting determines how many blocks long the piece of track is.
@@ -19,7 +21,6 @@ Current options are:
 ![UI](immersiverailroading:wiki/images/track/track_neither.png)
 
 ### Curvosity
-[OBJECT PROMISE]
 
 # Relevant Pages
 * [Golden Spike](immersiverailroading:wiki/en_us/tracks/golden_spike.md)
