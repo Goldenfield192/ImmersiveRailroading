@@ -77,6 +77,6 @@ Right-clicking on a placed blueprint will allow you to change the settings witho
 
 Shift \+ right-click on a placed blueprint will allow you to change its direction based on your looking direction, and you can also shift its position if it is in any mode except Fixed.
 
-Breaking the block will remove the blueprint.  Shift \+ breaking the block will attempt to place the blueprint.
+Breaking the block will remove the blueprint.  Shift \+ left-click the block will attempt to place the blueprint.
 
 See the [Golden Spike](immersiverailroading:wiki/en_us/tracks/golden_spike.md) for more information.

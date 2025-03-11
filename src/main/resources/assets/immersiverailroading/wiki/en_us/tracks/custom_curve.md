@@ -8,7 +8,7 @@ By the way, you can use the [Golden Spike](immersiverailroading:wiki/en_us/track
 This setting determines how many blocks long the piece of track is.
 
 ### Vertical Smoothing
-If the track has a slope, this option determines whether the track will be vertically smoothed at both ends to join the other tracks.
+If the curve has a slope(via the [Golden Spike](immersiverailroading:wiki/en_us/tracks/golden_spike.md)), this option determines whether the track will be vertically smoothed at both ends to join the other tracks.
 
 Current options are:
 * Both
@@ -21,6 +21,7 @@ Current options are:
 ![UI](immersiverailroading:wiki/images/track/track_neither.png)
 
 ### Curvosity
+This setting controls the horizontal curvosity of the turning section if it is customized by the [Golden Spike](immersiverailroading:wiki/en_us/tracks/golden_spike.md), higher value means more curved.
 
 # Relevant Pages
 * [Golden Spike](immersiverailroading:wiki/en_us/tracks/golden_spike.md)

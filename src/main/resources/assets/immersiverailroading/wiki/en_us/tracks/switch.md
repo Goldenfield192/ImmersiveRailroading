@@ -14,7 +14,7 @@ This setting controls whether the direction of switch is forced to be left/right
 This setting determines how large the angle of the turning section should be.
 
 ### Vertical Smoothing
-If the switch has a slope, this option determines whether the track will be smoothed vertically at both ends to join the other tracks.
+If the switch's turning section has a slope(via the [Golden Spike](immersiverailroading:wiki/en_us/tracks/golden_spike.md)), this option determines whether the track will be smoothed vertically at both ends to join the other tracks.
 
 Current options are:
 * Both
@@ -27,7 +27,7 @@ Current options are:
   ![UI](immersiverailroading:wiki/images/track/track_neither.png)
 
 ### Curvosity
-[OBJECT PROMISE]
+This setting controls the horizontal curvosity of the turning section if it is customized by the [Golden Spike](immersiverailroading:wiki/en_us/tracks/golden_spike.md), higher value means more curved.
 
 # Example
 A switch set to the straight direction:
