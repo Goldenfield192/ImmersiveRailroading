@@ -15,10 +15,10 @@ public class TrackPageBuilder implements IPageBuilder {
     public MarkdownDocument build(Identifier id) {
         MarkdownDocument document = new MarkdownDocument(id);
         TrackDefinition def = DefinitionManager.getTrack("immersiverailroading:track/" + id.getPath());
-        document.addLine(new MDTrackRenderer(def));
-        document.addLine(new MarkdownStyledText("Name: " + def.name));
-        document.addLine(new MarkdownStyledText("Modeler: " + def.modelerName));
-        document.addLine(new MarkdownStyledText("Pack: " + def.packName));
+        document.addLine(new MDTrackRenderer(def))
+                .addLine(new MarkdownStyledText("Name: " + def.name))
+                .addLine(new MarkdownStyledText("Modeler: " + def.modelerName))
+                .addLine(new MarkdownStyledText("Pack: " + def.packName));
         return document;
     }
 

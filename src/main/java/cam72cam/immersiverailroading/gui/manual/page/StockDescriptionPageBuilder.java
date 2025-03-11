@@ -26,12 +26,11 @@ public class StockDescriptionPageBuilder implements IPageBuilder {
             return DefaultPageBuilder.INSTANCE.build(def.description);
         }
 
-        document.addLine(new MDStockModelRenderer(def));
-        document.addLine(new MarkdownStyledText("Modeler: "), new MarkdownStyledText(def.modelerName));
-        document.addLine(new MarkdownStyledText("Pack: "), new MarkdownStyledText(def.packName));
-
-        document.addLine(new MarkdownStyledText(""));
-        document.addLine(new MarkdownStyledText("Required components:"));
+        document.addLine(new MDStockModelRenderer(def))
+                .addLine(new MarkdownStyledText("Modeler: "), new MarkdownStyledText(def.modelerName))
+                .addLine(new MarkdownStyledText("Pack: "), new MarkdownStyledText(def.packName))
+                .addLine(new MarkdownStyledText(""))
+                .addLine(new MarkdownStyledText("Required components:"));
         Map<String, Integer> componentMap = new HashMap<>();
         for(ItemComponentType componentType : def.getItemComponents()){
             componentMap.computeIfPresent(componentType.name(), (string, integer) -> integer+1);

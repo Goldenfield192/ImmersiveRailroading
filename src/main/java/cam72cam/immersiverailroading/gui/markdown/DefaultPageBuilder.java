@@ -89,8 +89,8 @@ public class DefaultPageBuilder implements IPageBuilder{
             } else if(currentLine.startsWith("> ")){
                 //Tips
                 //Must be more than just 1 '>'
-                document.addLine(MarkdownDocument.MarkdownLine.create(new MarkdownStyledText("")).isTipStart(true));
-                document.addLine(MarkdownDocument.MarkdownLine.create(parse(currentLine.substring(Math.min(2, currentLine.length() - 1)))));
+                document.addLine(MarkdownDocument.MarkdownLine.create(new MarkdownStyledText("")).isTipStart(true))
+                        .addLine(MarkdownDocument.MarkdownLine.create(parse(currentLine.substring(Math.min(2, currentLine.length() - 1)))));
                 isInTips = true;
             } else if(currentLine.startsWith("[list_selector]")){
                 MarkdownListSelector selector = new MarkdownListSelector(currentLine.substring(15));
