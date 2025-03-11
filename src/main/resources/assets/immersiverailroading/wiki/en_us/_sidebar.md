@@ -13,6 +13,5 @@
 [Computer APIs](immersiverailroading:wiki/en_us/computer_apis.md)
 ### Helps
 [Performance](immersiverailroading:wiki/en_us/rolling_stock_performance.md)
-[Customizing IR](immersiverailroading:wiki/en_us/customizing_ir.md)
-[Config](OBJECT PROMISE)
+[Customizing IR via Config](immersiverailroading:wiki/en_us/config.md)
 [Known Conflicts with other mods](immersiverailroading:wiki/en_us/known_conflicts.md)
