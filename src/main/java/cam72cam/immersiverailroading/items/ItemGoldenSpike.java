@@ -66,18 +66,7 @@ public class ItemGoldenSpike extends CustomItem {
 					if (tr.isAboveRails()) {
 						tepos = tepos.down();
 					}
-					//If x or z < 0 there are some weird things...
-					Vec3d finalPos = hit.subtract(0, hit.y, 0).add(pos).subtract(tepos);
-					ModCore.info(String.valueOf(
-							Facing.fromAngle(180 - ((int)((player.getYawHead() + 90/(segmentation() * 2f)) * segmentation())) / 90 * 90 / (segmentation() * 1f))
-					));
-//					if(finalPos.x < 0){
-//						finalPos = finalPos.add(1,0,0);
-//					}
-//					if(finalPos.z < -1){
-//						finalPos = finalPos.add(0,0,1);
-//					}
-					tr.setCustomInfo(new PlacementInfo(tr.getItem(), player.getYawHead(), finalPos));
+					tr.setCustomInfo(new PlacementInfo(tr.getItem(), player.getYawHead(), hit.subtract(0, hit.y, 0).add(pos).subtract(tepos)));
 				}
 			}
 		}
