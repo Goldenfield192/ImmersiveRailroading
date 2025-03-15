@@ -7,6 +7,7 @@ import cam72cam.immersiverailroading.tile.TileRailBase;
 import cam72cam.immersiverailroading.tile.TileRailPreview;
 import cam72cam.immersiverailroading.util.BlockUtil;
 import cam72cam.immersiverailroading.util.PlacementInfo;
+import cam72cam.mod.ModCore;
 import cam72cam.mod.item.*;
 import cam72cam.mod.serialization.TagField;
 import cam72cam.mod.sound.Audio;
@@ -20,6 +21,8 @@ import cam72cam.mod.util.Facing;
 
 import java.util.Collections;
 import java.util.List;
+
+import static cam72cam.immersiverailroading.util.PlacementInfo.segmentation;
 
 public class ItemGoldenSpike extends CustomItem {
 	public ItemGoldenSpike() {
@@ -65,12 +68,15 @@ public class ItemGoldenSpike extends CustomItem {
 					}
 					//If x or z < 0 there are some weird things...
 					Vec3d finalPos = hit.subtract(0, hit.y, 0).add(pos).subtract(tepos);
-					if(finalPos.x < 0){
-						finalPos = finalPos.add(1,0,0);
-					}
-					if(finalPos.z < 0){
-						finalPos = finalPos.add(0,0,1);
-					}
+					ModCore.info(String.valueOf(
+							Facing.fromAngle(180 - ((int)((player.getYawHead() + 90/(segmentation() * 2f)) * segmentation())) / 90 * 90 / (segmentation() * 1f))
+					));
+//					if(finalPos.x < 0){
+//						finalPos = finalPos.add(1,0,0);
+//					}
+//					if(finalPos.z < -1){
+//						finalPos = finalPos.add(0,0,1);
+//					}
 					tr.setCustomInfo(new PlacementInfo(tr.getItem(), player.getYawHead(), finalPos));
 				}
 			}
