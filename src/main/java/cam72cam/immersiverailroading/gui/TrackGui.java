@@ -39,6 +39,9 @@ public class TrackGui implements IScreen {
 	private TextField lengthInput;
 	private Slider degreesSlider;
 	private Slider curvositySlider;
+	private Slider ctrl1RollSlider;
+	private Slider midRollSlider;
+	private Slider ctrl2RollSlider;
 	private CheckBox isPreviewCB;
 	private CheckBox isGradeCrossingCB;
 	private Button gaugeButton;
@@ -203,7 +206,23 @@ public class TrackGui implements IScreen {
 				curvositySlider.setText(GuiText.SELECTOR_CURVOSITY.toString(String.format("%.2f", settings.curvosity)));
 			}
 		};
+		this.ctrl1RollSlider = new Slider(screen, 25+xtop, ytop, "", -20, 20, settings.ctrl1Roll, true) {
+			@Override
+			public void onSlider() {
+				settings.ctrl1Roll = (float) this.getValue();
+				curvositySlider.setText(GuiText.SELECTOR_CURVOSITY.toString(String.format("%.2f", settings.ctrl1Roll)));
+			}
+		};
+		this.ctrl2RollSlider = new Slider(screen, 325+xtop, ytop, "", -20,20, settings.ctrl2Roll, true) {
+			@Override
+			public void onSlider() {
+				settings.ctrl2Roll = (float) this.getValue();
+				curvositySlider.setText(GuiText.SELECTOR_CURVOSITY.toString(String.format("%.2f", settings.ctrl2Roll)));
+			}
+		};
 		curvositySlider.onSlider();
+		ctrl1RollSlider.onSlider();
+		ctrl2RollSlider.onSlider();
 		ytop += height;
 
 		directionButton.setVisible(settings.type.hasDirection());

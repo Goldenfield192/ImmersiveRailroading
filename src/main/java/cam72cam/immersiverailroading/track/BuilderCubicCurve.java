@@ -119,24 +119,30 @@ public class BuilderCubicCurve extends BuilderIterator {
 			Vec3d p = points.get(i);
 			float yaw;
 			float pitch;
+			float roll;
 			if (points.size() == 1) {
 				yaw = info.placementInfo.yaw;
+				roll = (info.settings.ctrl1Roll + info.settings.ctrl2Roll) / 2;
 				pitch = 0;
 			} else if (i == points.size()-1) {
 				Vec3d next = points.get(i-1);
 				pitch = (float) Math.toDegrees(Math.atan2(next.y - p.y, next.distanceTo(p)));
                 yaw = curve.angleStop();
+				roll = info.settings.ctrl1Roll;
 			} else if (i == 0) {
 				Vec3d next = points.get(i+1);
 				pitch = (float) -Math.toDegrees(Math.atan2(next.y - p.y, next.distanceTo(p)));
 				yaw = curve.angleStart();
+				roll = info.settings.ctrl2Roll;
 			} else {
 				Vec3d prev = points.get(i-1);
 				Vec3d next = points.get(i+1);
 				pitch = (float) -Math.toDegrees(Math.atan2(next.y - prev.y, next.distanceTo(prev)));
 				yaw = VecUtil.toYaw(points.get(i+1).subtract(points.get(i-1)));
+			    float percent = (i+1f) / points.size();
+				roll = info.settings.ctrl1Roll * percent + info.settings.ctrl2Roll * (1 - percent);
 			}
-			res.add(new PosStep(p, yaw, pitch));
+			res.add(new PosStep(p, yaw, pitch, roll));
 		}
 		cache.put(stepSize, res);
 		return cache.get(stepSize);
@@ -235,15 +241,15 @@ public class BuilderCubicCurve extends BuilderIterator {
 	}
 
 	@Override
-	public List<VecYawPitch> getRenderData() {
+	public List<VecYawPitchRoll> getRenderData() {
 		if (subBuilders == null) {
 			return super.getRenderData();
 		} else {
-			List<VecYawPitch> data = new ArrayList<>();
+			List<VecYawPitchRoll> data = new ArrayList<>();
 			for (BuilderBase curve : subBuilders.subList(0, Math.min(subBuilders.size(), 3))) {
 				Vec3d offset = new Vec3d(curve.pos.subtract(pos));
-				for (VecYawPitch rd : curve.getRenderData()) {
-					rd = new VecYawPitch(rd.x + offset.x, rd.y + offset.y, rd.z + offset.z, rd.yaw, rd.pitch, rd.length);
+				for (VecYawPitchRoll rd : curve.getRenderData()) {
+					rd = new VecYawPitchRoll(rd.x + offset.x, rd.y + offset.y, rd.z + offset.z, rd.yaw, rd.pitch, rd.length, rd.roll);
 					data.add(rd);
 				}
 			}

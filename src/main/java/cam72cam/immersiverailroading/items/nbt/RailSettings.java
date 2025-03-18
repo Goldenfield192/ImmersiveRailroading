@@ -14,6 +14,11 @@ public class RailSettings {
     public final int length;
     public final float degrees;
     public final float curvosity;
+
+    public final float ctrl1Roll;
+    public final float midRoll;
+    public final float ctrl2Roll;
+
     public final TrackPositionType posType;
     public final TrackSmoothing smoothing;
     public final TrackDirection direction;
@@ -23,7 +28,13 @@ public class RailSettings {
     public final boolean isGradeCrossing;
     public final String track;
 
-    public RailSettings(Gauge gauge, String track, TrackItems type, int length, float degrees, float curvosity, TrackPositionType posType, TrackSmoothing smoothing, TrackDirection direction, ItemStack railBed, ItemStack railBedFill, boolean isPreview, boolean isGradeCrossing) {
+//    public RailSettings(Gauge gauge, String track, TrackItems type, int length, float degrees, float curvosity, TrackPositionType posType, TrackSmoothing smoothing, TrackDirection direction, ItemStack railBed, ItemStack railBedFill, boolean isPreview, boolean isGradeCrossing) {
+//        this(gauge, track, type, length, degrees, curvosity, posType, smoothing, direction, railBed, railBedFill,
+//             isPreview, isGradeCrossing, 0, 0, 0);
+//    }
+
+    //Capability
+    public RailSettings(Gauge gauge, String track, TrackItems type, int length, float degrees, float curvosity, TrackPositionType posType, TrackSmoothing smoothing, TrackDirection direction, ItemStack railBed, ItemStack railBedFill, boolean isPreview, boolean isGradeCrossing, float ctrl1Roll, float midRoll, float ctrl2Roll) {
         this.gauge = gauge;
         this.track = track;
         this.type = type;
@@ -37,13 +48,16 @@ public class RailSettings {
         this.isPreview = isPreview;
         this.isGradeCrossing = isGradeCrossing;
         this.curvosity = curvosity;
+        this.ctrl1Roll = ctrl1Roll;
+        this.ctrl2Roll = ctrl2Roll;
+        this.midRoll = midRoll;
     }
 
     public void write(ItemStack stack) {
         TagCompound data = new TagCompound();
         try {
             TagSerializer.serialize(data, mutable());
-        } catch (SerializationException e) {
+        } catch(SerializationException e) {
             ImmersiveRailroading.catching(e);
         }
         stack.setTagCompound(data);
@@ -52,7 +66,7 @@ public class RailSettings {
     public static RailSettings from(ItemStack stack) {
         try {
             return new Mutable(stack.getTagCompound()).immutable();
-        } catch (SerializationException e) {
+        } catch(SerializationException e) {
             throw new RuntimeException(e);
         }
     }
@@ -72,8 +86,11 @@ public class RailSettings {
         public TagAccessor<Float> apply(Class<Float> type, String fieldName, TagField tag) {
             return new TagAccessor<Float>(
                     (d, o) -> d.setFloat(fieldName, o),
-                    d -> d.hasKey(fieldName) ? d.getFloat(fieldName) :
-                            d.hasKey("quarters") ? d.getInteger("quarters") /4F * 90 : 90
+                    d -> d.hasKey(fieldName) ?
+                         d.getFloat(fieldName) :
+                         d.hasKey("quarters") ?
+                         d.getInteger("quarters") / 4F * 90 :
+                         90
             ) {
                 @Override
                 public boolean applyIfMissing() {
@@ -89,11 +106,12 @@ public class RailSettings {
             return new TagAccessor<TrackSmoothing>(
                     (d, o) -> d.setEnum(fieldName, o),
                     nbt -> {
-                        if (nbt.hasKey(fieldName)) {
+                        if(nbt.hasKey(fieldName)){
                             return nbt.getEnum(fieldName, type);
                         }
                         return nbt.getEnum("type", TrackItems.class) == TrackItems.SLOPE ?
-                                TrackSmoothing.NEITHER : TrackSmoothing.BOTH;
+                               TrackSmoothing.NEITHER :
+                               TrackSmoothing.BOTH;
                     }
             ) {
                 @Override
@@ -131,6 +149,12 @@ public class RailSettings {
         public boolean isGradeCrossing;
         @TagField("track")
         public String track;
+        @TagField("ctrl1Roll")
+        public float ctrl1Roll;
+        @TagField("ctrl2Roll")
+        public float ctrl2Roll;
+        @TagField("midRoll")
+        public float midRoll;
 
         private Mutable(RailSettings settings) {
             this.gauge = settings.gauge;
@@ -146,6 +170,9 @@ public class RailSettings {
             this.railBedFill = settings.railBedFill;
             this.isPreview = settings.isPreview;
             this.isGradeCrossing = settings.isGradeCrossing;
+            this.ctrl1Roll = settings.ctrl1Roll;
+            this.midRoll = settings.midRoll;
+            this.ctrl2Roll = settings.ctrl2Roll;
         }
 
         private Mutable(TagCompound data) throws SerializationException {
@@ -163,6 +190,9 @@ public class RailSettings {
             isPreview = false;
             isGradeCrossing = false;
             curvosity = 1;
+            this.ctrl1Roll = 0;
+            this.midRoll = 0;
+            this.ctrl2Roll = 0;
 
             TagSerializer.deserialize(data, this);
         }
@@ -181,7 +211,10 @@ public class RailSettings {
                     railBed,
                     railBedFill,
                     isPreview,
-                    isGradeCrossing
+                    isGradeCrossing,
+                    ctrl1Roll,
+                    midRoll,
+                    ctrl2Roll
             );
         }
     }
@@ -195,7 +228,7 @@ public class RailSettings {
                         TagCompound target = new TagCompound();
                         try {
                             TagSerializer.serialize(target, o.mutable());
-                        } catch (SerializationException e) {
+                        } catch(SerializationException e) {
                             // This is messy
                             throw new RuntimeException(e);
                         }
@@ -204,7 +237,7 @@ public class RailSettings {
                     d -> {
                         try {
                             return new Mutable(d.get(fieldName)).immutable();
-                        } catch (SerializationException e) {
+                        } catch(SerializationException e) {
                             throw new RuntimeException(e);
                         }
                     }

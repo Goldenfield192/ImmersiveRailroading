@@ -16,6 +16,9 @@ public class CubicCurve {
     public final Vec3d ctrl2;
     public final Vec3d p2;
 
+    public float ctrl1Roll;
+    public float ctrl2Roll;
+
     //http://spencermortensen.com/articles/bezier-circle/
     public final static double c = 0.55191502449;
 

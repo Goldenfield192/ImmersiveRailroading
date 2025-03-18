@@ -32,27 +32,27 @@ public class BuilderCrossing extends BuilderBase {
 	}
 
 	@Override
-	public List<VecYawPitch> getRenderData() {
+	public List<VecYawPitchRoll> getRenderData() {
 		
-		List<VecYawPitch> data = new ArrayList<VecYawPitch>();
+		List<VecYawPitchRoll> data = new ArrayList<VecYawPitchRoll>();
 		float angle = 0;
 
 		double trackOffset = (1-info.settings.gauge.scale())/4;
 		
 		Vec3d pos = VecUtil.rotateWrongYaw(Vec3d.ZERO, angle-90);
-		data.add(new VecYawPitch(pos.x, pos.y, pos.z, -angle, 0, info.settings.length, "RAIL_RIGHT", "RAIL_LEFT"));
+		data.add(new VecYawPitchRoll(pos.x, pos.y, pos.z, -angle, 0, info.settings.length, "RAIL_RIGHT", "RAIL_LEFT"));
 		
 		for (double i = -trackOffset; i < info.settings.length - trackOffset; i+=info.settings.gauge.scale()) {
 			pos = VecUtil.rotateWrongYaw(new Vec3d(0, 0, i-0.25), angle-90);
-			data.add(new VecYawPitch(pos.x, pos.y, pos.z-1, -angle, "RAIL_BASE"));
+			data.add(new VecYawPitchRoll(pos.x, pos.y, pos.z-1, -angle, "RAIL_BASE"));
 		}
 		angle -= 90;
 		
 		pos = VecUtil.rotateWrongYaw(new Vec3d(0, 0, 0), angle-90);
-		data.add(new VecYawPitch(pos.x, pos.y, pos.z, -angle, 0, info.settings.length, "RAIL_RIGHT", "RAIL_LEFT"));
+		data.add(new VecYawPitchRoll(pos.x, pos.y, pos.z, -angle, 0, info.settings.length, "RAIL_RIGHT", "RAIL_LEFT"));
 		for (double i = -trackOffset; i < info.settings.length - trackOffset; i+=info.settings.gauge.scale()) {
 			pos = VecUtil.rotateWrongYaw(new Vec3d(0, 0, i-0.25), angle-90);
-			data.add(new VecYawPitch(pos.x-1, pos.y, pos.z, -angle, "RAIL_BASE"));
+			data.add(new VecYawPitchRoll(pos.x-1, pos.y, pos.z, -angle, "RAIL_BASE"));
 		}
 		
 		return data;

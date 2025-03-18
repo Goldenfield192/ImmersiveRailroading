@@ -31,7 +31,7 @@ public class RailRender {
 	private final RailInfo info;
 	private boolean isLoaded;
 	private boolean isLoading;
-	private List<BuilderBase.VecYawPitch> renderData;
+	private List<BuilderBase.VecYawPitchRoll> renderData;
 	private List<TrackBase> tracks;
 
 	private RailRender(RailInfo info) {

@@ -162,8 +162,8 @@ public abstract class BuilderIterator extends BuilderBase implements IIterableTr
 	}
 
 	@Override
-	public List<VecYawPitch> getRenderData() {
-		List<VecYawPitch> data = new ArrayList<VecYawPitch>();
+	public List<VecYawPitchRoll> getRenderData() {
+		List<VecYawPitchRoll> data = new ArrayList<VecYawPitchRoll>();
 
 		double scale = info.settings.gauge.scale();
 		List<PosStep> points = getPath(scale * info.getTrackModel().spacing);
@@ -216,15 +216,15 @@ public abstract class BuilderIterator extends BuilderBase implements IIterableTr
 			}
 			if (angle != 0) {
 				if (direction == TrackDirection.RIGHT) {
-					data.add(new VecYawPitch(switchPos.x, switchPos.y, switchPos.z, switchPos.yaw, switchPos.pitch, (1 - angle / 180) * (float) info.settings.gauge.scale(), "RAIL_LEFT"));
-					data.add(new VecYawPitch(cur.x, cur.y, cur.z, cur.yaw, cur.pitch, (1 + angle / 180) * (float) info.settings.gauge.scale(), "RAIL_RIGHT"));
+					data.add(new VecYawPitchRoll(switchPos.x, switchPos.y, switchPos.z, switchPos.yaw, switchPos.pitch, (1 - angle / 180) * (float) info.settings.gauge.scale(), switchPos.roll, "RAIL_LEFT"));
+					data.add(new VecYawPitchRoll(cur.x, cur.y, cur.z, cur.yaw, cur.pitch, (1 + angle / 180) * (float) info.settings.gauge.scale(), switchPos.roll, "RAIL_RIGHT"));
 				} else {
-					data.add(new VecYawPitch(cur.x, cur.y, cur.z, cur.yaw, cur.pitch, (1 - angle / 180) * (float) info.settings.gauge.scale(), "RAIL_LEFT"));
-					data.add(new VecYawPitch(switchPos.x, switchPos.y, switchPos.z, switchPos.yaw, switchPos.pitch, (1 + angle / 180) * (float) info.settings.gauge.scale(), "RAIL_RIGHT"));
+					data.add(new VecYawPitchRoll(cur.x, cur.y, cur.z, cur.yaw, cur.pitch, (1 - angle / 180) * (float) info.settings.gauge.scale(), switchPos.roll, "RAIL_LEFT"));
+					data.add(new VecYawPitchRoll(switchPos.x, switchPos.y, switchPos.z, switchPos.yaw, switchPos.pitch, (1 + angle / 180) * (float) info.settings.gauge.scale(), switchPos.roll, "RAIL_RIGHT"));
 				}
-				data.add(new VecYawPitch(cur.x, cur.y, cur.z, cur.yaw, cur.pitch, "RAIL_BASE"));
+				data.add(new VecYawPitchRoll(cur.x, cur.y, cur.z, cur.yaw, cur.pitch, -1, switchPos.roll, "RAIL_BASE"));
 			} else {
-				data.add(new VecYawPitch(cur.x, cur.y, cur.z, cur.yaw, cur.pitch));
+				data.add(new VecYawPitchRoll(cur.x, cur.y, cur.z, cur.yaw, cur.pitch, -1, switchPos.roll));
 			}
 		}
 		

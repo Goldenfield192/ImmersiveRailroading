@@ -10,6 +10,8 @@ import cam72cam.immersiverailroading.registry.DefinitionManager;
 import cam72cam.immersiverailroading.track.TrackBase;
 import cam72cam.immersiverailroading.util.MathUtil;
 import cam72cam.immersiverailroading.util.RailInfo;
+import cam72cam.mod.ModCore;
+import cam72cam.mod.entity.Player;
 import cam72cam.mod.entity.boundingbox.IBoundingBox;
 import cam72cam.mod.item.ItemStack;
 import cam72cam.mod.math.Vec3d;
@@ -17,6 +19,7 @@ import cam72cam.mod.math.Vec3i;
 import cam72cam.mod.serialization.TagCompound;
 import cam72cam.mod.serialization.TagField;
 import cam72cam.mod.serialization.TagMapper;
+import cam72cam.mod.util.Facing;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -46,7 +49,13 @@ public class TileRail extends TileRailBase {
 		}
 		return boundingBox;
 	}
-	
+
+	@Override
+	public boolean onClick(Player player, Player.Hand hand, Facing facing, Vec3d hit) {
+		ModCore.info(this.info.settings.ctrl1Roll + " " + this.info.settings.midRoll + " "+ this.info.settings.ctrl2Roll);
+		return true;
+	}
+
 	@Override
 	public double getRenderDistance() {
 		return 8*32;
