@@ -6,6 +6,9 @@ import cam72cam.immersiverailroading.model.components.ModelComponent;
 import cam72cam.immersiverailroading.physics.MovementTrack;
 import cam72cam.immersiverailroading.render.ExpireableMap;
 import cam72cam.immersiverailroading.thirdparty.trackapi.ITrack;
+import cam72cam.immersiverailroading.tile.TileRail;
+import cam72cam.immersiverailroading.tile.TileRailBase;
+import cam72cam.immersiverailroading.tile.TileRailGag;
 import cam72cam.immersiverailroading.util.VecUtil;
 import cam72cam.mod.math.Vec3d;
 import cam72cam.mod.util.DegreeFuncs;
@@ -25,6 +28,8 @@ public class TrackFollower {
     private final float offset;
     private final boolean front;
     private Vec3d pos;
+    private float roll;
+    public double trackOffset;
     private float yawReadout;
     private final Matrix4 matrix;
 
@@ -48,21 +53,34 @@ public class TrackFollower {
         }
     }
 
-    public Matrix4 getMatrix() {
+    public Matrix4 getMatrix() {//TODO add roll
         double recomputeDist = 0.1 * stock.gauge.scale();
+        float offsetYaw = (front ?
+                           stock.getFrontYaw() :
+                           stock.getRearYaw());
+        //TODO Frame wheel and steam
+        float offsetRoll = (front ?
+                            stock.getFrontRoll() :
+                            stock.getRearRoll());
         if (pos == null || stock.getPosition().distanceToSquared(pos) > recomputeDist * recomputeDist) {
             pos = stock.getPosition();
-            float offsetYaw = (front ? stock.getFrontYaw() : stock.getRearYaw());
+
+            Vec3d offsetPos = pos.add(VecUtil.fromWrongYawPitch(offset, stock.getRotationYaw(), stock.getRotationPitch()));
+            double toMinPoint = min - offset;
+            roll = nextRoll(stock.getWorld(), stock.gauge, offsetPos, stock.getRotationYaw(), offsetYaw, toMinPoint);
+
             if (offset >= min && offset <= max) {
                 yawReadout = stock.getRotationYaw() - offsetYaw;
+                roll = offsetRoll;
                 matrix.setIdentity();
                 matrix.translate(-offset, 0, 0);
                 matrix.rotate(Math.toRadians(yawReadout), 0, 1, 0);
+                matrix.translate(0,-trackOffset, 0);
+                matrix.rotate(Math.toRadians(roll),1,0,0);
+                matrix.translate(0, trackOffset, 0);
                 matrix.translate(offset, 0, 0);
             } else {
                 // Don't need to path to a point that's already on the track.  TODO This can also be used to improve accuracy of the offset rendering
-                Vec3d offsetPos = pos.add(VecUtil.fromWrongYawPitch(offset, stock.getRotationYaw(), stock.getRotationPitch()));
-                double toMinPoint = min - offset;
                 double betweenPoints = max - min;
 
                 float toPointYaw = 0;
@@ -73,6 +91,7 @@ public class TrackFollower {
                 Vec3d pointPos = nextPosition(stock.getWorld(), stock.gauge, offsetPos, stock.getRotationYaw(), offsetYaw, toMinPoint);
                 Vec3d pointPosNext = nextPosition(stock.getWorld(), stock.gauge, pointPos, stock.getRotationYaw(), offsetYaw, betweenPoints);
                 Vec3d delta = stock.getPosition().subtract(pointPos).scale(max); // Scale copies sign
+                roll = nextRoll(stock.getWorld(), stock.gauge, offsetPos, stock.getRotationYaw(), offsetYaw, toMinPoint);
                 if (pointPos.distanceTo(pointPosNext) > 0.1 * stock.gauge.scale()) {
                     toPointYaw = VecUtil.toYaw(delta) + stock.getRotationYaw() + 180;
                     atPointYaw = VecUtil.toYaw(pointPos.subtract(pointPosNext)) + stock.getRotationYaw() + 180 - toPointYaw ;
@@ -103,9 +122,26 @@ public class TrackFollower {
                 matrix.rotate(Math.toRadians(atPointYaw), 0, 1, 0);
                 matrix.rotate(Math.toRadians(atPointPitch), 0, 0, 1);
                 matrix.translate(min / stock.gauge.scale(), 0, 0);
+                matrix.translate(0,-trackOffset, 0);
             }
         }
         return matrix;
+    }
+
+    public float nextRoll(World world, Gauge gauge, Vec3d currentPosition, float rotationYaw, float bogeyYaw, double distance) {
+        ITrack rail = MovementTrack.findTrack(world, currentPosition, rotationYaw, gauge.value());
+        if (rail == null) {
+            return 0;
+        }
+        Vec3d result = rail.getNextPosition(currentPosition, VecUtil.fromWrongYaw(distance, bogeyYaw));
+        float r = rail instanceof TileRailBase ? ((TileRailBase) rail).getNextRoll(currentPosition, VecUtil.fromWrongYaw(distance, bogeyYaw)) : 0;
+        if (result == null) {
+            return 0;
+        }
+        TileRail tileRail = rail instanceof TileRail ?
+                     (TileRail) rail : rail instanceof TileRailGag ? ((TileRailGag) rail).getParentTile() : null;
+        trackOffset = tileRail != null ? tileRail.info.getTrackHeight() * tileRail.info.settings.gauge.scale() : 0;
+        return r;
     }
 
     public Vec3d nextPosition(World world, Gauge gauge, Vec3d currentPosition, float rotationYaw, float bogeyYaw, double distance) {

@@ -36,6 +36,8 @@ public class SimulationState {
     // Render purposes
     public float yawFront;
     public float yawRear;
+    public float rollFront;
+    public float rollRear;
 
     public Vec3d couplerPositionFront;
     public Vec3d couplerPositionRear;
@@ -196,6 +198,8 @@ public class SimulationState {
 
         yawFront = stock.getFrontYaw();
         yawRear = stock.getRearYaw();
+        rollFront = stock.getFrontRoll();
+        rollRear = stock.getRearRoll();
 
         recalculatedAt = position;
 
@@ -228,6 +232,8 @@ public class SimulationState {
 
         this.yawFront = prev.yawFront;
         this.yawRear = prev.yawRear;
+        this.rollRear = prev.rollRear;
+        this.rollFront = prev.rollFront;
         couplerPositionFront = prev.couplerPositionFront;
         couplerPositionRear = prev.couplerPositionRear;
 
@@ -381,10 +387,27 @@ public class SimulationState {
         Vec3d nextFront = trackFront.getNextPosition(positionFront, VecUtil.fromWrongYaw(distance, yawFront));
         Vec3d nextRear = trackRear.getNextPosition(positionRear, VecUtil.fromWrongYaw(distance, yawRear));
 
+        boolean isSpeedFront = nextFront.distanceTo(positionRear) > positionFront.distanceTo(positionRear);
+        //TODO bug on custom curve
+        boolean frontDirection = trackFront instanceof TileRailBase
+                           ? ((TileRailBase) trackFront).getDirectionAlong(positionFront, VecUtil.fromWrongYaw(distance, yawFront))
+                           : false;
+        boolean rearDirection = trackRear instanceof TileRailBase
+                                ? ((TileRailBase) trackRear).getDirectionAlong(positionRear, VecUtil.fromWrongYaw(distance, yawRear))
+                                : false;
+
         if (!nextFront.equals(positionFront) && !nextRear.equals(positionRear)) {
             yawFront = VecUtil.toWrongYaw(nextFront.subtract(positionFront));
             yawRear = VecUtil.toWrongYaw(nextRear.subtract(positionRear));
 
+            rollFront = trackFront instanceof TileRailBase
+                        ? ((TileRailBase) trackFront).getNextRoll(positionFront, VecUtil.fromWrongYaw(distance, yawFront))
+                        : 0;
+            rollFront *= frontDirection ? -1 : 1;
+            rollRear = trackRear instanceof TileRailBase
+                        ? ((TileRailBase) trackRear).getNextRoll(positionRear, VecUtil.fromWrongYaw(distance, yawRear))
+                        : 0;
+            rollRear *= rearDirection ? -1 : 1;
             // TODO flatten this vector calculation
             Vec3d deltaCenter = nextFront.subtract(position).scale(config.offsetRear)
                     .subtract(nextRear.subtract(position).scale(config.offsetFront))

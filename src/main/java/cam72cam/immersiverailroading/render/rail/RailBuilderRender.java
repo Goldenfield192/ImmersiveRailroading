@@ -39,7 +39,13 @@ public class RailBuilderRender {
                 m.translate(piece.x, piece.y, piece.z);
                 m.rotate(Math.toRadians(piece.getYaw()), 0, 1, 0);
                 m.rotate(Math.toRadians(piece.getPitch()), 1, 0, 0);
+                double d = info.settings.gauge.scale() * info.getTrackHeight();
+                double sin = Math.sin(Math.toRadians(piece.roll));
+                double target = d * sin;
+                double cos = Math.cos(Math.toRadians(piece.roll));
                 m.rotate(Math.toRadians(piece.roll), 0, 0, 1);
+                m.translate(target * cos, 0,0);
+                m.translate(0, target * sin, 0);
                 m.rotate(Math.toRadians(-90), 0, 1, 0);
 
                 if (piece.getLength() != -1) {

@@ -36,6 +36,12 @@ public abstract class EntityMoveableRollingStock extends EntityRidableRollingSto
     private Float frontYaw;
     @TagField("rearYaw")
     private Float rearYaw;
+    @TagField("frontRoll")
+    private Float frontRoll;
+    @TagField("rearRoll")
+    private Float rearRoll;
+    public int prevTickNum;
+
     @TagField("distanceTraveled")
     public double distanceTraveled = 0;
     private Speed currentSpeed;
@@ -69,6 +75,12 @@ public abstract class EntityMoveableRollingStock extends EntityRidableRollingSto
         }
         if (rearYaw == null) {
             rearYaw = getRotationYaw();
+        }
+        if (frontRoll == null) {
+            frontRoll = 0f;
+        }
+        if (rearRoll == null) {
+            rearRoll = 0f;
         }
     }
 
@@ -280,6 +292,9 @@ public abstract class EntityMoveableRollingStock extends EntityRidableRollingSto
         this.setRotationPitch(currentPos.rotationPitch);
         this.frontYaw = currentPos.frontYaw;
         this.rearYaw = currentPos.rearYaw;
+            this.frontRoll = currentPos.frontRoll;
+            this.rearRoll = currentPos.rearRoll;
+        prevTickNum = currentPos.tickID;
 
         this.currentSpeed = currentPos.speed;
 
@@ -403,6 +418,28 @@ public abstract class EntityMoveableRollingStock extends EntityRidableRollingSto
 
     public void setRearYaw(float rearYaw) {
         this.rearYaw = rearYaw;
+    }
+
+    public float getRearRoll() {
+        if(this.rearRoll != null){
+            return rearRoll;
+        }
+        return 0;
+    }
+
+    public void setRearRoll(float rearRoll) {
+        this.rearRoll = rearRoll;
+    }
+
+    public float getFrontRoll() {
+        if(this.frontRoll != null){
+            return frontRoll;
+        }
+        return 0;
+    }
+
+    public void setFrontRoll(float frontRoll) {
+        this.frontRoll = frontRoll;
     }
 
     public float getTickSkew() {

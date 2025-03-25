@@ -206,14 +206,14 @@ public class TrackGui implements IScreen {
 				curvositySlider.setText(GuiText.SELECTOR_CURVOSITY.toString(String.format("%.2f", settings.curvosity)));
 			}
 		};
-		this.ctrl1RollSlider = new Slider(screen, 25+xtop, ytop, "", -20, 20, settings.ctrl1Roll, true) {
+		this.ctrl1RollSlider = new Slider(screen, 25+xtop, ytop, "", -180, 180, settings.ctrl1Roll, true) {
 			@Override
 			public void onSlider() {
 				settings.ctrl1Roll = (float) this.getValue();
 				curvositySlider.setText(GuiText.SELECTOR_CURVOSITY.toString(String.format("%.2f", settings.ctrl1Roll)));
 			}
 		};
-		this.ctrl2RollSlider = new Slider(screen, 325+xtop, ytop, "", -20,20, settings.ctrl2Roll, true) {
+		this.ctrl2RollSlider = new Slider(screen, 325+xtop, ytop, "", -180,180, settings.ctrl2Roll, true) {
 			@Override
 			public void onSlider() {
 				settings.ctrl2Roll = (float) this.getValue();

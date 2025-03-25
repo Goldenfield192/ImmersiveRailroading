@@ -27,6 +27,9 @@ import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
+//TODO
+//3. 粒子位置
+//4. 有的车不能正常工作，为什么？
 public class StockModel<ENTITY extends EntityMoveableRollingStock, DEFINITION extends EntityRollingStockDefinition> extends OBJModel {
     private final DEFINITION def;
     public final List<ModelComponent> allComponents;
@@ -153,6 +156,7 @@ public class StockModel<ENTITY extends EntityMoveableRollingStock, DEFINITION ex
     }
 
     public ModelState addRoll(ModelState state) {
+        //TODO Stock body roll should subtract rail height
         return state.push(builder -> builder.add((ModelState.Animator) (stock, partialTicks) ->
                 new Matrix4().rotate(Math.toRadians(sway.getRollDegrees(stock, partialTicks)), 1, 0, 0)));
     }
@@ -221,7 +225,7 @@ public class StockModel<ENTITY extends EntityMoveableRollingStock, DEFINITION ex
     protected void parseComponents(ComponentProvider provider, DEFINITION def) {
         this.frame = new Frame(provider, base, rocking, def.defID);
 
-        drivingWheels = DrivingAssembly.get(def.getValveGear(), provider, base, 0,
+        drivingWheels = DrivingAssembly.get(def.getValveGear(), provider, state1, 0,
                 frame != null ? frame.wheels : null,
                 bogeyFront != null ? bogeyFront.wheels : null,
                 bogeyRear != null ? bogeyRear.wheels : null
@@ -354,7 +358,6 @@ public class StockModel<ENTITY extends EntityMoveableRollingStock, DEFINITION ex
 
     protected void postRender(ENTITY stock, RenderState state, float partialTicks) {
         state.scale(stock.gauge.scale(), stock.gauge.scale(), stock.gauge.scale());
-        state.rotate(sway.getRollDegrees(stock, partialTicks), 1, 0, 0);
         controls.forEach(c -> c.postRender(stock, state, partialTicks));
         doors.forEach(c -> c.postRender(stock, state, partialTicks));
         gauges.forEach(c -> c.postRender(stock, state, partialTicks));

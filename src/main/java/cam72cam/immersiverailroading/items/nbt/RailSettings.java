@@ -33,6 +33,25 @@ public class RailSettings {
 //             isPreview, isGradeCrossing, 0, 0, 0);
 //    }
 
+    public RailSettings(RailSettings another){
+        this(another.gauge,
+             another.track,
+             another.type,
+             another.length,
+             another.degrees,
+             another.curvosity,
+             another.posType,
+             another.smoothing,
+             another.direction,
+             another.railBed,
+             another.railBedFill,
+             another.isPreview,
+             another.isGradeCrossing,
+             another.ctrl1Roll,
+             another.midRoll,
+             another.ctrl2Roll);
+    }
+
     //Capability
     public RailSettings(Gauge gauge, String track, TrackItems type, int length, float degrees, float curvosity, TrackPositionType posType, TrackSmoothing smoothing, TrackDirection direction, ItemStack railBed, ItemStack railBedFill, boolean isPreview, boolean isGradeCrossing, float ctrl1Roll, float midRoll, float ctrl2Roll) {
         this.gauge = gauge;

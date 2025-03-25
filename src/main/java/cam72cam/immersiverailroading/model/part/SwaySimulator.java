@@ -95,19 +95,7 @@ public class SwaySimulator {
         }
 
         public double getRollDegrees(float partialTicks) {
-            if (Math.abs(stock.getCurrentSpeed().metric() * stock.gauge.scale()) < 4) {
-                // don't calculate it
-                return 0;
-            }
-
-            double sway = Math.cos(Math.toRadians((stock.getTickCount() + partialTicks) * 13)) *
-                    swayMagnitude / 5 *
-                    stock.getDefinition().getSwayMultiplier() *
-                    ConfigGraphics.StockSwayMultiplier;
-
-            double tilt = stock.getDefinition().getTiltMultiplier() * (stock.getPrevRotationYaw() - stock.getRotationYaw()) * (stock.getCurrentSpeed().minecraft() > 0 ? 1 : -1);
-
-            return sway + tilt;
+            return (stock.getRearRoll() + stock.getFrontRoll()) / 2d;
         }
 
         public void removed() {

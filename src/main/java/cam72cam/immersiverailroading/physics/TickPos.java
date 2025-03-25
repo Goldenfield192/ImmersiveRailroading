@@ -24,12 +24,16 @@ public class TickPos {
 	public float frontYaw;
 	@TagField("rearYaw")
 	public float rearYaw;
+	@TagField("frontRoll")
+	public float frontRoll;
+	@TagField("rearRoll")
+	public float rearRoll;
 	@TagField("rotationYaw")
 	public float rotationYaw;
 	@TagField("rotationPitch")
 	public float rotationPitch;
 
-	public TickPos(int tickPosID, Speed speed, Vec3d position, float frontYaw, float rearYaw, float rotationYaw, float rotationPitch, boolean isOffTrack) {
+	public TickPos(int tickPosID, Speed speed, Vec3d position, float frontYaw, float rearYaw, float rotationYaw, float rotationPitch, boolean isOffTrack, float frontRoll, float rearRoll) {
 		this.tickID = tickPosID;
 		this.speed = speed;
 		this.isOffTrack = isOffTrack;
@@ -38,6 +42,8 @@ public class TickPos {
 		this.rearYaw = rearYaw;
 		this.rotationYaw = rotationYaw;
 		this.rotationPitch = rotationPitch;
+		this.frontRoll = frontRoll;
+		this.rearRoll = rearRoll;
 	}
 
 	public TickPos(SimulationState state) {
@@ -48,6 +54,8 @@ public class TickPos {
 		this.rotationYaw = state.yaw;
 		this.frontYaw = state.yawFront;
 		this.rearYaw = state.yawRear;
+		this.frontRoll = state.rollFront;
+		this.rearRoll = state.rollRear;
 		this.rotationPitch = state.pitch;
 	}
 
@@ -88,7 +96,9 @@ public class TickPos {
 				skewAngle(current.rearYaw, next.rearYaw, ratio),
 				skewAngle(current.rotationYaw, next.rotationYaw, ratio),
 				skewAngle(current.rotationPitch, next.rotationPitch, ratio),
-				current.isOffTrack
+				current.isOffTrack,
+				skewAngle(current.frontRoll, next.frontRoll, ratio),
+				skewAngle(current.rearRoll, next.rearRoll, ratio)
 		);
 	}
 
@@ -104,7 +114,7 @@ public class TickPos {
 
 	@Override
 	public TickPos clone() {
-		return new TickPos(tickID, speed, position, frontYaw, rearYaw, rotationYaw, rotationPitch, isOffTrack);
+		return new TickPos(tickID, speed, position, frontYaw, rearYaw, rotationYaw, rotationPitch, isOffTrack, frontRoll, rearRoll);
 	}
 
     public static class ListTagMapper implements TagMapper<List<TickPos>> {

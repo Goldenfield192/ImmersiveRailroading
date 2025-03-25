@@ -1,5 +1,6 @@
 package cam72cam.immersiverailroading.track;
 
+import cam72cam.immersiverailroading.items.nbt.RailSettings;
 import cam72cam.immersiverailroading.library.SwitchState;
 import cam72cam.immersiverailroading.library.TrackItems;
 import cam72cam.immersiverailroading.util.PlacementInfo;
@@ -34,7 +35,9 @@ public class BuilderCubicCurve extends BuilderIterator {
 		List<CubicCurve> subCurves = curve.subsplit((int) (101 * 2 * 3.1415f / 4));
 		if (subCurves.size() > 1) {
 			subBuilders = new ArrayList<>();
-			for (CubicCurve subCurve : subCurves) {
+			int splits = subCurves.size();
+			for (int i = 0; i < subCurves.size(); i++) {
+				CubicCurve subCurve = subCurves.get(i);
 				// main pos -> subCurve's start pos
 				Vec3d relOff = info.placementInfo.placementPosition.add(subCurve.p1);
 				Vec3i relPos = new Vec3i(relOff);
@@ -44,7 +47,14 @@ public class BuilderCubicCurve extends BuilderIterator {
 				//delta = delta.subtract(new Vec3i(delta)); // Relative position within the block
 				PlacementInfo startPos = new PlacementInfo(subCurve.p1.add(delta), info.placementInfo.direction, subCurve.angleStart(), subCurve.ctrl1.add(delta));
 				PlacementInfo endPos   = new PlacementInfo(subCurve.p2.add(delta), info.placementInfo.direction, subCurve.angleStop(), subCurve.ctrl2.add(delta));
-				RailInfo subInfo = new RailInfo(info.settings.with(b -> b.type = TrackItems.CUSTOM), startPos, endPos, SwitchState.NONE, SwitchState.NONE, 0);
+
+				int finalI = i;
+				RailSettings clone = new RailSettings(info.settings).with(b -> {
+					b.ctrl2Roll = (info.settings.ctrl2Roll * finalI / splits) + (info.settings.ctrl1Roll * (1 - (float) finalI / splits));
+					b.ctrl1Roll = (info.settings.ctrl2Roll * (finalI + 1) / splits) + (info.settings.ctrl1Roll * (1 - (float) (finalI + 1) / splits));
+				});
+				RailInfo subInfo = new RailInfo(clone.with(b -> b.type = TrackItems.CUSTOM),
+												startPos, endPos, SwitchState.NONE, SwitchState.NONE, 0);
 
 				BuilderCubicCurve subBuilder = new BuilderCubicCurve(subInfo, world, sPos);
 				if (subBuilders.size() != 0) {

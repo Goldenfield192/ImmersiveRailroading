@@ -15,6 +15,9 @@ import cam72cam.immersiverailroading.library.*;
 import cam72cam.immersiverailroading.model.part.Door;
 import cam72cam.immersiverailroading.physics.MovementTrack;
 import cam72cam.immersiverailroading.thirdparty.trackapi.BlockEntityTrackTickable;
+import cam72cam.immersiverailroading.track.BuilderBase;
+import cam72cam.immersiverailroading.track.BuilderCubicCurve;
+import cam72cam.immersiverailroading.track.CubicCurve;
 import cam72cam.immersiverailroading.util.*;
 import cam72cam.mod.block.IRedstoneProvider;
 import cam72cam.mod.entity.Player;
@@ -355,6 +358,97 @@ public class TileRailBase extends BlockEntityTrackTickable implements IRedstoneP
 			return MovementTrack.iterativePathing(getWorld(), currentPosition, this, getTrackGauge(), motion, maxDistance);
 		}
 		return getNextPositionShort(currentPosition, motion);
+	}
+
+	//false mean we need to invert roll
+	public boolean getDirectionAlong(Vec3d currentPosition, Vec3d motion){
+		TileRail rail = this instanceof TileRail ?
+                        (TileRail) this : this.getParentTile();
+		BuilderBase builderBase = (rail.info.settings.type == TrackItems.SWITCH
+								   ? rail.info.withSettings(b -> b.type = TrackItems.STRAIGHT)
+								   : rail.info).getBuilder(getWorld(), new Vec3i(rail.info.placementInfo.placementPosition).add(getPos()));
+		if(!(builderBase instanceof BuilderCubicCurve)){
+			return true;
+		}
+		BuilderCubicCurve curve = (BuilderCubicCurve) builderBase;
+		CubicCurve cubicCurve = curve.getCurve();
+		Vec3d track = cubicCurve.ctrl2.subtract(cubicCurve.ctrl1);
+		return track.x * motion.x + track.y * motion.y + track.z * motion.z > 0;
+	}
+
+	public float getNextRoll(Vec3d currentPosition, Vec3d motion){
+		if (this.getReplaced() == null) {
+			// Simple common case, maybe this does not need to be optimized out of the for loop below?
+			TileRail tile = this instanceof TileRail ? (TileRail) this : this.getParentTile();
+			if (tile == null) {
+				return 0;
+			}
+			//tiles = Collections.singletonList(tile);
+			// Optimized version of the below looping when no overlapping occurs
+
+			SwitchState state = SwitchUtil.getSwitchState(tile, currentPosition);
+
+			if (state == SwitchState.STRAIGHT) {
+				tile = tile.getParentTile();
+			}
+
+			return MovementTrack.getRoll(getWorld(), currentPosition, tile, motion);
+		}
+		// Complex case with overlapping segments
+		if (tiles == null) {
+			Map<Vec3i, TileRail> tileMap = new HashMap<>();
+			for (TileRailBase current = this; current != null; current = current.getReplacedTile()) {
+				TileRail tile = current instanceof TileRail ? (TileRail) current : current.getParentTile();
+				TileRail parent = tile;
+				while (parent != null && !parent.getPos().equals(parent.getParent())) {
+					// Move to root of switch (if applicable)
+					parent = parent.getParentTile();
+				}
+				if (tile != null && parent != null) {
+					tileMap.putIfAbsent(parent.getPos(), tile);
+				}
+			}
+			tiles = tileMap.values();
+		}
+
+
+		Vec3d nextPos = currentPosition;
+		Vec3d predictedPos = currentPosition.add(motion);
+		boolean hasSwitchSet = false;
+		float nextRoll = 0;
+
+		for (TileRail tile : tiles) {
+			SwitchState state = SwitchUtil.getSwitchState(tile, currentPosition);
+
+			if (state == SwitchState.STRAIGHT) {
+				tile = tile.getParentTile();
+			}
+
+			Vec3d potential = MovementTrack.nextPositionDirect(getWorld(), currentPosition, tile, motion);
+			if (potential != null) {
+				// If the track veers onto the curved leg of a switch, try that (with angle limitation)
+				// If two overlapped switches are both set, we could have a weird situation, but it's a incredibly unlikely edge case
+				if (state == SwitchState.TURN) {
+					// This code is *fundamentally* broken and most of the time no-longer matters due to the complex parent position logic above
+					float other = VecUtil.toWrongYaw(potential.subtract(currentPosition));
+					float rotationYaw = VecUtil.toWrongYaw(motion);
+					double diff = MathUtil.trueModulus(other - rotationYaw, 360);
+					diff = Math.min(360-diff, diff);
+					if (diff < 2.5) {
+						hasSwitchSet = true;
+						nextPos = potential;
+						nextRoll = MovementTrack.getRoll(getWorld(), currentPosition, tile, motion);
+					}
+				}
+				// TODO should this be an else?
+				// If we are not on a switch curve and closer to our target (or are on the first iteration)
+				if (currentPosition == nextPos || !hasSwitchSet && potential.distanceToSquared(predictedPos) < nextPos.distanceToSquared(predictedPos)) {
+					nextPos = potential;
+				    nextRoll = MovementTrack.getRoll(getWorld(), currentPosition, tile, motion);
+				}
+			}
+		}
+		return nextRoll;
 	}
 
 	private Collection<TileRail> tiles = null;
