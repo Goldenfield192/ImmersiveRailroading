@@ -1074,10 +1074,10 @@ public class TileRailBase extends BlockEntityTrackTickable implements IRedstoneP
 				if (player.isCrouching()) {
 					stockTag = null;
 					player.sendMessage(ChatText.RESET_AUGMENT_FILTER.getMessage());
-				} else {
-					stockTag = stack.getDisplayName();
-					player.sendMessage(ChatText.SET_AUGMENT_FILTER.getMessage(stockTag));
 				}
+			}
+			if(!player.isCrouching()){
+				GuiTypes.AUGMENT_TAG_SELECTOR.open(player, this.getPos());
 			}
 			return true;
 		}
@@ -1282,6 +1282,14 @@ public class TileRailBase extends BlockEntityTrackTickable implements IRedstoneP
     public void stockOverhead(EntityMoveableRollingStock stock) {
 		this.overhead = stock;
     }
+
+	public String getStockTag() {
+		return stockTag;
+	}
+
+	public void setStockTag(String stockTag) {
+		this.stockTag = stockTag;
+	}
 
 	public void setSelectedScript(LuaSelector.ScriptDef def) {
 		this.selectedScript = def;
