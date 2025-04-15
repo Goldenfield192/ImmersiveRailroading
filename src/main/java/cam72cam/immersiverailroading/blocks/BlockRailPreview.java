@@ -1,38 +1,24 @@
 package cam72cam.immersiverailroading.blocks;
 
-import cam72cam.immersiverailroading.ImmersiveRailroading;
 import cam72cam.immersiverailroading.tile.TileRailPreview;
-import cam72cam.mod.block.BlockEntity;
-import cam72cam.mod.block.BlockTypeEntity;
-import cam72cam.mod.block.Material;
+import net.minecraft.core.BlockPos;
+import net.minecraft.world.level.block.BaseEntityBlock;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.SoundType;
+import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.material.MapColor;
 
-public class BlockRailPreview extends BlockTypeEntity {
+public class BlockRailPreview extends BaseEntityBlock {
 	public BlockRailPreview() {
-		super(ImmersiveRailroading.MODID, "block_rail_preview");
+		super(Block.Properties.of().mapColor(MapColor.WOOL)
+							  .sound(SoundType.WOOL)
+							  .strength(0.2f,2000)
+							  .dynamicShape());
 	}
 
 	@Override
-	public Material getMaterial() {
-		return Material.WOOL;
-	}
-
-	@Override
-	public float getHardness() {
-		return 0.2f;
-	}
-
-	@Override
-	public float getExplosionResistance() {
-		return 2000;
-	}
-
-	@Override
-	public boolean isConnectable() {
-		return super.isConnectable();
-	}
-
-	@Override
-	public BlockEntity constructBlockEntity() {
-		return new TileRailPreview();
+	public BlockEntity newBlockEntity(BlockPos blockPos, BlockState blockState) {
+		return new TileRailPreview(blockPos, blockState);
 	}
 }

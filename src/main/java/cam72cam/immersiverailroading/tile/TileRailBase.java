@@ -33,11 +33,15 @@ import cam72cam.mod.util.Facing;
 import cam72cam.mod.serialization.TagCompound;
 import cam72cam.immersiverailroading.thirdparty.trackapi.ITrack;
 import cam72cam.mod.util.SingleCache;
+import net.minecraft.core.BlockPos;
+import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.level.block.entity.BlockEntityType;
+import net.minecraft.world.level.block.state.BlockState;
 import org.apache.commons.lang3.ArrayUtils;
 
 import java.util.*;
 
-public class TileRailBase extends BlockEntityTrackTickable implements IRedstoneProvider {
+public abstract class TileRailBase extends BlockEntity implements IRedstoneProvider {
 	@TagField("parent")
 	private Vec3i parent;
 	@TagField("height")
@@ -76,6 +80,10 @@ public class TileRailBase extends BlockEntityTrackTickable implements IRedstoneP
 	private EntityMoveableRollingStock overhead;
 	@TagField("pushPull")
 	private boolean pushPull = true;
+
+	public TileRailBase(BlockEntityType<?> p_155228_, BlockPos p_155229_, BlockState p_155230_) {
+		super(p_155228_, p_155229_, p_155230_);
+	}
 
 	public void setBedHeight(float height) {
 		this.bedHeight = height;

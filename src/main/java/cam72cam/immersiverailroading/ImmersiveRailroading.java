@@ -42,23 +42,29 @@ import cam72cam.mod.render.opengl.RenderState;
 import cam72cam.mod.resource.Identifier;
 import cam72cam.mod.sound.Audio;
 import cam72cam.mod.text.Command;
+import net.minecraftforge.eventbus.api.IEventBus;
+import net.minecraftforge.fml.common.Mod;
+import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 
 import java.util.function.Function;
 
-public class ImmersiveRailroading extends ModCore.Mod {
+@Mod(ImmersiveRailroading.MODID)
+public class ImmersiveRailroading{
     public static final String MODID = "immersiverailroading";
 
 	public static final int ENTITY_SYNC_DISTANCE = 512;
 	private static ImmersiveRailroading instance;
 
+	//TODO TagSerializer adapt
 	public ImmersiveRailroading() {
 		instance = this;
+		IEventBus modEventBus = FMLJavaModLoadingContext.get().getModEventBus();
+		IRBlocks.register(modEventBus);
+		IRItems.register(modEventBus);
+		GuiTypes.register(modEventBus);
 	}
 
-	@Override
-	public String modID() {
-		return MODID;
-	}
+
 
 	@Override
 	public void commonEvent(ModEvent event) {
@@ -233,9 +239,5 @@ public class ImmersiveRailroading extends ModCore.Mod {
 				DefinitionManager.initDefinitions();
 				break;
 		}
-	}
-
-	@Override
-	public void serverEvent(ModEvent event) {
 	}
 }

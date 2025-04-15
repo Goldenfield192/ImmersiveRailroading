@@ -1,5 +1,6 @@
 package cam72cam.immersiverailroading.tile;
 
+import cam72cam.immersiverailroading.IRBlocks;
 import cam72cam.immersiverailroading.IRItems;
 import cam72cam.immersiverailroading.items.nbt.RailSettings;
 import cam72cam.immersiverailroading.library.GuiTypes;
@@ -9,7 +10,6 @@ import cam72cam.immersiverailroading.track.IIterableTrack;
 import cam72cam.immersiverailroading.util.BlockUtil;
 import cam72cam.immersiverailroading.util.PlacementInfo;
 import cam72cam.immersiverailroading.util.RailInfo;
-import cam72cam.mod.block.BlockEntityTickable;
 import cam72cam.mod.entity.Player;
 import cam72cam.mod.entity.boundingbox.IBoundingBox;
 import cam72cam.mod.item.ItemStack;
@@ -17,8 +17,11 @@ import cam72cam.mod.math.Vec3d;
 import cam72cam.mod.serialization.TagCompound;
 import cam72cam.mod.serialization.TagField;
 import cam72cam.mod.util.Facing;
+import net.minecraft.core.BlockPos;
+import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.level.block.state.BlockState;
 
-public class TileRailPreview extends BlockEntityTickable {
+public class TileRailPreview extends BlockEntity {
 	private int ticksAlive;
 	private RailInfo info;
 
@@ -30,6 +33,10 @@ public class TileRailPreview extends BlockEntityTickable {
 	private PlacementInfo customInfo;
 	@TagField
 	private boolean isAboveRails = false;
+
+	public TileRailPreview(BlockPos p_155229_, BlockState p_155230_) {
+		super(IRBlocks.TILE_RAIL_PREVIEW.get(), p_155229_, p_155230_);
+	}
 
 	public ItemStack getItem() {
 		return this.item;

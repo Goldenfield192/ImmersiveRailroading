@@ -2,8 +2,14 @@ package cam72cam.immersiverailroading;
 
 import cam72cam.immersiverailroading.items.*;
 import cam72cam.immersiverailroading.items.ItemGoldenSpike;
+import net.minecraft.world.item.Item;
+import net.minecraftforge.eventbus.api.IEventBus;
+import net.minecraftforge.registries.DeferredRegister;
+import net.minecraftforge.registries.ForgeRegistries;
 
 public class IRItems {
+	public static final DeferredRegister<Item> ITEMS = DeferredRegister.create(ForgeRegistries.ITEMS, ImmersiveRailroading.MODID);
+
 	public static ItemRollingStock ITEM_ROLLING_STOCK = new ItemRollingStock();
 	public static ItemRollingStockComponent ITEM_ROLLING_STOCK_COMPONENT = new ItemRollingStockComponent();
 	public static ItemLargeWrench ITEM_LARGE_WRENCH = new ItemLargeWrench();
@@ -21,7 +27,7 @@ public class IRItems {
 	public static ItemSwitchKey ITEM_SWITCH_KEY = new ItemSwitchKey();
 	public static ItemTrackExchanger ITEM_TRACK_EXCHANGER = new ItemTrackExchanger();
 
-	public static void register() {
+	public static void register(IEventBus modEventBus) {
 		// loads static classes and ctrs
 	}
 }

@@ -1,12 +1,12 @@
 package cam72cam.immersiverailroading.tile;
 
+import cam72cam.immersiverailroading.IRBlocks;
 import cam72cam.immersiverailroading.ImmersiveRailroading;
 import cam72cam.immersiverailroading.library.CraftingMachineMode;
 import cam72cam.immersiverailroading.library.Permissions;
 import cam72cam.immersiverailroading.multiblock.Multiblock.MultiblockInstance;
 import cam72cam.immersiverailroading.multiblock.MultiblockRegistry;
 import cam72cam.immersiverailroading.net.MultiblockSelectCraftPacket;
-import cam72cam.mod.block.BlockEntityTickable;
 import cam72cam.mod.energy.Energy;
 import cam72cam.mod.energy.IEnergy;
 import cam72cam.mod.entity.Player;
@@ -19,10 +19,23 @@ import cam72cam.mod.math.Vec3d;
 import cam72cam.mod.math.Vec3i;
 import cam72cam.mod.serialization.TagField;
 import cam72cam.mod.util.Facing;
-import cam72cam.mod.serialization.TagCompound;
 import cam72cam.mod.world.BlockInfo;
+import cam72cam.mod.world.World;
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.level.block.entity.BlockEntityType;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.phys.AABB;
+import net.minecraftforge.common.capabilities.Capability;
+import net.minecraftforge.common.capabilities.ICapabilityProvider;
+import net.minecraftforge.common.util.LazyOptional;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
-public class TileMultiblock extends BlockEntityTickable {
+public class TileMultiblock extends BlockEntity implements ICapabilityProvider {
 
 	@TagField("replaced")
 	private BlockInfo replaced;
@@ -44,8 +57,13 @@ public class TileMultiblock extends BlockEntityTickable {
 	private ItemStack craftItem = ItemStack.EMPTY;
 	@TagField
 	private ItemStackHandler container = new ItemStackHandler(0);
+	private net.minecraftforge.items.ItemStackHandler handler =
 	@TagField("energyStorage")
     private Energy energy = new Energy(0, 1000);
+
+	public TileMultiblock(BlockPos p_155229_, BlockState p_155230_) {
+		super(IRBlocks.TILE_MULTIBLOCK.get(), p_155229_, p_155230_);
+	}
 
 	public boolean isLoaded() {
 			//TODO FIX ME bad init
@@ -60,17 +78,16 @@ public class TileMultiblock extends BlockEntityTickable {
 		
 		container.setSize(this.getMultiblock().getInvSize(offset));
 		
-		markDirty();
+		this.setChanged();
 	}
 
 	@Override
-	public void load(TagCompound nbt) {
-		container.onChanged(slot -> this.markDirty());
+	public void load(CompoundTag nbt) {
+		container.onChanged(slot -> this.setChanged());
 		container.setSlotLimit(slot -> getMultiblock().getSlotLimit(offset, slot));
-		energy.onChanged(this::markDirty);
+		energy.onChanged(this::setChanged);
 	}
 
-	@Override
 	public void update() {
 		this.ticks += 1;
 
@@ -78,22 +95,22 @@ public class TileMultiblock extends BlockEntityTickable {
 			this.getMultiblock().tick(offset);
 		} else if (ticks > 20) {
 			System.out.println("Error in multiblock, reverting");
-			getWorld().breakBlock(getPos());
+			getLevel().setBlockAndUpdate(getBlockPos(), Blocks.AIR.defaultBlockState());
 		}
 	}
 
 	@Override
-	public IBoundingBox getRenderBoundingBox() {
+	public AABB getRenderBoundingBox() {
 		return IBoundingBox.INFINITE;
 	}
 
 	public Vec3i getOrigin() {
-		return getPos().subtract(offset.rotate(rotation));
+		return new Vec3i(getBlockPos()).subtract(offset.rotate(rotation));
 	}
 	
 	public MultiblockInstance getMultiblock() {
 		if (this.mb == null && this.isLoaded()) {
-			this.mb = MultiblockRegistry.get(name).instance(getWorld(), getOrigin(), rotation);
+			this.mb = MultiblockRegistry.get(name).instance(World.get(getLevel()), getOrigin(), rotation);
 		}
 		return this.mb;
 	}
@@ -161,7 +178,7 @@ public class TileMultiblock extends BlockEntityTickable {
 	public void setCraftProgress(int progress) {
 		if (craftProgress != progress) {
 			craftProgress = progress;
-			this.markDirty();
+			this.setChanged();
 		}
 	}
 	
@@ -170,13 +187,13 @@ public class TileMultiblock extends BlockEntityTickable {
 	}
 	
 	public void setCraftMode(CraftingMachineMode mode) {
-		if (getWorld().isServer) {
+		if (!getLevel().isClientSide()) {
 			if (craftMode != mode) {
 				craftMode = mode;
-				this.markDirty();
+				this.setChanged();
 			}
 		} else {
-			new MultiblockSelectCraftPacket(getPos(), craftItem, mode).sendToServer();
+			new MultiblockSelectCraftPacket(new Vec3i(getBlockPos()), craftItem, mode).sendToServer();
 		}
 	}
 	
@@ -185,20 +202,25 @@ public class TileMultiblock extends BlockEntityTickable {
 	}
 
 	public void setCraftItem(ItemStack selected) {
-		if (getWorld().isServer) {
+		if (!getLevel().isClientSide()) {
 			if (selected == null || !selected.equals(craftItem)) {
 				this.craftItem = selected == null ? null : selected.copy();
 				this.craftProgress = 0;
-				this.markDirty();
+				this.setChanged();
 			}
 		} else {
-			new MultiblockSelectCraftPacket(getPos(), selected, craftMode).sendToServer();
+			new MultiblockSelectCraftPacket(new Vec3i(getBlockPos()), selected, craftMode).sendToServer();
 		}
 	}
 	
 	/*
 	 * Capabilities
 	 */
+
+	@Override
+	public @NotNull <T> LazyOptional<T> getCapability(@NotNull Capability<T> cap, @Nullable Direction side) {
+		return super.getCapability(cap, side);
+	}
 
 	@Override
 	public IInventory getInventory(Facing facing) {

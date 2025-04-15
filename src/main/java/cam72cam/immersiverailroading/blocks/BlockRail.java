@@ -1,15 +1,17 @@
 package cam72cam.immersiverailroading.blocks;
 
 import cam72cam.immersiverailroading.tile.TileRail;
-import cam72cam.mod.block.BlockEntity;
+import net.minecraft.core.BlockPos;
+import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.level.block.state.BlockState;
 
 public class BlockRail extends BlockRailBase {
 	public BlockRail() {
-		super("block_rail");
+		super();
 	}
 
 	@Override
-	public BlockEntity constructBlockEntity() {
-		return new TileRail();
+	public BlockEntity newBlockEntity(BlockPos blockPos, BlockState blockState) {
+		return new TileRail(blockPos, blockState);
 	}
 }

@@ -1,28 +1,25 @@
 package cam72cam.immersiverailroading.blocks;
 
-import cam72cam.immersiverailroading.ImmersiveRailroading;
 import cam72cam.immersiverailroading.tile.TileMultiblock;
-import cam72cam.mod.block.BlockEntity;
-import cam72cam.mod.block.BlockTypeEntity;
-import cam72cam.mod.block.Material;
+import net.minecraft.core.BlockPos;
+import net.minecraft.world.level.block.BaseEntityBlock;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.SoundType;
+import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.material.MapColor;
+import org.jetbrains.annotations.Nullable;
 
-public class BlockMultiblock extends BlockTypeEntity {
+public class BlockMultiblock extends BaseEntityBlock {
 	public BlockMultiblock() {
-		super(ImmersiveRailroading.MODID, "multiblock");
+		super(Block.Properties.of().mapColor(MapColor.METAL)
+							  .sound(SoundType.METAL)
+							  .strength(0.2f,1)
+							  .dynamicShape());
 	}
 
 	@Override
-	public Material getMaterial() {
-		return Material.METAL;
-	}
-
-	@Override
-	public float getHardness() {
-		return 0.2f;
-	}
-
-	@Override
-	public BlockEntity constructBlockEntity() {
-		return new TileMultiblock();
+	public @Nullable BlockEntity newBlockEntity(BlockPos blockPos, BlockState blockState) {
+		return new TileMultiblock(blockPos, blockState);
 	}
 }

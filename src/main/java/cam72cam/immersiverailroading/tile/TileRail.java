@@ -17,6 +17,8 @@ import cam72cam.mod.math.Vec3i;
 import cam72cam.mod.serialization.TagCompound;
 import cam72cam.mod.serialization.TagField;
 import cam72cam.mod.serialization.TagMapper;
+import net.minecraft.core.BlockPos;
+import net.minecraft.world.level.block.state.BlockState;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -32,6 +34,11 @@ public class TileRail extends TileRailBase {
 	private List<ItemStack> drops;
 
 	private IBoundingBox boundingBox;
+
+	public TileRail(BlockPos p_155229_, BlockState p_155230_) {
+		super(IRBlocks.TILE_RAIL.get(), p_155229_, p_155230_);
+	}
+
 	@Override
     public IBoundingBox getRenderBoundingBox() {
 		if (info == null) {
