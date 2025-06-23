@@ -1,6 +1,7 @@
 package cam72cam.immersiverailroading.util;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 import cam72cam.immersiverailroading.entity.EntityMoveableRollingStock;
 import cam72cam.immersiverailroading.entity.EntityRollingStock;
@@ -107,7 +108,7 @@ public class SpawnUtil {
 
 		for (UnitDefinition.Stock rollingStock : unit.unitList) {
 			EntityRollingStockDefinition def = rollingStock.definition;
-			boolean isFlipped = rollingStock.flipped;
+			boolean isFlipped = rollingStock.direction.getDirection();
 
 			List<ItemComponentType> list = def.getItemComponents();
 
@@ -146,6 +147,9 @@ public class SpawnUtil {
 				center = initte.getNextPosition(center, VecUtil.fromWrongYaw(0.1, originalRot));
 				center = initte.getNextPosition(center, VecUtil.fromWrongYaw(offset, originalRot));
 				stock.setPosition(center);
+
+				// Set default control group values
+				rollingStock.controlGroup.forEach(stock::setControlPosition);
 
 				if (stock instanceof EntityMoveableRollingStock) {
 					EntityMoveableRollingStock moveable = (EntityMoveableRollingStock)stock;
@@ -188,8 +192,7 @@ public class SpawnUtil {
 
 				Vec3d length = VecUtil.fromWrongYaw(def.getCouplerPosition(isFlipped ? CouplerType.BACK : CouplerType.FRONT, stock.gauge), originalRot);
 
-				player.sendMessage(
-						PlayerMessage.direct(String.format("Placed stock %s at position %s With offset %s", stock.getDefinition().defID, spawnPos, length)));
+//				player.sendMessage(PlayerMessage.direct(String.format("Placed stock %s at position %s With offset %s", stock.getDefinition().defID, spawnPos, length)));
 				worldIn.spawnEntity(stock);
 
 				// TODO Support for non Straight tracks?? I have no clue how tho
