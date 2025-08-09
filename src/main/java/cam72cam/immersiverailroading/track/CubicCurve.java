@@ -73,12 +73,57 @@ public class CubicCurve {
     }
 
     public Vec3d position(double t) {
-        Vec3d pt = Vec3d.ZERO;
-        pt = pt.add(p1.		scale(1 * Math.pow(1-t, 3) * Math.pow(t, 0)));
-        pt = pt.add(ctrl1.	scale(3 * Math.pow(1-t, 2) * Math.pow(t, 1)));
-        pt = pt.add(ctrl2.	scale(3 * Math.pow(1-t, 1) * Math.pow(t, 2)));
-        pt = pt.add(p2.		scale(1 * Math.pow(1-t, 0) * Math.pow(t, 3)));
-        return pt;
+        //WILL CAUSE ABOUT 2850% PERFORMANCE DECREASE
+//        Vec3d pt = Vec3d.ZERO;
+//        pt = pt.add(p1.		scale(1 * Math.pow(1-t, 3) * Math.pow(t, 0)));
+//        pt = pt.add(ctrl1.	scale(3 * Math.pow(1-t, 2) * Math.pow(t, 1)));
+//        pt = pt.add(ctrl2.	scale(3 * Math.pow(1-t, 1) * Math.pow(t, 2)));
+//        pt = pt.add(p2.		scale(1 * Math.pow(1-t, 0) * Math.pow(t, 3)));
+//
+//        return pt;
+        double u = 1 - t;
+        double x = p1.x * u * u * u + ctrl1.x * 3 * u * u * t + ctrl2.x * 3 * u * t * t + p2.x * t * t * t;
+        double y = p1.y * u * u * u + ctrl1.y * 3 * u * u * t + ctrl2.y * 3 * u * t * t + p2.y * t * t * t;
+        double z = p1.z * u * u * u + ctrl1.z * 3 * u * u * t + ctrl2.z * 3 * u * t * t + p2.z * t * t * t;
+        return new Vec3d(x, y, z);
+    }
+
+    public Vec3d derivative(double t){
+        //WILL CAUSE 1000%+ decrease if using Vec3d
+//        Vec3d pt = Vec3d.ZERO;
+//        double u = 1 - t;
+//        pt = pt.add(ctrl1.add(p1   .scale(-1)).scale(3 * u * u));
+//        pt = pt.add(ctrl2.add(ctrl1.scale(-1)).scale(6 * t * u));
+//        pt = pt.add(p2   .add(ctrl2.scale(-1)).scale(3 * t * t));
+//        return pt;
+        double u = 1 - t;
+        double d1 = 3 * u * u;
+        double d2 = 6 * u * t;
+        double d3 = 3 * t * t;
+
+        double dx = d1 * (ctrl1.x - p1.x) + d2 * (ctrl2.x - ctrl1.x) + d3 * (p2.x - ctrl2.x);
+        double dy = d1 * (ctrl1.y - p1.y) + d2 * (ctrl2.y - ctrl1.y) + d3 * (p2.y - ctrl2.y);
+        double dz = d1 * (ctrl1.z - p1.z) + d2 * (ctrl2.z - ctrl1.z) + d3 * (p2.z - ctrl2.z);
+
+        return new Vec3d(dx, dy, dz);
+    }
+
+    public double length(double precision){ //recommend 4
+        double segments = Math.pow(10, precision);
+        double length = 0.0;
+        double tStep = 1.0 / segments;
+        Vec3d prevDeriv = derivative(0);
+        double prevSpeed = prevDeriv.length();
+
+        for (int i = 1; i <= segments; i++) {
+            double t = i * tStep;
+            Vec3d deriv = derivative(t);
+            double speed = deriv.length();
+
+            length += (prevSpeed + speed) * tStep / 2.0;
+            prevSpeed = speed;
+        }
+        return length;
     }
 
     public List<Vec3d> toList(double stepSize) {
@@ -135,11 +180,6 @@ public class CubicCurve {
             }
         }
         Collections.reverse(resRev);
-        //For some reason these 2 point may be too close, so check here
-        if(res.get(res.size() - 1).distanceToSquared(resRev.get(0)) <= 0.0001 * stepSizeSquared){//ie.0.01 * stepSize
-            Vec3d revStart = resRev.remove(0);
-            res.set(res.size() - 1, res.get(res.size() - 1).add(revStart).scale(0.5));
-        }
         res.addAll(resRev);
         return res;
     }
