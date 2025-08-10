@@ -65,7 +65,6 @@ public class LightFlare<T extends EntityMoveableRollingStock> {
 
     private LightFlare(EntityRollingStockDefinition def, ModelState state, ModelComponent component) {
         this.component = component;
-        this.forward = component.center.x < 0;
         Matcher rgbValues = component.modelIDs.stream()
                 .map(rgb::matcher)
                 .filter(Matcher::matches)
@@ -101,6 +100,9 @@ public class LightFlare<T extends EntityMoveableRollingStock> {
         );
 
         if (config != null) {
+//            this.forward = config.revertDirection
+//                           ? !(component.center.x < 0)
+//                           : component.center.x < 0;
             this.lightTex = config.lightTex;
             this.blinkIntervalTicks = (int)(config.blinkIntervalSeconds * 20);
             this.blinkOffsetTicks = (int)(config.blinkOffsetSeconds * 20);
@@ -115,12 +117,14 @@ public class LightFlare<T extends EntityMoveableRollingStock> {
                 }
             }
         } else {
+//            this.forward = component.center.x < 0;
             this.lightTex = LightDefinition.default_light_tex;
             this.blinkIntervalTicks = 0;
             this.blinkOffsetTicks = 0;
             this.blinkFullBright = true;
             this.castsLights = true;
         }
+        this.forward = false;
 
         ModelState mystate = state.push(builder -> builder
                 .add((ModelState.Lighter) (stock) ->
