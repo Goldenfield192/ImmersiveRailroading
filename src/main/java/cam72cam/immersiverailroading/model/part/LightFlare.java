@@ -1,5 +1,6 @@
 package cam72cam.immersiverailroading.model.part;
 
+import cam72cam.immersiverailroading.ConfigGraphics;
 import cam72cam.immersiverailroading.entity.EntityMoveableRollingStock;
 import cam72cam.immersiverailroading.entity.EntityRollingStock;
 import cam72cam.immersiverailroading.library.ModelComponentType;
@@ -142,6 +143,10 @@ public class LightFlare<T extends EntityMoveableRollingStock> {
     }
 
     public void postRender(T stock, RenderState state) {
+        if(ConfigGraphics.disableLightTexture){
+            return;
+        }
+
         //GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_MIN_FILTER, GL11.GL_LINEAR);
         //GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_MAG_FILTER, GL11.GL_LINEAR);
         boolean reverse = stock.getCurrentSpeed().minecraft() < 0;
