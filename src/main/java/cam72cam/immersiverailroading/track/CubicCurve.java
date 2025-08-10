@@ -2,12 +2,12 @@ package cam72cam.immersiverailroading.track;
 
 import cam72cam.immersiverailroading.library.TrackSmoothing;
 import cam72cam.immersiverailroading.util.VecUtil;
-import cam72cam.mod.ModCore;
 import cam72cam.mod.math.Vec3d;
 import org.apache.commons.lang3.tuple.Pair;
 import util.Matrix4;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 public class CubicCurve {
@@ -73,29 +73,22 @@ public class CubicCurve {
     }
 
     public Vec3d position(double t) {
-        //WILL CAUSE ABOUT 2850% PERFORMANCE DECREASE
-//        Vec3d pt = Vec3d.ZERO;
-//        pt = pt.add(p1.		scale(1 * Math.pow(1-t, 3) * Math.pow(t, 0)));
-//        pt = pt.add(ctrl1.	scale(3 * Math.pow(1-t, 2) * Math.pow(t, 1)));
-//        pt = pt.add(ctrl2.	scale(3 * Math.pow(1-t, 1) * Math.pow(t, 2)));
-//        pt = pt.add(p2.		scale(1 * Math.pow(1-t, 0) * Math.pow(t, 3)));
-//
-//        return pt;
+        //Using Vec3d will cause almost 2850% performance decrease
         double u = 1 - t;
-        double x = p1.x * u * u * u + ctrl1.x * 3 * u * u * t + ctrl2.x * 3 * u * t * t + p2.x * t * t * t;
-        double y = p1.y * u * u * u + ctrl1.y * 3 * u * u * t + ctrl2.y * 3 * u * t * t + p2.y * t * t * t;
-        double z = p1.z * u * u * u + ctrl1.z * 3 * u * u * t + ctrl2.z * 3 * u * t * t + p2.z * t * t * t;
+
+        double d1 = u * u * u;
+        double d2 = 3 * u * u * t;
+        double d3 = 3 * u * t * t;
+        double d4 = t * t * t;
+
+        double x = p1.x * d1 + ctrl1.x * d2 + ctrl2.x * d3 + p2.x * d4;
+        double y = p1.y * d1 + ctrl1.y * d2 + ctrl2.y * d3 + p2.y * d4;
+        double z = p1.z * d1 + ctrl1.z * d2 + ctrl2.z * d3 + p2.z * d4;
         return new Vec3d(x, y, z);
     }
 
     public Vec3d derivative(double t){
         //WILL CAUSE 1000%+ decrease if using Vec3d
-//        Vec3d pt = Vec3d.ZERO;
-//        double u = 1 - t;
-//        pt = pt.add(ctrl1.add(p1   .scale(-1)).scale(3 * u * u));
-//        pt = pt.add(ctrl2.add(ctrl1.scale(-1)).scale(6 * t * u));
-//        pt = pt.add(p2   .add(ctrl2.scale(-1)).scale(3 * t * t));
-//        return pt;
         double u = 1 - t;
         double d1 = 3 * u * u;
         double d2 = 6 * u * t;
@@ -127,72 +120,13 @@ public class CubicCurve {
     }
 
     public List<Vec3d> toList(double stepSize) {
-//        {
-//            List<Vec3d> res = new ArrayList<>();
-//            List<Vec3d> resRev = new ArrayList<>();
-//            res.add(p1);
-//            if (p1.equals(p2)) {
-//                return res;
-//            }
-//
-//            resRev.add(p2);
-//            double precision = 5;
-//            double stepSizeSquared = stepSize * stepSize;
-//
-//            double t = 0;
-//            while (t <= 0.5) {
-//                for (double i = 1; i < precision; i++) {
-//                    Vec3d prev = res.get(res.size() - 1);
-//
-//                    double delta = (Math.pow(10, -i));
-//
-//                    for (; t < 1 + delta; t += delta) {
-//                        Vec3d pos = position(t);
-//                        if (pos.distanceToSquared(prev) > stepSizeSquared) {
-//                            // We passed it, just barely
-//                            t -= delta;
-//                            break;
-//                        }
-//                    }
-//                }
-//                res.add(position(t));
-//            }
-//
-//            double lt = t;
-//            t = 1;
-//
-//            while (t > lt) {
-//                for (double i = 1; i < precision; i++) {
-//                    Vec3d prev = resRev.get(resRev.size() - 1);
-//
-//                    double delta = (Math.pow(10, -i));
-//
-//                    for (; t > lt - delta; t -= delta) {
-//                        Vec3d pos = position(t);
-//                        if (pos.distanceToSquared(prev) > stepSizeSquared) {
-//                            // We passed it, just barely
-//                            t += delta;
-//                            break;
-//                        }
-//                    }
-//                }
-//                if (t > lt) {
-//                    resRev.add(position(t));
-//                }
-//            }
-//            Collections.reverse(resRev);
-//            res.addAll(resRev);
-//            return res;
-//        }
-        long time = System.nanoTime();
-
         List<Vec3d> result = new ArrayList<>();
         double length = this.length(4);
-        result.add(p1);
         if(p1.equals(p2)){
-            return result;
+            return Collections.singletonList(p1);
         }
 
+        //Almost the same as length(), but we want intermediate values
         double segments = length / (0.01 * stepSize);
         double l = 0.0;
         double tStep = 1.0 / segments;
@@ -214,10 +148,9 @@ public class CubicCurve {
             prevSpeed = speed;
         }
 
-        if (result.size() < Math.round(length / stepSize)) {//For some precision reason the last point is skipped, add it back
+        if (result.size() < Math.round(length / stepSize) && result.get(result.size() - 1).distanceToSquared(p2) > 0.36*stepSize*stepSize) {//For some precision reason the last point is skipped, add it back
            result.add(p2);
         }
-        ModCore.info(String.valueOf(System.nanoTime() - time));
 
         return result;
     }
