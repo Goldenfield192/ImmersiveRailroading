@@ -121,7 +121,7 @@ public class BuilderCubicCurve extends BuilderIterator {
 		curve = curve.subsplit(200).get(0);
 
 		double length = curve.length(4);
-		int count = (int) (length / targetStepSize) + 1;
+		int count = (int) (length / targetStepSize);
 		double mod = (length / targetStepSize) % 1;
 		if(mod > 0.6){
 			count += 1;
