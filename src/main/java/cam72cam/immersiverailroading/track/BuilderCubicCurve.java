@@ -9,6 +9,7 @@ import cam72cam.mod.item.ItemStack;
 import cam72cam.mod.math.Vec3d;
 import cam72cam.mod.math.Vec3i;
 import cam72cam.mod.world.World;
+import org.apache.commons.lang3.tuple.Pair;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -114,6 +115,14 @@ public class BuilderCubicCurve extends BuilderIterator {
 		// Skip the super long calculation since it'll be overridden anyways
 		curve = curve.subsplit(200).get(0);
 
+		double length = curve.length(4);
+		int count = (int) (length / stepSize) + 1;
+		double mod = (length / stepSize) % 1;
+		if(mod > 0.6){
+			count += 1;
+		}
+		stepSize = length / count;
+
 		List<Vec3d> points = curve.toList(stepSize);
 		for(int i = 0; i < points.size(); i++) {
 			Vec3d p = points.get(i);
@@ -140,6 +149,59 @@ public class BuilderCubicCurve extends BuilderIterator {
 		}
 		cache.put(stepSize, res);
 		return cache.get(stepSize);
+	}
+
+	@Override
+	public Pair<Double, List<PosStep>> getPathForRender(double targetStepSize) {
+		if (cache == null) {
+			cache = new HashMap<>();
+		}
+
+		if (cache.containsKey(targetStepSize)) {
+			return Pair.of(targetStepSize, cache.get(targetStepSize));
+		}
+
+		List<PosStep> res = new ArrayList<>();
+		CubicCurve curve = getCurve();
+
+		// HACK for super long curves
+		// Skip the super long calculation since it'll be overridden anyways
+		curve = curve.subsplit(200).get(0);
+
+		double length = curve.length(4);
+		int count = (int) (length / targetStepSize);
+		double mod = (length / targetStepSize) % 1;
+		if(mod > 0.6){
+			count += 1;
+		}
+		double stepSize = length / count;
+
+		List<Vec3d> points = curve.toList(stepSize);
+		for(int i = 0; i < points.size(); i++) {
+			Vec3d p = points.get(i);
+			float yaw;
+			float pitch;
+			if (points.size() == 1) {
+				yaw = info.placementInfo.yaw;
+				pitch = 0;
+			} else if (i == points.size()-1) {
+				Vec3d next = points.get(i-1);
+				pitch = (float) Math.toDegrees(Math.atan2(next.y - p.y, next.distanceTo(p)));
+				yaw = curve.angleStop();
+			} else if (i == 0) {
+				Vec3d next = points.get(i+1);
+				pitch = (float) -Math.toDegrees(Math.atan2(next.y - p.y, next.distanceTo(p)));
+				yaw = curve.angleStart();
+			} else {
+				Vec3d prev = points.get(i-1);
+				Vec3d next = points.get(i+1);
+				pitch = (float) -Math.toDegrees(Math.atan2(next.y - prev.y, next.distanceTo(prev)));
+				yaw = VecUtil.toYaw(points.get(i+1).subtract(points.get(i-1)));
+			}
+			res.add(new PosStep(p, yaw, pitch));
+		}
+		cache.put(targetStepSize, res);
+		return Pair.of(stepSize, cache.get(targetStepSize));
 	}
 
 	/* OVERRIDES */

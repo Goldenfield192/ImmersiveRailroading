@@ -2,12 +2,12 @@ package cam72cam.immersiverailroading.track;
 
 import cam72cam.immersiverailroading.library.TrackSmoothing;
 import cam72cam.immersiverailroading.util.VecUtil;
+import cam72cam.mod.ModCore;
 import cam72cam.mod.math.Vec3d;
 import org.apache.commons.lang3.tuple.Pair;
 import util.Matrix4;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 public class CubicCurve {
@@ -127,61 +127,99 @@ public class CubicCurve {
     }
 
     public List<Vec3d> toList(double stepSize) {
-        List<Vec3d> res = new ArrayList<>();
-        List<Vec3d> resRev = new ArrayList<>();
-        res.add(p1);
-        if (p1.equals(p2)) {
-            return res;
+//        {
+//            List<Vec3d> res = new ArrayList<>();
+//            List<Vec3d> resRev = new ArrayList<>();
+//            res.add(p1);
+//            if (p1.equals(p2)) {
+//                return res;
+//            }
+//
+//            resRev.add(p2);
+//            double precision = 5;
+//            double stepSizeSquared = stepSize * stepSize;
+//
+//            double t = 0;
+//            while (t <= 0.5) {
+//                for (double i = 1; i < precision; i++) {
+//                    Vec3d prev = res.get(res.size() - 1);
+//
+//                    double delta = (Math.pow(10, -i));
+//
+//                    for (; t < 1 + delta; t += delta) {
+//                        Vec3d pos = position(t);
+//                        if (pos.distanceToSquared(prev) > stepSizeSquared) {
+//                            // We passed it, just barely
+//                            t -= delta;
+//                            break;
+//                        }
+//                    }
+//                }
+//                res.add(position(t));
+//            }
+//
+//            double lt = t;
+//            t = 1;
+//
+//            while (t > lt) {
+//                for (double i = 1; i < precision; i++) {
+//                    Vec3d prev = resRev.get(resRev.size() - 1);
+//
+//                    double delta = (Math.pow(10, -i));
+//
+//                    for (; t > lt - delta; t -= delta) {
+//                        Vec3d pos = position(t);
+//                        if (pos.distanceToSquared(prev) > stepSizeSquared) {
+//                            // We passed it, just barely
+//                            t += delta;
+//                            break;
+//                        }
+//                    }
+//                }
+//                if (t > lt) {
+//                    resRev.add(position(t));
+//                }
+//            }
+//            Collections.reverse(resRev);
+//            res.addAll(resRev);
+//            return res;
+//        }
+        long time = System.nanoTime();
+
+        List<Vec3d> result = new ArrayList<>();
+        double length = this.length(4);
+        result.add(p1);
+        if(p1.equals(p2)){
+            return result;
         }
 
-        resRev.add(p2);
-        double precision = 5;
-        double stepSizeSquared = stepSize * stepSize;
+        double segments = length / (0.01 * stepSize);
+        double l = 0.0;
+        double tStep = 1.0 / segments;
+        Vec3d prevDeriv = derivative(0);
+        double prevSpeed = prevDeriv.length();
 
-        double t = 0;
-        while (t <= 0.5) {
-            for (double i = 1; i < precision; i++) {
-                Vec3d prev = res.get(res.size()-1);
+        int count = 0;
 
-                double delta = (Math.pow(10, -i));
+        for (int i = 1; i <= segments; i++) {
+            double t = i * tStep;
+            Vec3d deriv = derivative(t);
+            double speed = deriv.length();
 
-                for (;t < 1 + delta; t+=delta) {
-                    Vec3d pos = position(t);
-                    if (pos.distanceToSquared(prev) > stepSizeSquared) {
-                        // We passed it, just barely
-                        t -= delta;
-                        break;
-                    }
-                }
+            l += (prevSpeed + speed) * tStep / 2.0;
+            if(l >= count * stepSize){
+                result.add(position(t));
+                count ++;
             }
-            res.add(position(t));
+            prevSpeed = speed;
         }
 
-        double lt = t;
-        t = 1;
-
-        while (t > lt) {
-            for (double i = 1; i < precision; i++) {
-                Vec3d prev = resRev.get(resRev.size()-1);
-
-                double delta = (Math.pow(10, -i));
-
-                for (;t > lt - delta; t-=delta) {
-                    Vec3d pos = position(t);
-                    if (pos.distanceToSquared(prev) > stepSizeSquared) {
-                        // We passed it, just barely
-                        t += delta;
-                        break;
-                    }
-                }
-            }
-            if (t > lt) {
-                resRev.add(position(t));
-            }
+        if (result.size() < Math.round(length / stepSize)) {//For some precision reason the last point is skipped, add it back
+           result.add(p2);
         }
-        Collections.reverse(resRev);
-        res.addAll(resRev);
-        return res;
+        ModCore.info(String.valueOf(System.nanoTime() - time));
+
+        return result;
     }
 
     public float angleStop() {
