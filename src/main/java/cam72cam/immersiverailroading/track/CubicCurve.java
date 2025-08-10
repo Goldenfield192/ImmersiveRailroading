@@ -148,7 +148,8 @@ public class CubicCurve {
             prevSpeed = speed;
         }
 
-        if (result.size() < Math.round(length / stepSize) && result.get(result.size() - 1).distanceToSquared(p2) > 0.36*stepSize*stepSize) {//For some precision reason the last point is skipped, add it back
+        if (result.size() < Math.round(length / stepSize) && result.get(result.size() - 1).distanceToSquared(p2) > 0.7*stepSize*stepSize) {
+            //For some precision reason the last point is skipped, add it back
            result.add(p2);
         }
 
