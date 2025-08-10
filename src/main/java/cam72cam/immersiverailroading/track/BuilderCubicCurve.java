@@ -129,6 +129,9 @@ public class BuilderCubicCurve extends BuilderIterator {
 		double stepSize = length / count;
 
 		List<Vec3d> points = curve.toList(stepSize);
+		if(count == 0){//Meaning stepSize must be NaN, caused by curve length == 0
+			stepSize = targetStepSize;
+		}
 		for(int i = 0; i < points.size(); i++) {
 			Vec3d p = points.get(i);
 			float yaw;
