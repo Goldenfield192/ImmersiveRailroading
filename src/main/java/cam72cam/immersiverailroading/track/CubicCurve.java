@@ -131,6 +131,25 @@ public class CubicCurve {
         return length;
     }
 
+    public double lengthInBetween(double start, double end, double iter){
+        if(start == end){
+            return 0;
+        }
+        double length = 0.0;
+        double tStep = (end - start) / iter;
+        Vec3d prevDeriv = derivative(start);
+        double prevSpeed = prevDeriv.length();
+
+        for (double i = start + tStep; i <= end; i+=tStep) {
+            Vec3d deriv = derivative(i);
+            double speed = deriv.length();
+
+            length += (prevSpeed + speed) * tStep / 2.0;
+            prevSpeed = speed;
+        }
+        return length;
+    }
+
     public List<Vec3d> toList(double stepSize) {
         List<Vec3d> result = new ArrayList<>();
         result.add(p1);
@@ -138,11 +157,36 @@ public class CubicCurve {
             return result;
         }
 
+
         double lastLength = 0;
+        double error = 0.001 * stepSize;
+
         for (int i = 0; i < segment; i++) {
-            if(len[i] - lastLength <= stepSize && len[i+1] - lastLength >= stepSize){
-                result.add(position(t[i]));
-                lastLength = len[i];
+            if(len[i] - lastLength <= stepSize && len[i+1] - lastLength > stepSize){
+                double low = t[i];
+                double high = t[i+1];
+                double currentLen = len[i];
+                double mid = (low + high) / 2;
+
+                for(int j = 1; j <= 8 ; j++){
+                    mid = (low + high) / 2;
+                    double test = lengthInBetween(low, mid, 10);
+                    if(Math.abs(currentLen + test - lastLength - stepSize) < error){
+                        break;
+                    }
+
+                    if(currentLen + test < lastLength + stepSize){
+                        low = mid;
+                        currentLen += test;
+                    } else if (currentLen + test > lastLength + stepSize) {
+                        high = mid;
+                    } else {
+                        break;
+                    }
+                }
+
+                result.add(position(mid));
+                lastLength = currentLen + lengthInBetween(low, mid, 10);
             }
         }
 
