@@ -7,7 +7,6 @@ import org.apache.commons.lang3.tuple.Pair;
 import util.Matrix4;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 public class CubicCurve {
@@ -15,6 +14,10 @@ public class CubicCurve {
     public final Vec3d ctrl1;
     public final Vec3d ctrl2;
     public final Vec3d p2;
+
+    public double[] t;
+    public double[] len;
+    public int segment;
 
     //http://spencermortensen.com/articles/bezier-circle/
     public final static double c = 0.55191502449;
@@ -101,16 +104,43 @@ public class CubicCurve {
         return new Vec3d(dx, dy, dz);
     }
 
-    public double length(double precision){ //recommend 4
-        double segments = Math.pow(10, precision);
+    public double lengthWithCache(int iterations){
+        this.segment = iterations;
+        this.t = new double[segment + 10];
+        this.len = new double[segment + 10];
         double length = 0.0;
-        double tStep = 1.0 / segments;
+        double tStep = 1.0 / (double) iterations;
         Vec3d prevDeriv = derivative(0);
         double prevSpeed = prevDeriv.length();
+        //Cache it
+        t[0] = 0.0;
+        len[0] = 0.0;
 
-        for (int i = 1; i <= segments; i++) {
-            double t = i * tStep;
-            Vec3d deriv = derivative(t);
+        for (int i = 1; i <= (double) iterations; i++) {
+            double pos = i * tStep;
+            Vec3d deriv = derivative(pos);
+            double speed = deriv.length();
+
+            length += (prevSpeed + speed) * tStep / 2.0;
+            t[i] = pos;
+            len[i] = length;
+            prevSpeed = speed;
+        }
+        t[segment] = 1;//The final index
+        return length;
+    }
+
+    public double lengthInBetween(double start, double end, double iter){
+        if(start == end){
+            return 0;
+        }
+        double length = 0.0;
+        double tStep = (end - start) / iter;
+        Vec3d prevDeriv = derivative(start);
+        double prevSpeed = prevDeriv.length();
+
+        for (double i = start + tStep; i <= end; i+=tStep) {
+            Vec3d deriv = derivative(i);
             double speed = deriv.length();
 
             length += (prevSpeed + speed) * tStep / 2.0;
@@ -121,36 +151,45 @@ public class CubicCurve {
 
     public List<Vec3d> toList(double stepSize) {
         List<Vec3d> result = new ArrayList<>();
-        double length = this.length(4);
+        result.add(p1);
         if(p1.equals(p2)){
-            return Collections.singletonList(p1);
+            return result;
         }
 
-        //Almost the same as length(), but we want intermediate values
-        double segments = length / (0.01 * stepSize);
-        double l = 0.0;
-        double tStep = 1.0 / segments;
-        Vec3d prevDeriv = derivative(0);
-        double prevSpeed = prevDeriv.length();
+        double lastLength = 0;
+        double error = 0.001 * stepSize;
 
-        int count = 0;
+        for (int i = 0; i < segment; i++) {
+            if(len[i] - lastLength <= stepSize && len[i+1] - lastLength > stepSize){
+                double low = t[i];
+                double high = t[i+1];
+                double currentLen = len[i];
+                double mid = (low + high) / 2;
 
-        for (int i = 1; i <= segments; i++) {
-            double t = i * tStep;
-            Vec3d deriv = derivative(t);
-            double speed = deriv.length();
+                for(int j = 1; j <= 7; j++){
+                    mid = (low + high) / 2;
+                    double test = lengthInBetween(low, mid, 10);
+                    if(Math.abs(currentLen + test - lastLength - stepSize) < error){
+                        break;
+                    }
 
-            l += (prevSpeed + speed) * tStep / 2.0;
-            if(l >= count * stepSize){
-                result.add(position(t));
-                count ++;
+                    if(currentLen + test < lastLength + stepSize){
+                        low = mid;
+                        currentLen += test;
+                    } else if (currentLen + test > lastLength + stepSize) {
+                        high = mid;
+                    } else {
+                        break;
+                    }
+                }
+
+                result.add(position(mid));
+                lastLength = currentLen + lengthInBetween(low, mid, 10);
             }
-            prevSpeed = speed;
         }
 
-        if (result.size() <= Math.round(length / stepSize) && result.get(result.size() - 1).distanceToSquared(p2) > 0.7*stepSize*stepSize) {
-            //For some precision reason the last point is skipped, add it back
-           result.add(p2);
+        if(len[segment] - lastLength >= 0.8 * stepSize){
+            result.add(p2);
         }
 
         return result;
