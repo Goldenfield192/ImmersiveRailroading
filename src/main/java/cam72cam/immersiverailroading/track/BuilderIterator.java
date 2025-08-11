@@ -151,8 +151,8 @@ public abstract class BuilderIterator extends BuilderBase implements IIterableTr
 	
 	@Override
 	public List<TrackBase> getTracksForRender() {
-		return this.tracks;
-	}
+        return super.getTracksForRender();
+    }
 
 	private static float delta(float a, float b) {
 		float angle = (float) Math.toDegrees(Math.toRadians(a) - Math.toRadians(b));
@@ -173,6 +173,7 @@ public abstract class BuilderIterator extends BuilderBase implements IIterableTr
 		Pair<Double, List<PosStep>> pair = getPathForRender(scale * info.getTrackModel().spacing);
 		List<PosStep> points = pair.getRight();
         scale = pair.getLeft() / info.getTrackModel().spacing;
+		scale *= 1.005;//Avoid some gaps
 
 		boolean switchStraight = info.switchState == SwitchState.STRAIGHT;
 		int switchSize = 0;
