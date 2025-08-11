@@ -6,6 +6,7 @@ import cam72cam.immersiverailroading.track.BuilderBase;
 import cam72cam.immersiverailroading.track.TrackBase;
 import cam72cam.immersiverailroading.util.RailInfo;
 import cam72cam.mod.MinecraftClient;
+import cam72cam.mod.ModCore;
 import cam72cam.mod.math.Vec3d;
 import cam72cam.mod.math.Vec3i;
 import cam72cam.mod.render.opengl.RenderState;
@@ -50,7 +51,9 @@ public class RailRender {
 		// This may have some thread safety problems client side...
 		// Might need to add synchronization inside the builders
 		BuilderBase builder = info.getBuilder(MinecraftClient.getPlayer().getWorld());
+		long time = System.nanoTime();
 		renderData = builder.getRenderData();
+		ModCore.info("Load %s took %d ns", builder.info.uniqueID.hashCode(), System.nanoTime() - time);
 		tracks = builder.getTracksForRender();
 		isLoaded = true;
 		isLoading = false;

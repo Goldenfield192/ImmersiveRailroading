@@ -120,7 +120,7 @@ public class BuilderCubicCurve extends BuilderIterator {
 		// Skip the super long calculation since it'll be overridden anyways
 		curve = curve.subsplit(200).get(0);
 
-		double length = curve.length(4);
+		double length = curve.length(5);//The same precision as old algorithm
 		int count = (int) (length / targetStepSize);
 		double mod = (length / targetStepSize) % 1;
 		if(mod > 0.6){
