@@ -15,8 +15,8 @@ public class CubicCurve {
     public final Vec3d ctrl2;
     public final Vec3d p2;
 
-    public double[] t;
-    public double[] len;
+    public double[] cachedPos;
+    public double[] cachedLength;
     public int segment;
 
     //http://spencermortensen.com/articles/bezier-circle/
@@ -104,18 +104,27 @@ public class CubicCurve {
         return new Vec3d(dx, dy, dz);
     }
 
-    public double length(double precision){
-        double segments = Math.pow(10, precision);
-        this.segment = (int) segments;
-        this.t = new double[segment + 10];
-        this.len = new double[segment + 10];
+    public double length(double precision, int steps){
+        int segments = 0;
+        if(steps > 0){
+            double chord = p1.distanceTo(p2);
+            double controlNet = p1.distanceTo(ctrl1) + ctrl1.distanceTo(ctrl2) + ctrl2.distanceTo(p2);
+            double flatness = controlNet - chord;
+
+            segments = Math.min((int) Math.pow(10, precision), Math.max(steps * 4, (int) (flatness * 1000)));
+        } else {
+            segments = (int) Math.pow(10, precision);
+        }
+        this.segment = segments;
+        this.cachedPos = new double[segment + 10];
+        this.cachedLength = new double[segment + 10];
         double length = 0.0;
         double tStep = 1.0 / segments;
         Vec3d prevDeriv = derivative(0);
         double prevSpeed = prevDeriv.length();
         //Cache it
-        t[0] = 0.0;
-        len[0] = 0.0;
+        cachedPos[0] = 0.0;
+        cachedLength[0] = 0.0;
 
         for (int i = 1; i <= segments; i++) {
             double pos = i * tStep;
@@ -123,11 +132,31 @@ public class CubicCurve {
             double speed = deriv.length();
 
             length += (prevSpeed + speed) * tStep / 2.0;
-            t[i] = pos;
-            len[i] = length;
+            cachedPos[i] = pos;
+            cachedLength[i] = length;
             prevSpeed = speed;
         }
-        t[segment] = 1;//The final index
+        cachedPos[segment] = 1;//The final index
+        return length;
+    }
+
+    public double lengthInBetween(double start, double end, double precision){
+        if(start == end){
+            return 0;
+        }
+        double segments = Math.pow(10, precision);
+        double length = 0.0;
+        double tStep = 1.0 / segments;
+        Vec3d prevDeriv = derivative(start);
+        double prevSpeed = prevDeriv.length();
+
+        for (double i = start + tStep; i <= end; i+=tStep) {
+            Vec3d deriv = derivative(i);
+            double speed = deriv.length();
+
+            length += (prevSpeed + speed) * tStep / 2.0;
+            prevSpeed = speed;
+        }
         return length;
     }
 
@@ -139,14 +168,55 @@ public class CubicCurve {
         }
 
         double lastLength = 0;
+
         for (int i = 0; i < segment; i++) {
-            if(len[i] - lastLength <= stepSize && len[i+1] - lastLength >= stepSize){
-                result.add(position(t[i]));
-                lastLength = len[i];
+
+            double nextTarget = lastLength + stepSize;
+            if(cachedLength[i] <= nextTarget && cachedLength[i+1] >= nextTarget) {
+                double segmentStartT = cachedPos[i];
+                double segmentEndT = cachedPos[i + 1];
+                double segmentStartS = cachedLength[i];
+                double segmentEndS = cachedLength[i + 1];
+
+                double t = segmentStartT + (nextTarget - segmentStartS) /
+                        (segmentEndS - segmentStartS) * (segmentEndT - segmentStartT);
+
+                double delta = 0.01;
+                double bestT = t;
+                double bestError = Double.MAX_VALUE;
+
+                for (int iter = 3; iter < 5; iter++) {
+                    for (int step = 0; step < 10; step++) {
+                        double testLength = segmentStartS + lengthInBetween(segmentStartT, t, 3);
+                        double error = Math.abs(testLength - nextTarget);
+
+                        if (error < bestError) {
+                            bestError = error;
+                            bestT = t;
+                        }
+
+                        // 调整t值
+                        if (testLength < nextTarget) {
+                            t += delta; // 弧长不足，增加t
+                        } else {
+                            t -= delta; // 弧长过长，减少t
+                        }
+
+                        if (t < segmentStartT) t = segmentStartT;
+                        if (t > segmentEndT) t = segmentEndT;
+                    }
+
+                    delta *= 0.1;
+                    t = bestT; // 从最优解开始下一轮迭代
+                }
+
+                // 添加找到的点
+                result.add(position(bestT));
+                lastLength = nextTarget;
             }
         }
 
-        if(len[segment] - lastLength >= 0.8 * stepSize){
+        if(cachedLength[segment] - lastLength >= 0.8 * stepSize){
             result.add(p2);
         }
 

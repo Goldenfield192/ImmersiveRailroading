@@ -120,13 +120,14 @@ public class BuilderCubicCurve extends BuilderIterator {
 		// Skip the super long calculation since it'll be overridden anyways
 		curve = curve.subsplit(200).get(0);
 
-		double length = curve.length(5);//The same precision as old algorithm
+		double length = curve.length(3, -1);//Pre-calculate
 		int count = (int) (length / targetStepSize);
 		double mod = (length / targetStepSize) % 1;
 		if(mod > 0.6){
 			count += 1;
 		}
 		double stepSize = length / count;
+		curve.length(5, count);//Build new cache with dynamic stepSize
 
 		List<Vec3d> points = curve.toList(stepSize);
 		if(count == 0){//Meaning stepSize must be NaN, caused by curve length == 0
