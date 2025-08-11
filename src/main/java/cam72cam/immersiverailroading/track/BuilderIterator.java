@@ -229,7 +229,7 @@ public abstract class BuilderIterator extends BuilderBase implements IIterableTr
 					data.add(new VecYawPitch(cur.x, cur.y, cur.z, cur.yaw, cur.pitch, (1 - angle / 180) * (float) scale, "RAIL_LEFT"));
 					data.add(new VecYawPitch(switchPos.x, switchPos.y, switchPos.z, switchPos.yaw, switchPos.pitch, (1 + angle / 180) * (float) scale, "RAIL_RIGHT"));
 				}
-				data.add(new VecYawPitch(cur.x, cur.y, cur.z, cur.yaw, cur.pitch, "RAIL_BASE"));
+				data.add(new VecYawPitch(cur.x, cur.y, cur.z, cur.yaw, cur.pitch, (float) scale, "RAIL_BASE"));
 			} else {
 				data.add(new VecYawPitch(cur.x, cur.y, cur.z, cur.yaw, cur.pitch, (float) scale));
 			}
