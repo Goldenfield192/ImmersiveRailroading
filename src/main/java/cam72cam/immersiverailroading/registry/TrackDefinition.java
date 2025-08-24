@@ -9,7 +9,7 @@ import cam72cam.immersiverailroading.library.TrackComponent;
 import cam72cam.immersiverailroading.model.TrackModel;
 import cam72cam.mod.item.Fuzzy;
 import cam72cam.mod.item.ItemStack;
-import org.apache.commons.lang3.tuple.Pair;
+import cam72cam.mod.resource.Identifier;
 import trackapi.lib.Gauges;
 
 import java.util.*;
@@ -40,7 +40,29 @@ public class TrackDefinition {
         double spacing = object.getValue("model_spacing_m").asDouble( model_gauge_m / Gauges.STANDARD);
 
         this.models = new ArrayList<>();
+
         DataBlock models = object.getBlock("models");
+        for (Map.Entry<String, DataBlock> entry : models.getBlockMap().entrySet()) {
+            String condition = entry.getKey();
+            DataBlock block = entry.getValue();
+            Map<String, Identifier> map = new HashMap<>();
+            for(DataBlock block1 : block.getBlocks("sub_models")){
+                map.put(block1.getValue("ident").asString(), block1.getValue("path").asIdentifier());
+            }
+            TrackModel model = new TrackModel(condition, map, model_gauge_m, spacing);
+            if(block.getValues("order") != null){
+                model.setOrder(block.getValues("order")
+                                    .stream()
+                                    .map(DataBlock.Value::asString)
+                                    .collect(Collectors.toList()));
+            } else if(block.getBlock("random") != null){
+                model.setRandomWeight(s -> block.getBlock("random").getValue(s).asInteger());
+            } else {
+                throw new RuntimeException();
+            }
+            this.models.add(model);
+        }
+
         for (Map.Entry<String, DataBlock.Value> entry : models.getValueMap().entrySet()) {
             this.models.add(new TrackModel(entry.getKey(), entry.getValue().asIdentifier(), model_gauge_m, spacing));
         }
@@ -56,7 +78,7 @@ public class TrackDefinition {
                             part.getValue("cost").asFloat()
                     ));
                 }
-                if (parts.size() > 0) {
+                if (!parts.isEmpty()) {
                     materials.put(comp, parts);
                 }
             }
@@ -118,7 +140,7 @@ public class TrackDefinition {
         private List<ItemType> items;
         public final float cost;
         TrackMaterial(String item, float cost) {
-            this.items = Arrays.stream(item.split(",")).map(s -> s.trim()).map(ItemType::new).collect(Collectors.toList());
+            this.items = Arrays.stream(item.split(",")).map(String::trim).map(ItemType::new).collect(Collectors.toList());
             this.cost = cost;
         }
 
