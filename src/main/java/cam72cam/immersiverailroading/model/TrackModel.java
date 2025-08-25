@@ -1,6 +1,5 @@
 package cam72cam.immersiverailroading.model;
 
-import cam72cam.immersiverailroading.library.TrackItems;
 import cam72cam.immersiverailroading.render.MultiVBO;
 import cam72cam.immersiverailroading.track.BuilderBase;
 import cam72cam.immersiverailroading.track.BuilderBase.VecYawPitch;
@@ -102,9 +101,7 @@ public class TrackModel {
 
     public MultiVBO getModel(RailInfo info, List<BuilderBase.VecYawPitch> data, long seed) {
         // Special track types always use single model
-        if (info.settings.type == TrackItems.SWITCH ||//TODO SWITCH changes upon placing
-                info.settings.type == TrackItems.TRANSFERTABLE ||
-                info.settings.type == TrackItems.TURNTABLE) {
+        if (info.settings.type.isTable()) {
             return getSingleModel(info, data);
         }
 
