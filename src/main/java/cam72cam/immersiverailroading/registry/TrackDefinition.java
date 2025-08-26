@@ -55,10 +55,10 @@ public class TrackDefinition {
                                     .stream()
                                     .map(DataBlock.Value::asString)
                                     .collect(Collectors.toList()));
-            } else if(block.getBlock("random") != null){
+            } else if(block.getBlock("random_weights") != null){
                 model.setRandomWeight(s -> block.getBlock("random").getValue(s).asInteger());
             } else {
-                throw new RuntimeException();
+                throw new IllegalStateException("Missing 'order' or 'random_weights' in model condition: " + condition);
             }
             this.models.add(model);
         }
