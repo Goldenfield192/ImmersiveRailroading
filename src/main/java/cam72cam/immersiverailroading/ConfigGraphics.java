@@ -72,4 +72,8 @@ public class ConfigGraphics {
 
 	@Comment("Try to fake interior lighting for locomotives/passenger cars that are being ridden")
 	public static boolean FakeInteriorLighting = true;
+
+	@Comment("The track's maximum visibility range")
+	@Range(min = 256, max = 4096)
+	public static double TrackRenderDistance = 256;
 }
