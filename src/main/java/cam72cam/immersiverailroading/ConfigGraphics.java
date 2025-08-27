@@ -69,7 +69,7 @@ public class ConfigGraphics {
 	public static boolean FakeInteriorLighting = true;
 
 	@Comment("Disable headlights' texture render")
-	public static boolean disableLightTexture = false;
+	public static boolean DisableLightTextureRender = false;
 
 	@Comment("The track's maximum visibility range")
 	@Range(min = 256, max = 4096)
