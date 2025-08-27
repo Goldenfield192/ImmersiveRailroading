@@ -2,7 +2,6 @@ package cam72cam.immersiverailroading.gui;
 
 import cam72cam.immersiverailroading.ConfigGraphics;
 import cam72cam.immersiverailroading.ImmersiveRailroading;
-import cam72cam.immersiverailroading.gui.manual.ClippedRenderer;
 import cam72cam.immersiverailroading.gui.markdown.MarkdownDocument;
 import cam72cam.immersiverailroading.gui.markdown.MarkdownPageManager;
 import cam72cam.immersiverailroading.gui.markdown.element.MarkdownUrl;
@@ -10,8 +9,10 @@ import cam72cam.mod.event.ClientEvents;
 import cam72cam.mod.gui.helpers.GUIHelpers;
 import cam72cam.mod.gui.screen.IScreen;
 import cam72cam.mod.gui.screen.IScreenBuilder;
+import cam72cam.mod.render.opengl.RenderContext;
 import cam72cam.mod.render.opengl.RenderState;
 import cam72cam.mod.resource.Identifier;
+import cam72cam.mod.util.With;
 import org.apache.commons.lang3.tuple.MutablePair;
 
 import java.awt.*;
@@ -89,12 +90,15 @@ public class ManualGui implements IScreen {
         GUIHelpers.texturedRect(new Identifier("immersiverailroading:gui/wiki/right_bottom_corner.png"), width - 60, height - 20,10,10);
 
         //Markdown
-        ClippedRenderer.renderInRegion(54, 35, 120, height - 50, () -> {
-            sidebar.render(state.clone().translate(57, 40, 0).scale(ConfigGraphics.ManualFontSize, ConfigGraphics.ManualFontSize, ConfigGraphics.ManualFontSize));
-        });
-        ClippedRenderer.renderInRegion(175, 15, GUIHelpers.getScreenWidth() - 220, height - 30, () -> {
-            content.render(state.clone().translate(180, 20, 0).scale(ConfigGraphics.ManualFontSize, ConfigGraphics.ManualFontSize, ConfigGraphics.ManualFontSize));
-        });
+        state.scissor(true, new Rectangle(54, 35, 120, height - 50));
+        try(With with = RenderContext.apply(state)){
+            sidebar.render(state.clone().translate(57, 40, 0).scale(ConfigGraphics.ManualFontSize));
+        }
+
+        state.scissor(true, new Rectangle(175, 15, GUIHelpers.getScreenWidth() - 220, height - 30));
+        try(With with = RenderContext.apply(state)){
+            content.render(state.clone().translate(180, 20, 0).scale(ConfigGraphics.ManualFontSize));
+        }
 
         //Middle split line
         GUIHelpers.drawRect(170,15,2,height - 30, BUTTON_DISABLED_COLOR);
