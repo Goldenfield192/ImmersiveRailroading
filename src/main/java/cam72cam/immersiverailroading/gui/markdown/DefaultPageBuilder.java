@@ -1,6 +1,7 @@
 package cam72cam.immersiverailroading.gui.markdown;
 
 import cam72cam.immersiverailroading.gui.manual.GaugeProvider;
+import cam72cam.immersiverailroading.gui.manual.LanguageProvider;
 import cam72cam.immersiverailroading.gui.manual.StockListProvider;
 import cam72cam.immersiverailroading.gui.manual.TrackProvider;
 import cam72cam.immersiverailroading.gui.markdown.element.*;
@@ -25,6 +26,7 @@ public class DefaultPageBuilder implements IPageBuilder{
         register(StockListProvider.SYNTAX, StockListProvider::parse);
         register(GaugeProvider.SYNTAX, GaugeProvider::parse);
         register(TrackProvider.SYNTAX, TrackProvider::parse);
+        register(LanguageProvider.SYNTAX, LanguageProvider::parse);
     }
 
     /**

@@ -1,23 +1,32 @@
 package cam72cam.immersiverailroading.gui.markdown;
 
+import cam72cam.immersiverailroading.ImmersiveRailroading;
 import cam72cam.immersiverailroading.gui.ManualGui;
 import cam72cam.immersiverailroading.gui.manual.page.ItemComponentPageBuilder;
 import cam72cam.immersiverailroading.gui.manual.page.StockDescriptionPageBuilder;
 import cam72cam.immersiverailroading.gui.manual.page.TrackPageBuilder;
 import cam72cam.mod.resource.Identifier;
 
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
 public class MarkdownPageManager {
     private static final Map<String, IPageBuilder> BUILDERS = new HashMap<>();
     private static final Map<String, Map<Identifier, MarkdownDocument>> CUSTOM_PAGES = new HashMap<>();
+    private static final Set<String> AVAILABLE_LANG;
 
     static {
         registerPageBuilder("irstock", StockDescriptionPageBuilder.INSTANCE);
         registerPageBuilder("iritem", ItemComponentPageBuilder.INSTANCE);
         registerPageBuilder("irtrack", TrackPageBuilder.INSTANCE);
         registerPageBuilder("immersiverailroading", DefaultPageBuilder.INSTANCE);
+
+        AVAILABLE_LANG = new HashSet<>();
+        for(Locale locale : Locale.getAvailableLocales()){
+            try {
+                new Identifier(ImmersiveRailroading.MODID, "wiki/"+locale.toString().toLowerCase()+"/_sidebar.md").getResourceStream();
+                AVAILABLE_LANG.add(locale.toString().toLowerCase());
+            } catch (Exception ignore){}
+        }
     }
 
     public static void registerPageBuilder(String domain, IPageBuilder builder){
@@ -67,6 +76,10 @@ public class MarkdownPageManager {
             CUSTOM_PAGES.get(id.getDomain()).computeIfPresent(id, (ident, document) -> builder.build(ident));
             ManualGui.refresh();
         }
+    }
+
+    public static Set<String> getAvailableLanguages() {
+        return AVAILABLE_LANG;
     }
 
     public static String getPageName(Identifier id){

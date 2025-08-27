@@ -7,3 +7,5 @@ Wiki created by dragonshardz, neronakoma, cam72cam: Immersive Railroading develo
 It adds a new transport system (item, fluids, players, animals, villagers) to the game. It is based on real world physics and uses life-size models to convey the true scale and grandeur of Railroading.
 ***
 Want new looks and more detailed textures? Come check out the [resource packs](immersiverailroading:wiki/en_us/resource_packs_outside_sources.md)
+
+[lang_provider]

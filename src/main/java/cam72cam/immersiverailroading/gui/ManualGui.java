@@ -5,6 +5,7 @@ import cam72cam.immersiverailroading.ImmersiveRailroading;
 import cam72cam.immersiverailroading.gui.markdown.MarkdownDocument;
 import cam72cam.immersiverailroading.gui.markdown.MarkdownPageManager;
 import cam72cam.immersiverailroading.gui.markdown.element.MarkdownUrl;
+import cam72cam.mod.MinecraftClient;
 import cam72cam.mod.event.ClientEvents;
 import cam72cam.mod.gui.helpers.GUIHelpers;
 import cam72cam.mod.gui.screen.IScreen;
@@ -12,11 +13,13 @@ import cam72cam.mod.gui.screen.IScreenBuilder;
 import cam72cam.mod.render.opengl.RenderContext;
 import cam72cam.mod.render.opengl.RenderState;
 import cam72cam.mod.resource.Identifier;
+import cam72cam.mod.text.TextUtil;
 import cam72cam.mod.util.With;
 import org.apache.commons.lang3.tuple.MutablePair;
 
 import java.awt.*;
 import java.awt.geom.Rectangle2D;
+import java.util.Locale;
 import java.util.Stack;
 
 import static cam72cam.immersiverailroading.gui.markdown.Colors.BUTTON_DISABLED_COLOR;
@@ -29,6 +32,7 @@ public class ManualGui implements IScreen {
     private static Rectangle2D prevPageButton;
     private static Rectangle2D nextPageButton;
     private static boolean refresh = false;
+    private static String lang;
 
     private int width;
     private int height;
@@ -38,6 +42,12 @@ public class ManualGui implements IScreen {
 
     static {
         historyPageStack.push(MutablePair.of(new Identifier("immersiverailroading:wiki/en_us/home.md"), 0d));
+        Locale client = new TextUtil().getClientLocal();
+        if(MarkdownPageManager.getAvailableLanguages().contains(client.toString().toLowerCase())){
+            lang = client.toString().toLowerCase();
+        } else {
+            lang = "en_us";
+        }
     }
 
     //Will be called every time the screen scale changes
@@ -47,7 +57,7 @@ public class ManualGui implements IScreen {
         instance = this;
         prevPageButton = new Rectangle(60, 15, 20, 20);
         nextPageButton = new Rectangle(120, 15, 20, 20);
-        sidebar = MarkdownPageManager.getOrComputePageByID(new Identifier(ImmersiveRailroading.MODID, "wiki/en_us/_sidebar.md"), 100);
+        sidebar = MarkdownPageManager.getOrComputePageByID(new Identifier(ImmersiveRailroading.MODID, "wiki/"+lang+"/_sidebar.md"), 100);
         sidebar.setScrollRegion(new Rectangle(50, 35, 120, screen.getHeight() - 50));
         content = MarkdownPageManager.getOrComputePageByID(historyPageStack.peek().getLeft(), screen.getWidth() - 240);
         content.setScrollRegion(new Rectangle(180,15,width - 220,height - 30));
@@ -189,5 +199,9 @@ public class ManualGui implements IScreen {
         instance.sidebar.handleScrollOnTicks();
         instance.content.handleScrollOnTicks();
         historyPageStack.peek().setValue(instance.content.getVerticalOffset());
+    }
+
+    public static void setLang(String lang) {
+        ManualGui.lang = lang;
     }
 }

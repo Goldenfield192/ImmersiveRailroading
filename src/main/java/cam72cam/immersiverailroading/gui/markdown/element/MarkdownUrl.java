@@ -132,7 +132,7 @@ public class MarkdownUrl extends MarkdownClickableElement {
         if(MarkdownPageManager.getPageName(id) != null){
             renderTooltip("Open page: " + MarkdownPageManager.getPageName(destination), bottomBound);
         } else if(this.destination.getDomain().equals("https")){
-            renderTooltip("Click to send this website to your dialog!", bottomBound);
+            renderTooltip("Open website: " + this.destination, bottomBound);
         } else {
             //What should we do?
         }
