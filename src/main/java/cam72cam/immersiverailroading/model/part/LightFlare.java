@@ -1,5 +1,6 @@
 package cam72cam.immersiverailroading.model.part;
 
+import cam72cam.immersiverailroading.ConfigGraphics;
 import cam72cam.immersiverailroading.entity.EntityMoveableRollingStock;
 import cam72cam.immersiverailroading.entity.EntityRollingStock;
 import cam72cam.immersiverailroading.library.ModelComponentType;
@@ -23,6 +24,7 @@ import util.Matrix4;
 
 import java.util.*;
 import java.util.function.Function;
+import java.util.function.Predicate;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
@@ -61,7 +63,6 @@ public class LightFlare<T extends EntityMoveableRollingStock> {
 
     private LightFlare(EntityRollingStockDefinition def, ModelState state, ModelComponent component) {
         this.component = component;
-        this.forward = component.center.x < 0;
         Matcher rgbValues = component.modelIDs.stream()
                 .map(rgb::matcher)
                 .filter(Matcher::matches)
@@ -81,7 +82,18 @@ public class LightFlare<T extends EntityMoveableRollingStock> {
         this.controlGroup = component.modelIDs.stream()
                 .map(lcgPattern::matcher).filter(Matcher::find).map(m -> m.group(1)).findFirst().orElse(null);
 
-        this.invert = component.modelIDs.stream().anyMatch(g -> g.contains("_LINVERT_") || g.startsWith("LINVERT_") || g.endsWith("_LINVERT"));
+        Predicate<String> tester = s -> component.modelIDs.stream()
+                                                          .anyMatch(g -> g.contains("_" + s + "_")
+                                                                         || g.startsWith(s + "_")
+                                                                         || g.endsWith("_" + s));
+        this.invert = tester.test("LINVERT");
+        if(tester.test("FACING_FRONT")){
+            this.forward = true;
+        } else if(tester.test("FACING_REAR")) {
+            this.forward = false;
+        } else {
+            this.forward = component.center.x < 0;
+        }
 
         // This is bad...
         LightDefinition config = def.getLight(component.type.toString()
@@ -128,6 +140,9 @@ public class LightFlare<T extends EntityMoveableRollingStock> {
     }
 
     public void postRender(T stock, RenderState state) {
+        if(!ConfigGraphics.RenderLightFlare){
+            return;
+        }
         //GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_MIN_FILTER, GL11.GL_LINEAR);
         //GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_MAG_FILTER, GL11.GL_LINEAR);
         boolean reverse = stock.getCurrentSpeed().minecraft() < 0;

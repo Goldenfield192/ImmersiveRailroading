@@ -71,4 +71,7 @@ public class ConfigGraphics {
 	@Comment("The track's maximum visibility range")
 	@Range(min = 256, max = 4096)
 	public static double TrackRenderDistance = 256;
+
+	@Comment("Set to false to disable rendering of stock headlights' flare texture")
+	public static boolean RenderLightFlare = true;
 }
