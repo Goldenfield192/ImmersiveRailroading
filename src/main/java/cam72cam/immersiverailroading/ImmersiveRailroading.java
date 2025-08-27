@@ -3,7 +3,7 @@ package cam72cam.immersiverailroading;
 import cam72cam.immersiverailroading.entity.*;
 import cam72cam.immersiverailroading.entity.physics.chrono.ServerChronoState;
 import cam72cam.immersiverailroading.gui.ManualGui;
-import cam72cam.immersiverailroading.gui.markdown.*;
+import cam72cam.immersiverailroading.gui.manual.ManualHoverRenderer;
 import cam72cam.immersiverailroading.gui.overlay.GuiBuilder;
 import cam72cam.immersiverailroading.items.ItemPaintBrush;
 import cam72cam.immersiverailroading.library.GuiTypes;

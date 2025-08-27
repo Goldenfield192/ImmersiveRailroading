@@ -8,7 +8,7 @@ local event_name, net_address, augment_type, stock_uuid = event.pull("ir_train_o
 ```
 
 ## Loco Control Augment
-The component name is `ir_augment_control`. To learn more about this augment, see it's [dedicated page](immersiverailroading:wiki/en_us/augment_control.md). Don't forget to set the augment to COMPUTER mode by right-clicking it with a redstone torch!
+The component name is `ir_augment_control`. To learn more about this augment, see it's [dedicated page](immersiverailroading:wiki/en_us/augments/augment_control.md). Don't forget to set the augment to COMPUTER mode by right-clicking it with a redstone torch!
 ```lua
 setThrottle(number): sets the throttle to a value between -1 and 1, where -1 is full-reverse and 1 is full-forward
 setBrake(number): sets the brake to a value between 0 and 1
@@ -18,7 +18,7 @@ getAugmentType(): returns the augment's type
 ```
 
 ## Detector Augment
-The component name is `ir_augment_detector`. To learn more about this augment, see it's [dedicated page](immersiverailroading:wiki/en_us/augment_detector.md).
+The component name is `ir_augment_detector`. To learn more about this augment, see it's [dedicated page](immersiverailroading:wiki/en_us/augments/augment_detector.md).
 
 ```lua
 info(): returns information about the stock/locomotive overhead

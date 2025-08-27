@@ -1,67 +1,56 @@
 package cam72cam.immersiverailroading.gui;
 
+import cam72cam.immersiverailroading.ConfigGraphics;
 import cam72cam.immersiverailroading.ImmersiveRailroading;
-import cam72cam.immersiverailroading.gui.markdown.*;
+import cam72cam.immersiverailroading.gui.markdown.MarkdownDocument;
+import cam72cam.immersiverailroading.gui.markdown.MarkdownPageManager;
+import cam72cam.immersiverailroading.gui.markdown.element.MarkdownUrl;
 import cam72cam.mod.event.ClientEvents;
 import cam72cam.mod.gui.helpers.GUIHelpers;
 import cam72cam.mod.gui.screen.IScreen;
 import cam72cam.mod.gui.screen.IScreenBuilder;
+import cam72cam.mod.render.opengl.RenderContext;
 import cam72cam.mod.render.opengl.RenderState;
 import cam72cam.mod.resource.Identifier;
-import cam72cam.mod.text.TextColor;
+import cam72cam.mod.util.With;
 import org.apache.commons.lang3.tuple.MutablePair;
 
 import java.awt.*;
 import java.awt.geom.Rectangle2D;
-import java.io.IOException;
-import java.util.HashMap;
-import java.util.List;
 import java.util.Stack;
 
-import static cam72cam.immersiverailroading.gui.markdown.Colors.*;
+import static cam72cam.immersiverailroading.gui.markdown.Colors.BUTTON_DISABLED_COLOR;
 
 public class ManualGui implements IScreen {
-    private static ManualGui currentOpeningManual;
+    private static ManualGui instance;
     //                                        page     page's mainOffset
     private static final Stack<MutablePair<Identifier, Double>> historyPageStack = new Stack<>();
     private static final Stack<MutablePair<Identifier, Double>> futurePageStack = new Stack<>();
-    private static final HashMap<Identifier, String> sidebarNameMap = new HashMap<>();
-    private static final Rectangle2D prevPageButton;
-    private static final Rectangle2D nextPageButton;
+    private static Rectangle2D prevPageButton;
+    private static Rectangle2D nextPageButton;
+    private static boolean refresh = false;
 
     private int width;
     private int height;
     private MarkdownDocument sidebar;
-    private MarkdownDocument footer;
     private MarkdownDocument content;
     private Identifier lastPage;
 
     static {
         historyPageStack.push(MutablePair.of(new Identifier("immersiverailroading:wiki/en_us/home.md"), 0d));
-        prevPageButton = new Rectangle(60,5,10,10);
-        nextPageButton = new Rectangle(80,5,10,10);
     }
 
     //Will be called every time the screen scale changes
     //So there's no need to update line break manually
     @Override
     public void init(IScreenBuilder screen) {
-        currentOpeningManual = this;
-        try {
-            footer = MarkdownBuilder.build(new Identifier(ImmersiveRailroading.MODID, "wiki/en_us/_footer.md"), screen.getWidth() - 120);
-            int footerHeight = footer.getLineCount() * 10;
-            sidebar = MarkdownBuilder.build(new Identifier(ImmersiveRailroading.MODID, "wiki/en_us/_sidebar.md"), screen.getWidth());
-            sidebar.setScrollRegion(new Rectangle(50, 20, 120, screen.getHeight() - 20 - footerHeight));
-            //Maintain a map to replace Markdown file name in url with pre-defined name
-            sidebar.getOriginalLines().forEach(line ->
-                    line.getElements().stream()
-                            .filter(element -> element instanceof MarkdownUrl)
-                            .forEach(element -> sidebarNameMap.put(((MarkdownUrl) element).destination, element.text)));
-            content = MarkdownBuilder.build(historyPageStack.peek().getLeft(), screen.getWidth() - 240);
-            content.setScrollRegion(new Rectangle(170,20,width - 220,height - 20 - footerHeight));
-        } catch (IOException e) {
-            throw new RuntimeException();
-        }
+        instance = this;
+        prevPageButton = new Rectangle(60, 15, 20, 20);
+        nextPageButton = new Rectangle(120, 15, 20, 20);
+        sidebar = MarkdownPageManager.getOrComputePageByID(new Identifier(ImmersiveRailroading.MODID, "wiki/en_us/_sidebar.md"), 100);
+        sidebar.setScrollRegion(new Rectangle(50, 35, 120, screen.getHeight() - 50));
+        content = MarkdownPageManager.getOrComputePageByID(historyPageStack.peek().getLeft(), screen.getWidth() - 240);
+        content.setScrollRegion(new Rectangle(180,15,width - 220,height - 30));
     }
 
     @Override
@@ -71,7 +60,7 @@ public class ManualGui implements IScreen {
 
     @Override
     public void onClose() {
-        currentOpeningManual = null;
+        instance = null;
     }
 
     @Override
@@ -80,59 +69,59 @@ public class ManualGui implements IScreen {
         width = builder.getWidth();
         height = builder.getHeight();
 
-        if(lastPage != historyPageStack.peek().getLeft()){
+        if(lastPage != historyPageStack.peek().getLeft() || refresh){
             //Meaning that we should refresh it
-            try {
-                content = MarkdownBuilder.build(historyPageStack.peek().getLeft(), width - 240);
-                content.setScrollRegion(new Rectangle(170,20,width-220,height-30));
-            } catch (IOException e) {
-                throw new RuntimeException(e);
-            }
+            content = MarkdownPageManager.getOrComputePageByID(historyPageStack.peek().getLeft(), width - 240);
+            content.setScrollRegion(new Rectangle(170,20,width-220,height-30));
             content.setVerticalOffset(historyPageStack.peek().getValue());
             lastPage = historyPageStack.peek().getLeft();
+            refresh = false;
         }
 
         //Background
-        GUIHelpers.drawRect(0, 0, width, height, BACKGROUND_COLOR);
-        GUIHelpers.drawRect(50, 0, width - 100, height, MAIN_COLOR);
-        GUIHelpers.drawRect(50, 0, 120, height, SIDEBAR_COLOR);
+        GUIHelpers.texturedRect(new Identifier("immersiverailroading:gui/wiki/left_top_corner.png"), 50, 10,10,10);
+        GUIHelpers.texturedRect(new Identifier("immersiverailroading:gui/wiki/top_edge.png"), 60, 10,width - 120,10);
+        GUIHelpers.texturedRect(new Identifier("immersiverailroading:gui/wiki/right_top_corner.png"), width - 60, 10,10,10);
+        GUIHelpers.texturedRect(new Identifier("immersiverailroading:gui/wiki/left_edge.png"), 50, 20,10,height - 40);
+        GUIHelpers.texturedRect(new Identifier("immersiverailroading:gui/wiki/center.png"), 60, 20,width - 120,height - 40);
+        GUIHelpers.texturedRect(new Identifier("immersiverailroading:gui/wiki/right_edge.png"), width - 60, 20,10,height - 40);
+        GUIHelpers.texturedRect(new Identifier("immersiverailroading:gui/wiki/left_bottom_corner.png"), 50, height - 20,10,10);
+        GUIHelpers.texturedRect(new Identifier("immersiverailroading:gui/wiki/bottom_edge.png"), 60, height - 20,width - 120,10);
+        GUIHelpers.texturedRect(new Identifier("immersiverailroading:gui/wiki/right_bottom_corner.png"), width - 60, height - 20,10,10);
 
         //Markdown
-        sidebar.render(state.clone().translate(57, 27, 0));
-        content.render(state.clone().translate(180, 30, 0));
+        state.scissor(true, new Rectangle(54, 35, 120, height - 50));
+        try(With with = RenderContext.apply(state)){
+            sidebar.render(state.clone().translate(57, 40, 0).scale(ConfigGraphics.ManualFontSize));
+        }
+
+        state.scissor(true, new Rectangle(175, 15, GUIHelpers.getScreenWidth() - 220, height - 30));
+        try(With with = RenderContext.apply(state)){
+            content.render(state.clone().translate(180, 20, 0).scale(ConfigGraphics.ManualFontSize));
+        }
+
+        //Middle split line
+        GUIHelpers.drawRect(170,15,2,height - 30, BUTTON_DISABLED_COLOR);
+
+        //Header
+        if(historyPageStack.size() != 1){
+            GUIHelpers.texturedRect(new Identifier("immersiverailroading:gui/wiki/left.png"),
+                                    60, 15, 20, 20);
+        }
+        if(!futurePageStack.isEmpty()){
+            GUIHelpers.texturedRect(new Identifier("immersiverailroading:gui/wiki/right.png"),
+                                    120, 15, 20, 20);
+        }
 
         //Tooltip
         //Currently only MarkdownUrl inherits MarkdownClickableElement, need change when more types are added
         for(MarkdownDocument screen : new MarkdownDocument[]{sidebar, content}){
-            if(screen.getHoveredElement() != null){
+            if(screen.getHoveredElement() != null && screen.getHoveredElement() instanceof MarkdownUrl){
                 MarkdownUrl clickable = (MarkdownUrl) screen.getHoveredElement();
-                if (sidebarNameMap.containsKey(clickable.destination)) {
-                    clickable.renderTooltip("Open page: "
-                                    + sidebarNameMap.getOrDefault(clickable.destination, "UNDEFINED"),
-                            (int) screen.getScrollRegion().getMaxY());
-                } else {
-                    clickable.renderTooltip((int) screen.getScrollRegion().getMaxY());
-                }
+                clickable.renderTooltip(screen.page, (int) screen.getScrollRegion().getMaxY());
                 break;
             }
         }
-
-        //Footer
-        int lineCount = footer.getLineCount();
-        GUIHelpers.drawRect(50, height - (10 * lineCount), width - 100, 10 * lineCount, FOOTER_COLOR);
-        for(MarkdownDocument.MarkdownLine l : footer.getBrokenLines()){
-            List<MarkdownElement> line = l.getElements();
-            GUIHelpers.drawCenteredString(line.get(0).apply(),
-                    width / 2, builder.getHeight() - (10 * lineCount), DEFAULT_TEXT_COLOR);
-            lineCount --;
-        }
-
-        //Header
-        GUIHelpers.drawRect(50, 0, width - 100, 20, HEADER_COLOR);
-        GUIHelpers.drawString(TextColor.BOLD.wrap("<-"), 60, 5,
-                historyPageStack.size() != 1 ? BUTTON_COLOR : BUTTON_DISABLED_COLOR);
-        GUIHelpers.drawString(TextColor.BOLD.wrap("->"), 80, 5,
-                !futurePageStack.isEmpty() ? BUTTON_COLOR : BUTTON_DISABLED_COLOR);
     }
 
     public static void pushContent(Identifier identifier){
@@ -140,8 +129,13 @@ public class ManualGui implements IScreen {
     }
 
     public static void pushContent(Identifier identifier, double offset){
-        if(currentOpeningManual == null){
+        if(instance == null){
             return;
+        }
+
+        if(!futurePageStack.isEmpty() && futurePageStack.peek().getLeft().equals(identifier)){
+            historyPageStack.push(MutablePair.of(identifier, offset));
+            futurePageStack.pop();
         }
 
         if(!historyPageStack.peek().getLeft().equals(identifier)){
@@ -152,15 +146,19 @@ public class ManualGui implements IScreen {
         }
     }
 
+    public static void refresh() {
+        refresh = true;
+    }
+
     //Return true if the event is handled
     public static boolean onClick(ClientEvents.MouseGuiEvent event){
-        if(currentOpeningManual == null){
+        if(instance == null){
             return false;
         }
 
         if(event.scroll != 0) {
-            currentOpeningManual.sidebar.onScroll(event);
-            currentOpeningManual.content.onScroll(event);
+            instance.sidebar.onScroll(event);
+            instance.content.onScroll(event);
         }
 
         if(event.action == ClientEvents.MouseAction.RELEASE){
@@ -173,24 +171,23 @@ public class ManualGui implements IScreen {
             } else if(nextPageButton.contains(event.x, event.y)){
                 if(!futurePageStack.isEmpty()){
                     pushContent(futurePageStack.peek().getLeft(), futurePageStack.peek().getRight());
-                    futurePageStack.pop();
                 }
                 return true;
             }
-            currentOpeningManual.sidebar.onMouseRelease(event);
-            currentOpeningManual.content.onMouseRelease(event);
+            instance.sidebar.onMouseRelease(event);
+            instance.content.onMouseRelease(event);
         }
         return true;
     }
 
     //For scroll
     public static void onClientTick(){
-        if(currentOpeningManual == null){
+        if(instance == null){
             return;
         }
 
-        currentOpeningManual.sidebar.handleScrollOnTicks();
-        currentOpeningManual.content.handleScrollOnTicks();
-        historyPageStack.peek().setValue(currentOpeningManual.content.getVerticalOffset());
+        instance.sidebar.handleScrollOnTicks();
+        instance.content.handleScrollOnTicks();
+        historyPageStack.peek().setValue(instance.content.getVerticalOffset());
     }
 }

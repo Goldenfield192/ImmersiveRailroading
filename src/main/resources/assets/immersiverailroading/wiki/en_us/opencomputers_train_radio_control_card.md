@@ -1,4 +1,4 @@
-The Train Radio-control Card provides greater control over locomotive automation. By replacing the static track [augments](immersiverailroading:wiki/en_us/augment_control.md) with a "wireless" card, trains need not be in specific spots to be controlled, allowing full command of rolling stock in a large area. This Card is only compatible with OpenComputers as of this page revision.
+The Train Radio-control Card provides greater control over locomotive automation. By replacing the static track [augments](immersiverailroading:wiki/en_us/augments/augment_control.md) with a "wireless" card, trains need not be in specific spots to be controlled, allowing full command of rolling stock in a large area. This Card is only compatible with OpenComputers as of this page revision.
 
 To use the Radio-control Card, it must first be linked with locomotive. Right-clicking a locomotive will link the card to it. Shift-Right-clicking unlinks the card.
 Note that only configured locomotives can be used with the Card. Specifically, the configuration .json for the locomotive must define the following in the "properties" section.

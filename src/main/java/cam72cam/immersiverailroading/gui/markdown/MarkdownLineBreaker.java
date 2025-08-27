@@ -1,8 +1,14 @@
 package cam72cam.immersiverailroading.gui.markdown;
 
+import cam72cam.immersiverailroading.ConfigGraphics;
+import cam72cam.immersiverailroading.gui.markdown.element.MarkdownElement;
+import cam72cam.immersiverailroading.gui.markdown.element.MarkdownStyledText;
+import cam72cam.immersiverailroading.gui.markdown.element.MarkdownTitle;
 import cam72cam.mod.gui.helpers.GUIHelpers;
 
-import java.util.*;
+import java.util.Deque;
+import java.util.LinkedList;
+import java.util.List;
 
 import static cam72cam.immersiverailroading.gui.markdown.MarkdownDocument.MarkdownLine.LIST_PREFIX_WIDTH;
 
@@ -17,7 +23,7 @@ public class MarkdownLineBreaker {
      * @param screenWidth Target rendering width
      * @return The document itself, with refreshed brokenLines
      */
-    protected static MarkdownDocument breakDocument(MarkdownDocument document, int screenWidth){
+    public static MarkdownDocument breakDocument(MarkdownDocument document, int screenWidth){
         document.brokenLines.clear();
         boolean codeBlockFlag = false;
         boolean tipsFlag = false;
@@ -85,6 +91,7 @@ public class MarkdownLineBreaker {
                                 (element instanceof MarkdownTitle && ((MarkdownTitle) element).level == 1) ? 1.35 :
                                 (element instanceof MarkdownTitle && ((MarkdownTitle) element).level == 2) ? 1.15 :
                                 1;
+            multiplier *= ConfigGraphics.ManualFontSize;
             int elementWidth = (int) (GUIHelpers.getTextWidth(element.text) * multiplier);
 
             // If the element is oversize...

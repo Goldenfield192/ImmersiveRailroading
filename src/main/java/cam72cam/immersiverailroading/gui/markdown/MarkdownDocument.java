@@ -1,5 +1,8 @@
 package cam72cam.immersiverailroading.gui.markdown;
 
+import cam72cam.immersiverailroading.ConfigGraphics;
+import cam72cam.immersiverailroading.gui.manual.ManualHoverRenderer;
+import cam72cam.immersiverailroading.gui.markdown.element.*;
 import cam72cam.mod.event.ClientEvents;
 import cam72cam.mod.gui.helpers.GUIHelpers;
 import cam72cam.mod.math.Vec3d;
@@ -7,27 +10,21 @@ import cam72cam.mod.render.opengl.RenderState;
 import cam72cam.mod.resource.Identifier;
 
 import javax.annotation.Nonnull;
-import java.awt.*;
 import java.awt.geom.Rectangle2D;
-import java.io.IOException;
 import java.util.*;
-import java.util.List;
+import java.util.stream.Collectors;
 
-import static cam72cam.immersiverailroading.gui.markdown.Colors.*;
+import static cam72cam.immersiverailroading.gui.markdown.Colors.TIPS_BAR_COLOR;
 
 /**
  * Storage class to store Markdown file's content
  */
 @SuppressWarnings("unused")
 public class MarkdownDocument {
-    //All cached document
-    //TODO Maybe we should to use ExpireableMap?
-    private static final HashMap<Identifier, MarkdownDocument> DOCUMENTS = new HashMap<>();
-
     public final Identifier page;
-    protected final List<MarkdownLine> originalLines;
-    protected final List<MarkdownLine> brokenLines;
     private final HashMap<String, Integer> pageProperties;
+    protected List<MarkdownLine> originalLines;
+    protected List<MarkdownLine> brokenLines;
     private Rectangle2D scrollRegion;
     private double scrollSpeed;
     private double verticalOffset;
@@ -39,35 +36,11 @@ public class MarkdownDocument {
      * Internal constructor class
      * @param page This page's content location
      */
-    private MarkdownDocument(Identifier page) {
+    public MarkdownDocument(Identifier page) {
         this.page = page;
         this.originalLines = new LinkedList<>();
         this.brokenLines = new LinkedList<>();
         this.pageProperties = new HashMap<>();
-    }
-
-    /**
-     * Try to get a cached page
-     * @param id The page's content location
-     * @return The cached page or a new page if not present
-     */
-    public static synchronized MarkdownDocument getOrComputePageByID(Identifier id){
-        return DOCUMENTS.computeIfAbsent(id, MarkdownDocument::new);
-    }
-
-    /**
-     * API method for dynamic generated content
-     * @param id The cached page need to be cleared
-     */
-    public static synchronized void refreshByID(Identifier id){
-        Optional.ofNullable(DOCUMENTS.get(id)).ifPresent(document -> {
-            document.clearCache();
-            try {
-                MarkdownBuilder.build(id, document.getPageWidth());
-            } catch (IOException e) {
-                throw new RuntimeException(e);
-            }
-        });
     }
 
     /**
@@ -85,7 +58,15 @@ public class MarkdownDocument {
      * @return The stored value, or -1 if not present
      */
     public int getProperty(String name){
-        return this.pageProperties.getOrDefault(name, -1);
+        return this.pageProperties.getOrDefault(name, 0);
+    }
+
+    /**
+     * Copy existing page properties from given MarkdownDocument
+     * @param source Given MarkdownDocument
+     */
+    public void copyProperties(MarkdownDocument source){
+        this.pageProperties.putAll(source.pageProperties);
     }
 
     /**
@@ -122,7 +103,8 @@ public class MarkdownDocument {
             }
             if(inTips){
                 GUIHelpers.drawRect((int) offset.x , (int) offset.y ,
-                        MarkdownLine.LIST_PREFIX_WIDTH / 4, 10, TIPS_BAR_COLOR);
+                        MarkdownLine.LIST_PREFIX_WIDTH / 4,
+                        (int) (10 * ConfigGraphics.ManualFontSize), TIPS_BAR_COLOR);
             }
 
             //Should we translate the matrix to next line manually?
@@ -131,6 +113,7 @@ public class MarkdownDocument {
             for(MarkdownElement element : line.elements){
                 //Show current matrix result
                 offset = state.model_view().apply(Vec3d.ZERO);
+
                 height += element.render(state, pageWidth);
 
                 String str = element.apply();
@@ -146,12 +129,9 @@ public class MarkdownDocument {
 
                 //Dynamically update clickable elements' pos(for now only url is included)
                 if(element instanceof MarkdownClickableElement){
-                    MarkdownClickableElement clickable = (MarkdownClickableElement) element;
-                    clickable.section = new Rectangle((int) offset.x, (int) offset.y,
-                            GUIHelpers.getTextWidth(str), 10);
-
-                    if(this.scrollRegion.contains(ManualHoverRenderer.mouseX, ManualHoverRenderer.mouseY)
-                           && clickable.section.contains(ManualHoverRenderer.mouseX, ManualHoverRenderer.mouseY)){
+                    ((MarkdownClickableElement) element).updateSection(offset);
+                    if (this.scrollRegion.contains(ManualHoverRenderer.mouseX, ManualHoverRenderer.mouseY)
+                            && ((MarkdownClickableElement) element).section.contains(ManualHoverRenderer.mouseX, ManualHoverRenderer.mouseY)) {
                         hoveredElement = (MarkdownClickableElement) element;
                     }
                 }
@@ -162,8 +142,9 @@ public class MarkdownDocument {
                 height += 10;
             }
         }
-        this.pageHeight = height - 100;
-        return height;
+        /* * ConfigGraphics.ManualFontSize*/
+        this.pageHeight = height - 80;
+        return height - 80;
     }
 
     /**
@@ -179,6 +160,10 @@ public class MarkdownDocument {
     //Overloads
     public MarkdownDocument addLine(MarkdownElement line){
         return this.addLine(Collections.singletonList(line));
+    }
+
+    public MarkdownDocument addLine(MarkdownElement... line){
+        return this.addLine(Arrays.stream(line).collect(Collectors.toList()));
     }
 
     public MarkdownDocument addLine(List<MarkdownElement> line){
@@ -199,9 +184,9 @@ public class MarkdownDocument {
         return this.originalLines.isEmpty();
     }
 
-    private void clearCache(){
-        this.originalLines.clear();
-        this.brokenLines.clear();
+    public void clearCache(){
+        this.originalLines = new LinkedList<>();
+        this.brokenLines = new LinkedList<>();
     }
 
     public int getPageWidth() {
@@ -260,7 +245,7 @@ public class MarkdownDocument {
             this.brokenLines.forEach(line -> line.elements.stream().filter(e -> e instanceof MarkdownClickableElement)
                     .forEach(element -> {
                 if(((MarkdownClickableElement) element).section.contains(releaseEvent.x, releaseEvent.y)){
-                    ((MarkdownClickableElement) element).click();
+                    ((MarkdownClickableElement) element).click(this);
                 }
             }));
         }

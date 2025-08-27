@@ -3,7 +3,6 @@ package cam72cam.immersiverailroading;
 import cam72cam.immersiverailroading.library.PressureDisplayType;
 import cam72cam.immersiverailroading.library.SpeedDisplayType;
 import cam72cam.immersiverailroading.library.TemperatureDisplayType;
-import cam72cam.immersiverailroading.library.ValveGearConfig;
 import cam72cam.mod.config.ConfigFile.Comment;
 import cam72cam.mod.config.ConfigFile.Name;
 import cam72cam.mod.render.OptiFine;
@@ -11,7 +10,8 @@ import cam72cam.mod.render.OptiFine;
 import java.util.HashMap;
 import java.util.Map;
 
-import static cam72cam.mod.config.ConfigFile.*;
+import static cam72cam.mod.config.ConfigFile.File;
+import static cam72cam.mod.config.ConfigFile.Range;
 
 @Comment("Configuration File")
 @Name("general")
@@ -65,6 +65,10 @@ public class ConfigGraphics {
 	@Comment("Mouse Scroll Speed (negative values invert it)")
 	@Range(min = -10, max = 10)
 	public static float ScrollSpeed = 1;
+
+	@Comment("Mouse Scroll Speed (negative values invert it)")
+	@Range(min = 1, max = 2)
+	public static float ManualFontSize = 1;
 
 	@Comment("Try to fake interior lighting for locomotives/passenger cars that are being ridden")
 	public static boolean FakeInteriorLighting = true;
