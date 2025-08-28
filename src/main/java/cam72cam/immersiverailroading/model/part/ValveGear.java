@@ -292,10 +292,5 @@ public abstract class ValveGear {
         }
     }
 
-    private static ExpireableMap<String, ChuffSound> chuffSounds = new ExpireableMap<String, ChuffSound>() {
-        @Override
-        public void onRemove(String key, ChuffSound value) {
-            value.free();
-        }
-    };
+    private static final ExpireableMap<String, ChuffSound> chuffSounds = new ExpireableMap<>((k, v) -> v.free());
 }

@@ -69,8 +69,8 @@ public class StockAnimation {
                 float tickDelta;
                 if (value >= 0.95) {
                     // FORWARD
-                    if (tickStart.get(key) == null) {
-                        if (active.get(key) == null) {
+                    if (!tickStart.containsKey(key)) {
+                        if (!active.containsKey(key)) {
                             active.put(key, true);
                             tickStart.put(key, tickCount - total_ticks_per_loop - 1);
                         } else {
@@ -85,8 +85,8 @@ public class StockAnimation {
                     tickDelta = tickCount - tickStart.get(key);
                 } else {
                     // REVERSE
-                    if (tickStop.get(key) == null) {
-                        if (active.get(key) == null) {
+                    if (!tickStop.containsKey(key)) {
+                        if (!active.containsKey(key)) {
                             active.put(key, true);
                             tickStop.put(key, tickCount - total_ticks_per_loop - 1);
                         } else {

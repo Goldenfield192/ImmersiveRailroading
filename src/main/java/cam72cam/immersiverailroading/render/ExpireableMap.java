@@ -1,93 +1,101 @@
 package cam72cam.immersiverailroading.render;
 
+import it.unimi.dsi.fastutil.objects.Object2LongOpenHashMap;
+import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
+
 import java.util.*;
+import java.util.function.BiConsumer;
 
 public class ExpireableMap<K,V> {
-	
-	public int lifespan() {
-		return 10;
+	private final Map<K, V> map = new Object2ObjectOpenHashMap<>();
+	private final Map<K, Long> lastUsedTime = new Object2LongOpenHashMap<>();
+	private long lastTime = timeS();
+
+	private final int lifeSpan;
+	private final boolean refreshWhenAccess;
+	private final BiConsumer<K, V> removal;
+
+	public ExpireableMap() {
+		this(10);
 	}
-	public boolean sliding() {
-		return true;
+
+	public ExpireableMap(int lifeSpan) {
+		this(lifeSpan, true);
 	}
-	
-	public void onRemove(K key, V value) {
-		
+
+	public ExpireableMap(BiConsumer<K, V> removal){
+		this(10, true, removal);
 	}
-	
+
+	public ExpireableMap(int lifeSpan, boolean refreshWhenAccess){
+		this(lifeSpan, refreshWhenAccess, (k, v) -> {});
+	}
+
+	public ExpireableMap(int lifeSpan, boolean refreshWhenAccess, BiConsumer<K, V> removal){
+		this.lifeSpan = lifeSpan;
+		this.refreshWhenAccess = refreshWhenAccess;
+		this.removal = removal;
+	}
+
 	private static long timeS() {
 		return System.currentTimeMillis() / 1000L;
 	}
-	
-	private Map<K, V> map = new HashMap<K, V>();
-	private Map<K, Long> mapUsage = new HashMap<K, Long>();
-	private long lastTime = timeS();
-	
-	public V get(K key) {
-		synchronized(this) {
-			if (lastTime + lifespan() < timeS()) {
-				// clear unused
-				Set<K> ks = new HashSet<K>();
-				ks.addAll(map.keySet());
-				for (K dk : ks) {
-					if (dk != key && mapUsage.get(dk) + lifespan() < timeS()) {
-						onRemove(dk, map.get(dk));
-						map.remove(dk);
-						mapUsage.remove(dk);
-					}
-				}
-				lastTime = timeS();
+
+	public synchronized V get(K key) {
+		clearUnused();
+
+		if (map.containsKey(key)) {
+			if (refreshWhenAccess) {
+				lastUsedTime.put(key, timeS());
 			}
-			
-			
-			if (map.containsKey(key)) {
-				if (sliding()) {
-					mapUsage.put(key, timeS());
-				}
-				return map.get(key);
-			}
-			return null;
+			return map.get(key);
+		}
+		return null;
+	}
+
+	public synchronized void put(K key, V val) {
+		if (val == null) {
+			remove(key);
+		} else {
+			lastUsedTime.put(key, timeS());
+			map.put(key, val);
 		}
 	}
 
-	public void put(K key, V displayList) {
-		synchronized(this) {
-			if (displayList == null) {
-				remove(key);
-			} else {
-				mapUsage.put(key, timeS());
-				map.put(key, displayList);
-			}
+	public synchronized void remove(K key) {
+		if (map.containsKey(key)) {
+			removal.accept(key, map.get(key));
+			map.remove(key);
+			lastUsedTime.remove(key);
 		}
 	}
 
-	public void remove(K key) {
-		synchronized(this) {
-			if(map.containsKey(key)) {
-				onRemove(key, map.get(key));
-				map.remove(key);
-				mapUsage.remove(key);
-			}
-		}
+	public synchronized int size(){
+		return map.size();
 	}
 
-	public Collection<V> values() {
-		synchronized(this) {
-			if (lastTime + lifespan() < timeS()) {
-				// clear unused
-				Set<K> ks = new HashSet<K>();
-				ks.addAll(map.keySet());
-				for (K dk : ks) {
-					if (mapUsage.get(dk) + lifespan() < timeS()) {
-						onRemove(dk, map.get(dk));
-						map.remove(dk);
-						mapUsage.remove(dk);
-					}
+	public synchronized boolean containsKey(K key){
+		return map.containsKey(key);
+	}
+
+	public synchronized Collection<V> values() {
+		clearUnused();
+
+		return map.values();
+	}
+
+	private synchronized void clearUnused(){
+		if (lastTime + lifeSpan < timeS()) {
+			// clear unused
+            Set<K> ks = new HashSet<>(map.keySet());
+			for (K dk : ks) {
+				if (lastUsedTime.get(dk) + lifeSpan < timeS()) {
+					removal.accept(dk, map.get(dk));
+					map.remove(dk);
+					lastUsedTime.remove(dk);
 				}
-				lastTime = timeS();
 			}
-
-			return map.values();
+			lastTime = timeS();
 		}
 	}
 }
