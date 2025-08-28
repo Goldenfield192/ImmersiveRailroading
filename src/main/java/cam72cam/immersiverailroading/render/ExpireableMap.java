@@ -16,11 +16,11 @@ public class ExpireableMap<K,V> {
 	private final BiConsumer<K, V> removal;
 
 	public ExpireableMap() {
-		this(10);
+		this(10, true, (k, v) -> {});
 	}
 
 	public ExpireableMap(int lifeSpan) {
-		this(lifeSpan, true);
+		this(lifeSpan, true, (k, v) -> {});
 	}
 
 	public ExpireableMap(BiConsumer<K, V> removal){
