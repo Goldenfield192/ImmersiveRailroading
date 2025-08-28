@@ -62,14 +62,8 @@ public class TrackModel {
         return model.maxOfGroup(railGroups).y;
     }
 
-    public TrackModel setRandomWeight(Function<String, Integer> weightMap) {
+    public void setRandomWeight(Function<String, Integer> weightMap) {
         this.state = TrackState.RANDOM;
-        int totalWeight = 0;
-
-        // Calculate total weight
-        for (String key : this.mapper.keySet()) {
-            totalWeight += weightMap.apply(key);
-        }
 
         // Build weighted order list
         order.clear();
@@ -79,15 +73,12 @@ public class TrackModel {
                 order.add(key);
             }
         }
-
-        return this;
     }
 
-    public TrackModel setOrder(List<String> order) {
+    public void setOrder(List<String> order) {
         this.state = TrackState.ORDERED;
         this.order.clear();
         this.order.addAll(order);
-        return this;
     }
 
     public boolean canRender(double gauge) {
@@ -168,33 +159,37 @@ public class TrackModel {
     }
 
     private void renderPiece(RailInfo info, VecYawPitch piece, OBJModel model, OBJRender.Builder builder) {
-        Matrix4 matrix = createTransformationMatrix(info, piece);
-
-        if (!piece.getGroups().isEmpty()) {
-            List<String> groups = model.groups().stream()
-                                       .filter(group -> piece.getGroups().stream().anyMatch(group::contains))
-                                       .collect(Collectors.toList());
-            builder.draw(groups, matrix);
-        } else {
-            builder.draw(matrix);
-        }
-    }
-
-    private Matrix4 createTransformationMatrix(RailInfo info, VecYawPitch piece) {
         Matrix4 matrix = new Matrix4();
         matrix.translate(piece.x, piece.y, piece.z);
         matrix.rotate(Math.toRadians(piece.getYaw()), 0, 1, 0);
         matrix.rotate(Math.toRadians(piece.getPitch()), 1, 0, 0);
         matrix.rotate(Math.toRadians(-90), 0, 1, 0);
 
-        if (piece.getLength() != -1) {
-            matrix.scale(piece.getLength() / info.settings.gauge.scale(), 1, 1);
-        }
-
         double scale = info.settings.gauge.scale();
         matrix.scale(scale, scale, scale);
 
-        return matrix;
+        List<String> tables = new ArrayList<>();
+        model.groups().stream().filter(s -> s.contains("TABLE")).forEach(tables::add);
+
+        if(piece.getGroups().contains("RENDERTABLE")){
+            builder.draw(tables, matrix);
+        }
+
+        if (piece.getLength() != -1) {
+            matrix = matrix.copy().scale(piece.getLength() / info.settings.gauge.scale(), 1, 1);
+        }
+
+        List<String> groups;
+        if (!piece.getGroups().isEmpty()) {
+            groups = model.groups().stream()
+                          .filter(group -> piece.getGroups().stream().anyMatch(group::contains))
+                          .collect(Collectors.toList());
+            builder.draw(groups, matrix);
+        } else {
+            groups = new ArrayList<>(model.groups());
+            groups.removeAll(tables);
+        }
+        builder.draw(groups, matrix);
     }
 
     public OBJModel getFirstModel() {
