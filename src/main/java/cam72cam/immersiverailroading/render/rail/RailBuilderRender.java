@@ -11,6 +11,7 @@ import cam72cam.immersiverailroading.util.RailInfo;
 import cam72cam.mod.render.opengl.RenderState;
 import util.Matrix4;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -32,6 +33,9 @@ public class RailBuilderRender {
         if (cached == null) {
             OBJRender.Builder builder = model.binder().builder();
 
+            List<String> tables = new ArrayList<>();
+            model.groups().stream().filter(s -> s.contains("TABLE")).forEach(tables::add);
+
             for (VecYawPitch piece : renderData) {
                 Matrix4 m = new Matrix4();
                 //m.rotate(Math.toRadians(info.placementInfo.yaw), 0, 1, 0);
@@ -39,21 +43,26 @@ public class RailBuilderRender {
                 m.rotate(Math.toRadians(piece.getYaw()), 0, 1, 0);
                 m.rotate(Math.toRadians(piece.getPitch()), 1, 0, 0);
                 m.rotate(Math.toRadians(-90), 0, 1, 0);
-
-                if (piece.getLength() != -1) {
-                    m.scale(piece.getLength() / info.settings.gauge.scale(), 1, 1);
-                }
                 double scale = info.settings.gauge.scale();
                 m.scale(scale, scale, scale);
 
+                if(piece.getGroups().contains("RENDERTABLE")){
+                    builder.draw(tables, m);
+                }
+
+                if (piece.getLength() != -1) {
+                    m = m.copy().scale(piece.getLength() / info.settings.gauge.scale(), 1, 1);
+                }
+                List<String> groups;
                 if (piece.getGroups().size() != 0) {
-                    List<String> groups = model.groups().stream()
+                     groups = model.groups().stream()
                             .filter(group -> piece.getGroups().stream().anyMatch(group::contains))
                             .collect(Collectors.toList());
-                    builder.draw(groups, m);
                 } else {
-                    builder.draw(m);
+                    groups = new ArrayList<>(model.groups());
+                    groups.removeAll(tables);
                 }
+                builder.draw(groups, m);
             }
             cached = builder.build();
             cache.put(info.uniqueID, cached);
