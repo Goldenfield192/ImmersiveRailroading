@@ -71,10 +71,14 @@ public class ExpireableMap<K,V> {
 	}
 
 	public synchronized int size(){
+		clearUnused();
+
 		return map.size();
 	}
 
 	public synchronized boolean containsKey(K key){
+		clearUnused();
+
 		return map.containsKey(key);
 	}
 
