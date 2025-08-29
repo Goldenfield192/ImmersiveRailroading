@@ -13,12 +13,7 @@ import cam72cam.mod.render.opengl.RenderState;
 import java.util.List;
 
 public class RailBuilderRender {
-    private static final ExpireableMap<String, MultiVBO> cache = new ExpireableMap<String, MultiVBO>() {
-        @Override
-        public void onRemove(String key, MultiVBO value) {
-            value.free();
-        }
-    };
+    private static final ExpireableMap<String, MultiVBO> cache = new ExpireableMap<>((k, v) -> v.free());
 
     public static void renderRailBuilder(RailInfo info, List<VecYawPitch> renderData, RenderState state) {
         TrackModel model = DefinitionManager.getTrack(info.settings.track, info.settings.gauge.value());
