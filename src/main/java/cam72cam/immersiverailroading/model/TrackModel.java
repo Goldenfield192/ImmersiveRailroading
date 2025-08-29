@@ -8,18 +8,22 @@ import cam72cam.mod.model.obj.OBJModel;
 import cam72cam.mod.render.obj.OBJRender;
 import cam72cam.mod.render.opengl.VBO;
 import cam72cam.mod.resource.Identifier;
+import org.apache.commons.lang3.tuple.Pair;
 import trackapi.lib.Gauges;
 import util.Matrix4;
 
 import java.util.*;
 import java.util.function.Function;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 public class TrackModel {
     private final Map<Identifier, OBJModel> models;
     private final Map<String, Identifier> mapper;
     private TrackState state;
-    private final List<String> order;
+    private final List<String> random;
+    private TrackOrder order;
     private final String compare;
     private final double size;
     private final double height;
@@ -33,7 +37,7 @@ public class TrackModel {
         this.height = calculateRailHeight(model);
         this.spacing = spacing * (Gauges.STANDARD / modelGaugeM);
         this.state = TrackState.SINGLE;
-        this.order = new ArrayList<>();
+        this.random = new ArrayList<>();
         this.mapper = null;
     }
 
@@ -52,7 +56,7 @@ public class TrackModel {
         this.size = Double.parseDouble(condition.substring(1));
         this.height = maxHeight;
         this.spacing = spacing * (Gauges.STANDARD / modelGaugeM);
-        this.order = new ArrayList<>();
+        this.random = new ArrayList<>();
     }
 
     private double calculateRailHeight(OBJModel model) {
@@ -66,19 +70,18 @@ public class TrackModel {
         this.state = TrackState.RANDOM;
 
         // Build weighted order list
-        order.clear();
+        random.clear();
         for (String key : this.mapper.keySet()) {
             int weight = weightMap.apply(key);
             for (int i = 0; i < weight; i++) {
-                order.add(key);
+                random.add(key);
             }
         }
     }
 
-    public void setOrder(List<String> order) {
+    public void setOrder(TrackOrder order) {
         this.state = TrackState.ORDERED;
-        this.order.clear();
-        this.order.addAll(order);
+        this.order = order;
     }
 
     public boolean canRender(double gauge) {
@@ -107,8 +110,9 @@ public class TrackModel {
     private MultiVBO getOrderedModel(RailInfo info, List<VecYawPitch> data) {
         Map<String, OBJRender.Builder> vboMap = new HashMap<>();
 
+        List<String> names = order.getRenderOrder(data.size());
         for (int i = 0; i < data.size(); i++) {
-            String modelKey = order.get(i % order.size());
+            String modelKey = names.get(i);
             OBJModel model = models.get(mapper.get(modelKey));
 
             if (!vboMap.containsKey(modelKey)) {
@@ -130,7 +134,7 @@ public class TrackModel {
         Random random = new Random(seed);
 
         for (VecYawPitch datum : data) {
-            String modelKey = order.get(random.nextInt(order.size()));
+            String modelKey = this.random.get(random.nextInt(this.random.size()));
             OBJModel model = models.get(mapper.get(modelKey));
 
             if (!vboMap.containsKey(modelKey)) {
@@ -190,6 +194,11 @@ public class TrackModel {
             groups.removeAll(tables);
         }
         builder.draw(groups, matrix);
+        if(!piece.children.isEmpty()){
+            for(VecYawPitch vec : piece.children){
+                renderPiece(info, vec, model, builder);
+            }
+        }
     }
 
     public OBJModel getFirstModel() {
@@ -203,6 +212,70 @@ public class TrackModel {
     public void free() {
         for (OBJModel model : this.models.values()) {
             model.free();
+        }
+    }
+
+    public static class TrackOrder{
+        // All directions are C1 -> C2
+        protected List<String> pre = new ArrayList<>();
+        protected List<String> mid;
+        protected List<String> post = new ArrayList<>();
+
+        private static final Pattern pattern = Pattern.compile("^(.*?)(\\d*)$");
+
+        public TrackOrder(List<String> mid) {
+            this.mid = transform(mid);
+        }
+
+        public void setPre(List<String> pre) {
+            this.pre = transform(pre);
+        }
+
+        public void setPost(List<String> post) {
+            this.post = transform(post);
+        }
+
+        public List<String> getRenderOrder(int length) {
+            List<String> value = new ArrayList<>();
+
+            if(length < pre.size() + post.size()){
+                if(length < pre.size()){
+                    for(int i = 0; i < length; i++){
+                        value.add(pre.get(i));
+                    }
+                } else {
+                    value.addAll(pre);
+                    int remain = length - pre.size();
+                    for(int i = post.size() - 1 - remain; i < post.size(); i++) {
+                        value.add(post.get(i));
+                    }
+                }
+            } else {
+                value.addAll(pre);
+                value.addAll(post);
+                for(int i = 0, j = pre.size(); j < length - pre.size() - post.size(); i = (i+1) % mid.size(), j++){
+                    value.add(j, mid.get(i));
+                }
+            }
+            return value;
+        }
+
+        private static List<String> transform(List<String> orig) {
+            List<String> str = new ArrayList<>();
+            for(String s : orig){
+                Pair<String, Integer> pair = extract(s);
+                for(int i = 0; i < pair.getRight(); i++){
+                    str.add(pair.getLeft());
+                }
+            }
+            return str;
+        }
+
+        private static Pair<String, Integer> extract(String s) {
+            Matcher m = pattern.matcher(s);
+            m.find();
+            String numStr = m.group(2);
+            return Pair.of(m.group(1), numStr.isEmpty() ? 1 : Integer.parseInt(numStr));
         }
     }
 

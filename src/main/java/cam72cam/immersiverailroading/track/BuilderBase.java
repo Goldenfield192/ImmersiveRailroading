@@ -46,6 +46,7 @@ public abstract class BuilderBase {
 		public final float pitch;
 		public final float length;
 		public final List<String> groups;
+		public final List<VecYawPitch> children = new ArrayList<>();
 		
 		public VecYawPitch(double xIn, double yIn, double zIn, float yaw, String... groups) {
 			this(xIn, yIn, zIn, yaw, 0, groups);
@@ -60,6 +61,11 @@ public abstract class BuilderBase {
 			this.pitch = pitch;
 			this.length = length;
 		}
+
+		public void addChild(VecYawPitch another){
+			this.children.add(another);
+		}
+
 		public float getYaw() {
 			return this.yaw;
 		}
