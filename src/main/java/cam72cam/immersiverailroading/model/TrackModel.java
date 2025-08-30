@@ -8,14 +8,11 @@ import cam72cam.mod.model.obj.OBJModel;
 import cam72cam.mod.render.obj.OBJRender;
 import cam72cam.mod.render.opengl.VBO;
 import cam72cam.mod.resource.Identifier;
-import org.apache.commons.lang3.tuple.Pair;
 import trackapi.lib.Gauges;
 import util.Matrix4;
 
 import java.util.*;
 import java.util.function.Function;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 public class TrackModel {
@@ -111,7 +108,7 @@ public class TrackModel {
         Map<String, OBJRender.Builder> vboMap = new HashMap<>();
 
         List<String> names = order.getRenderOrder(data.size());
-        for (int i = 0; i < data.size(); i++) {
+        for (int i = 0; i < names.size(); i++) {
             String modelKey = names.get(i);
             OBJModel model = models.get(mapper.get(modelKey));
 
@@ -216,66 +213,75 @@ public class TrackModel {
     }
 
     public static class TrackOrder{
-        // All directions are C1 -> C2
-        protected List<String> pre = new ArrayList<>();
-        protected List<String> mid;
-        protected List<String> post = new ArrayList<>();
-
-        private static final Pattern pattern = Pattern.compile("^(.*?)(\\d*)$");
+        // All directions are Near -> Far
+        protected final List<String> near = new ArrayList<>();
+        protected final List<String> mid = new ArrayList<>();
+        protected final List<String> far = new ArrayList<>();
 
         public TrackOrder(List<String> mid) {
-            this.mid = transform(mid);
+            this.mid.addAll(parseCounts(mid));
         }
 
-        public void setPre(List<String> pre) {
-            this.pre = transform(pre);
+        public void setNear(List<String> near) {
+            this.near.addAll(parseCounts(near));
         }
 
-        public void setPost(List<String> post) {
-            this.post = transform(post);
+        public void setFar(List<String> far) {
+            this.far.addAll(parseCounts(far));
         }
 
         public List<String> getRenderOrder(int length) {
             List<String> value = new ArrayList<>();
 
-            if(length < pre.size() + post.size()){
-                if(length < pre.size()){
-                    for(int i = 0; i < length; i++){
-                        value.add(pre.get(i));
+            if(length < near.size() + far.size()){
+                int n = 0, f = 0;
+                while (true){
+                    if(n + f < length){
+                        if(n <= near.size()){
+                            n++;
+                        }
+                    } else {
+                        break;
                     }
-                } else {
-                    value.addAll(pre);
-                    int remain = length - pre.size();
-                    for(int i = post.size() - 1 - remain; i < post.size(); i++) {
-                        value.add(post.get(i));
+
+                    if(n + f < length){
+                        if(f<=far.size()){
+                            f++;
+                        }
+                    } else {
+                        break;
                     }
                 }
+
+                for(int i = 0; i < n; i++){
+                    value.add(near.get(i));
+                }
+                for(int i = far.size() - f; i < far.size(); i++){
+                    value.add(far.get(i));
+                }
             } else {
-                value.addAll(pre);
-                value.addAll(post);
-                for(int i = 0, j = pre.size(); j < length - pre.size() - post.size(); i = (i+1) % mid.size(), j++){
+                value.addAll(near);
+                value.addAll(far);
+                for(int i = 0, j = near.size(); j < length - near.size() - far.size(); i = (i+1) % mid.size(), j++){
                     value.add(j, mid.get(i));
                 }
             }
             return value;
         }
 
-        private static List<String> transform(List<String> orig) {
-            List<String> str = new ArrayList<>();
+        private static List<String> parseCounts(List<String> orig) {
+            List<String> result = new ArrayList<>();
             for(String s : orig){
-                Pair<String, Integer> pair = extract(s);
-                for(int i = 0; i < pair.getRight(); i++){
-                    str.add(pair.getLeft());
+                String[] str = s.split("\\*");
+                result.add(str[0]);
+                if(str.length == 2) {
+                    int max = Integer.parseInt(str[1]);
+                    for (int i = 1; i < max; i++) {
+                        result.add(str[0]);
+                    }
                 }
             }
-            return str;
-        }
-
-        private static Pair<String, Integer> extract(String s) {
-            Matcher m = pattern.matcher(s);
-            m.find();
-            String numStr = m.group(2);
-            return Pair.of(m.group(1), numStr.isEmpty() ? 1 : Integer.parseInt(numStr));
+            return result;
         }
     }
 

@@ -63,11 +63,11 @@ public class TrackDefinition {
                                                                 .map(DataBlock.Value::asString)
                                                                 .collect(Collectors.toList());
                 TrackModel.TrackOrder order = new TrackModel.TrackOrder(func.apply("mid"));
-                if(o.getValues("pre") != null){
-                    order.setPre(func.apply("pre"));
+                if(o.getValues("near") != null){
+                    order.setNear(func.apply("near"));
                 }
-                if(o.getValues("post") != null){
-                    order.setPost(func.apply("post"));
+                if(o.getValues("far") != null){
+                    order.setFar(func.apply("far"));
                 }
                 model.setOrder(order);
             } else if(block.getBlock("random_weights") != null){
