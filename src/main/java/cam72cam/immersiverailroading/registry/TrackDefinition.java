@@ -13,7 +13,7 @@ import cam72cam.mod.resource.Identifier;
 import trackapi.lib.Gauges;
 
 import java.util.*;
-import java.util.function.Function;
+import java.util.function.BiFunction;
 import java.util.stream.Collectors;
 
 public class TrackDefinition {
@@ -45,33 +45,26 @@ public class TrackDefinition {
         DataBlock models = object.getBlock("models");
         for (Map.Entry<String, DataBlock> entry : models.getBlockMap().entrySet()) {
             String condition = entry.getKey();
-            DataBlock block = entry.getValue();
+            DataBlock subModelBlock = entry.getValue();
             Map<String, Identifier> map = new HashMap<>();
-            for(DataBlock block1 : block.getBlocks("sub_models")){
+            for(DataBlock block1 : subModelBlock.getBlocks("sub_models")){
                 map.put(block1.getValue("ident").asString(), block1.getValue("path").asIdentifier());
             }
             TrackModel model = new TrackModel(condition, map, model_gauge_m, spacing);
-            if(block.getValues("order") != null){
-                model.setOrder(new TrackModel.TrackOrder(block.getValues("order")
-                                    .stream()
-                                    .map(DataBlock.Value::asString)
-                                    .collect(Collectors.toList())));
-            } else if(block.getBlock("order") != null) {
-                DataBlock o = block.getBlock("order");
-                Function<String, List<String>> func = s -> o.getValues(s)
-                                                                .stream()
-                                                                .map(DataBlock.Value::asString)
-                                                                .collect(Collectors.toList());
-                TrackModel.TrackOrder order = new TrackModel.TrackOrder(func.apply("mid"));
-                if(o.getValues("near") != null){
-                    order.setNear(func.apply("near"));
-                }
-                if(o.getValues("far") != null){
-                    order.setFar(func.apply("far"));
-                }
-                model.setOrder(order);
-            } else if(block.getBlock("random_weights") != null){
-                model.setRandomWeight(s -> block.getBlock("random").getValue(s).asInteger());
+            BiFunction<String, DataBlock, List<String>> getTrackList = (s, b) -> b.getValues(s)
+                                                                                  .stream()
+                                                                                  .map(DataBlock.Value::asString)
+                                                                                  .collect(Collectors.toList());
+            if(subModelBlock.getValues("order") != null){
+                model.setOrder(new TrackModel.TrackOrder(getTrackList.apply("order", subModelBlock)));
+            } else if(subModelBlock.getBlock("order") != null) {
+                DataBlock order = subModelBlock.getBlock("order");
+                TrackModel.TrackOrder o = new TrackModel.TrackOrder(getTrackList.apply("mid", order));
+                Optional.ofNullable(order.getValues("near")).ifPresent(obj -> o.setNear(getTrackList.apply("near", order)));
+                Optional.ofNullable(order.getValues("far")).ifPresent(obj -> o.setFar(getTrackList.apply("far", order)));
+                model.setOrder(o);
+            } else if(subModelBlock.getBlock("random_weights") != null){
+                model.setRandomWeight(s -> subModelBlock.getBlock("random").getValue(s).asInteger());
             } else {
                 throw new IllegalStateException("Missing 'order' or 'random_weights' in model condition: " + condition);
             }

@@ -235,21 +235,13 @@ public class TrackModel {
 
             if(length < near.size() + far.size()){
                 int n = 0, f = 0;
-                while (true){
-                    if(n + f < length){
-                        if(n <= near.size()){
-                            n++;
-                        }
-                    } else {
-                        break;
+                while (n + f < length){
+                    if(n <= near.size()){
+                        n++;
                     }
 
-                    if(n + f < length){
-                        if(f<=far.size()){
-                            f++;
-                        }
-                    } else {
-                        break;
+                    if(n + f < length && f <= far.size()){
+                        f++;
                     }
                 }
 
@@ -275,8 +267,8 @@ public class TrackModel {
                 String[] str = s.split("\\*");
                 result.add(str[0]);
                 if(str.length == 2) {
-                    int max = Integer.parseInt(str[1]);
-                    for (int i = 1; i < max; i++) {
+                    int count = Integer.parseInt(str[1]);
+                    for (int i = 1; i < count; i++) {
                         result.add(str[0]);
                     }
                 }
