@@ -4,6 +4,7 @@ import cam72cam.immersiverailroading.render.MultiVBO;
 import cam72cam.immersiverailroading.track.BuilderBase;
 import cam72cam.immersiverailroading.track.BuilderBase.VecYawPitch;
 import cam72cam.immersiverailroading.util.DataBlock;
+import cam72cam.immersiverailroading.util.MathUtil;
 import cam72cam.immersiverailroading.util.RailInfo;
 import cam72cam.mod.model.obj.OBJModel;
 import cam72cam.mod.render.obj.OBJRender;
@@ -64,7 +65,12 @@ public class TrackModel {
                                                     .collect(Collectors.toMap(Pair::getKey, Pair::getValue));
                 List<String> strs = new ArrayList<>();
                 AtomicInteger integer = new AtomicInteger(0);
+
+                int overallGcd = partWeights.values().stream()
+                                       .reduce(0, MathUtil::gcd);
+
                 partWeights.forEach((s, i) -> {
+                    i = i / overallGcd;
                     for(int j = 0; j < i; j++){
                         strs.add(s);
                     }
