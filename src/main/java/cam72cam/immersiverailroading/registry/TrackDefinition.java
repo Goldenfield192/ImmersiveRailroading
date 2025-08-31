@@ -9,11 +9,9 @@ import cam72cam.immersiverailroading.library.TrackComponent;
 import cam72cam.immersiverailroading.model.TrackModel;
 import cam72cam.mod.item.Fuzzy;
 import cam72cam.mod.item.ItemStack;
-import cam72cam.mod.resource.Identifier;
 import trackapi.lib.Gauges;
 
 import java.util.*;
-import java.util.function.BiFunction;
 import java.util.stream.Collectors;
 
 public class TrackDefinition {
@@ -44,31 +42,7 @@ public class TrackDefinition {
 
         DataBlock models = object.getBlock("models");
         for (Map.Entry<String, DataBlock> entry : models.getBlockMap().entrySet()) {
-            String condition = entry.getKey();
-            DataBlock subModelBlock = entry.getValue();
-            Map<String, Identifier> map = new HashMap<>();
-            for(DataBlock block1 : subModelBlock.getBlocks("sub_models")){
-                map.put(block1.getValue("ident").asString(), block1.getValue("path").asIdentifier());
-            }
-            TrackModel model = new TrackModel(condition, map, model_gauge_m, spacing);
-            BiFunction<String, DataBlock, List<String>> getTrackList = (s, b) -> b.getValues(s)
-                                                                                  .stream()
-                                                                                  .map(DataBlock.Value::asString)
-                                                                                  .collect(Collectors.toList());
-            if(subModelBlock.getValues("order") != null){
-                model.setOrder(new TrackModel.TrackOrder(getTrackList.apply("order", subModelBlock)));
-            } else if(subModelBlock.getBlock("order") != null) {
-                DataBlock order = subModelBlock.getBlock("order");
-                TrackModel.TrackOrder o = new TrackModel.TrackOrder(getTrackList.apply("mid", order));
-                Optional.ofNullable(order.getValues("near")).ifPresent(obj -> o.setNear(getTrackList.apply("near", order)));
-                Optional.ofNullable(order.getValues("far")).ifPresent(obj -> o.setFar(getTrackList.apply("far", order)));
-                model.setOrder(o);
-            } else if(subModelBlock.getBlock("random_weights") != null){
-                model.setRandomWeight(s -> subModelBlock.getBlock("random").getValue(s).asInteger());
-            } else {
-                throw new IllegalStateException("Missing 'order' or 'random_weights' in model condition: " + condition);
-            }
-            this.models.add(model);
+            this.models.add(TrackModel.parse(entry.getKey(), entry.getValue(), model_gauge_m, spacing));
         }
 
         for (Map.Entry<String, DataBlock.Value> entry : models.getValueMap().entrySet()) {

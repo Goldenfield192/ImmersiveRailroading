@@ -28,7 +28,7 @@ public class RailBuilderRender {
 
         MultiVBO cached = cache.get(info.uniqueID);
         if (cached == null) {
-            cached = model.getModel(info, renderData, info.uniqueID.hashCode());
+            cached = model.getModel(info, renderData);
             cache.put(info.uniqueID, cached);
         }
 

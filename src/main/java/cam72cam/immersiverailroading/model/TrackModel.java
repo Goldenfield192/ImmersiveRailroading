@@ -3,24 +3,27 @@ package cam72cam.immersiverailroading.model;
 import cam72cam.immersiverailroading.render.MultiVBO;
 import cam72cam.immersiverailroading.track.BuilderBase;
 import cam72cam.immersiverailroading.track.BuilderBase.VecYawPitch;
+import cam72cam.immersiverailroading.util.DataBlock;
 import cam72cam.immersiverailroading.util.RailInfo;
 import cam72cam.mod.model.obj.OBJModel;
 import cam72cam.mod.render.obj.OBJRender;
 import cam72cam.mod.render.opengl.VBO;
 import cam72cam.mod.resource.Identifier;
+import org.apache.commons.lang3.tuple.Pair;
 import trackapi.lib.Gauges;
 import util.Matrix4;
 
 import java.util.*;
-import java.util.function.Function;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.function.BiFunction;
+import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
 public class TrackModel {
-    private final Map<Identifier, OBJModel> models;
-    private final Map<String, Identifier> mapper;
-    private TrackState state;
-    private final List<String> random;
+    private Map<String, Supplier<String>> randomMap;
     private TrackOrder order;
+    private final Map<String, Identifier> mapper;
+    private final Map<Identifier, OBJModel> models;
     private final String compare;
     private final double size;
     private final double height;
@@ -33,14 +36,76 @@ public class TrackModel {
         this.size = Double.parseDouble(condition.substring(1));
         this.height = calculateRailHeight(model);
         this.spacing = spacing * (Gauges.STANDARD / modelGaugeM);
-        this.state = TrackState.SINGLE;
-        this.random = new ArrayList<>();
         this.mapper = null;
+        this.randomMap = null;
+    }
+
+    public static TrackModel parse(String condition, DataBlock block, double modelGaugeM, double spacing) throws Exception{
+        Map<String, Supplier<String>> mapper = new HashMap<>();
+        Map<String, Identifier> models = new HashMap<>();
+
+        List<DataBlock> subModels = block.getBlocks("sub_models");
+        if(subModels != null){
+            subModels.forEach(b -> {
+                String ident = b.getValue("ident").asString();
+                models.put(ident, b.getValue("path").asIdentifier());
+                mapper.put(ident, () -> ident);
+            });
+        }
+
+        List<DataBlock> randomized = block.getBlocks("randomized");
+        if(randomized != null){
+            randomized.forEach(b -> {
+                String ident = b.getValue("ident").asString();
+                Random ran = new Random(ident.hashCode());
+                Map<String, Integer> partWeights = b.getBlock("part_weights").getValueMap().entrySet()
+                                                    .stream()
+                                                    .map(entry -> Pair.of(entry.getKey(), entry.getValue().asInteger()))
+                                                    .collect(Collectors.toMap(Pair::getKey, Pair::getValue));
+                List<String> strs = new ArrayList<>();
+                AtomicInteger integer = new AtomicInteger(0);
+                partWeights.forEach((s, i) -> {
+                    for(int j = 0; j < i; j++){
+                        strs.add(s);
+                    }
+                    integer.addAndGet(i);
+                });
+
+                mapper.put(ident, () -> strs.get(ran.nextInt(integer.get())));
+            });
+        }
+
+        BiFunction<String, DataBlock, List<String>> getTrackList = (s, b) -> b.getValues(s)
+                                                                              .stream()
+                                                                              .map(DataBlock.Value::asString)
+                                                                              .collect(Collectors.toList());
+        DataBlock orderBlock = block.getBlock("order");
+        List<DataBlock.Value> orderArray = block.getValues("order");
+        TrackOrder trackOrder;
+        if(orderBlock != null){
+            List<String> near = getTrackList.apply("near", orderBlock);
+            List<String> mid = getTrackList.apply("mid", orderBlock);
+            List<String> far = getTrackList.apply("far", orderBlock);
+            trackOrder = new TrackOrder(mid);
+            trackOrder.setNear(near);
+            trackOrder.setFar(far);
+        } else if(orderArray != null) {
+            List<String> mid = getTrackList.apply("order", block);
+            trackOrder = new TrackOrder(mid);
+        } else {
+            throw new IllegalArgumentException("Must contains \"order\" field");
+        }
+
+        TrackModel model1 = new TrackModel(condition, models, modelGaugeM, spacing);
+        model1.order = trackOrder;
+        model1.randomMap = mapper;
+        return model1;
     }
 
     public TrackModel(String condition, Map<String, Identifier> map, double modelGaugeM, double spacing) throws Exception {
         this.models = new HashMap<>();
         this.mapper = map;
+        this.randomMap = new HashMap<>();
 
         double maxHeight = 0;
         for (Map.Entry<String, Identifier> entry : map.entrySet()) {
@@ -53,7 +118,6 @@ public class TrackModel {
         this.size = Double.parseDouble(condition.substring(1));
         this.height = maxHeight;
         this.spacing = spacing * (Gauges.STANDARD / modelGaugeM);
-        this.random = new ArrayList<>();
     }
 
     private double calculateRailHeight(OBJModel model) {
@@ -61,24 +125,6 @@ public class TrackModel {
                                        .filter(group -> group.contains("RAIL_LEFT") || group.contains("RAIL_RIGHT"))
                                        .collect(Collectors.toList());
         return model.maxOfGroup(railGroups).y;
-    }
-
-    public void setRandomWeight(Function<String, Integer> weightMap) {
-        this.state = TrackState.RANDOM;
-
-        // Build weighted order list
-        random.clear();
-        for (String key : this.mapper.keySet()) {
-            int weight = weightMap.apply(key);
-            for (int i = 0; i < weight; i++) {
-                random.add(key);
-            }
-        }
-    }
-
-    public void setOrder(TrackOrder order) {
-        this.state = TrackState.ORDERED;
-        this.order = order;
     }
 
     public boolean canRender(double gauge) {
@@ -90,26 +136,15 @@ public class TrackModel {
         }
     }
 
-    public MultiVBO getModel(RailInfo info, List<BuilderBase.VecYawPitch> data, long seed) {
-        // Special track types always use single model
-        if (info.settings.type.isTable()) {
-            return getSingleModel(info, data);
+    public MultiVBO getModel(RailInfo info, List<BuilderBase.VecYawPitch> data) {
+        if(info.settings.type.isTable() || this.models.size() == 1){
+            return renderSingle(info, data);
         }
 
-        switch (state) {
-            case SINGLE: return getSingleModel(info, data);
-            case RANDOM: return getRandomModel(info, data, seed);
-            case ORDERED: return getOrderedModel(info, data);
-            default: throw new IllegalArgumentException("?");
-        }
-    }
-
-    private MultiVBO getOrderedModel(RailInfo info, List<VecYawPitch> data) {
         Map<String, OBJRender.Builder> vboMap = new HashMap<>();
-
         List<String> names = order.getRenderOrder(data.size());
         for (int i = 0; i < names.size(); i++) {
-            String modelKey = names.get(i);
+            String modelKey = randomMap.get(names.get(i)).get();
             OBJModel model = models.get(mapper.get(modelKey));
 
             if (!vboMap.containsKey(modelKey)) {
@@ -126,30 +161,8 @@ public class TrackModel {
         return new MultiVBO(vbos);
     }
 
-    private MultiVBO getRandomModel(RailInfo info, List<BuilderBase.VecYawPitch> data, long seed) {
-        Map<String, OBJRender.Builder> vboMap = new HashMap<>();
-        Random random = new Random(seed);
-
-        for (VecYawPitch datum : data) {
-            String modelKey = this.random.get(random.nextInt(this.random.size()));
-            OBJModel model = models.get(mapper.get(modelKey));
-
-            if (!vboMap.containsKey(modelKey)) {
-                vboMap.put(modelKey, model.binder().builder());
-            }
-
-            renderPiece(info, datum, model, vboMap.get(modelKey));
-        }
-
-        Set<VBO> vbos = vboMap.values().stream()
-                              .map(OBJRender.Builder::build)
-                              .collect(Collectors.toSet());
-
-        return new MultiVBO(vbos);
-    }
-
-    private MultiVBO getSingleModel(RailInfo info, List<BuilderBase.VecYawPitch> data) {
-        OBJModel model = models.values().iterator().next();
+    private MultiVBO renderSingle(RailInfo info, List<BuilderBase.VecYawPitch> data) {
+        OBJModel model = getFirstModel();
         OBJRender.Builder builder = model.binder().builder();
 
         for (BuilderBase.VecYawPitch piece : data) {
@@ -254,7 +267,7 @@ public class TrackModel {
             } else {
                 value.addAll(near);
                 value.addAll(far);
-                for(int i = 0, j = near.size(); j < length - near.size() - far.size(); i = (i+1) % mid.size(), j++){
+                for(int i = 0, j = near.size(); j < length - far.size(); i = (i+1) % mid.size(), j++){
                     value.add(j, mid.get(i));
                 }
             }
@@ -275,11 +288,5 @@ public class TrackModel {
             }
             return result;
         }
-    }
-
-    private enum TrackState {
-        SINGLE,
-        RANDOM,
-        ORDERED
     }
 }
