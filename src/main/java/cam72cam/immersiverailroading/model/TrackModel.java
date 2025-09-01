@@ -10,21 +10,23 @@ import cam72cam.mod.model.obj.OBJModel;
 import cam72cam.mod.render.obj.OBJRender;
 import cam72cam.mod.render.opengl.VBO;
 import cam72cam.mod.resource.Identifier;
+import com.google.common.util.concurrent.AtomicDouble;
 import org.apache.commons.lang3.tuple.Pair;
 import trackapi.lib.Gauges;
 import util.Matrix4;
 
 import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
-import java.util.function.BiFunction;
+import java.util.function.Function;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
 public class TrackModel {
-    private Map<String, Supplier<String>> randomMap;
     private TrackOrder order;
-    private final Map<String, Identifier> mapper;
-    private final Map<Identifier, OBJModel> models;
+    //Get randomized idents' real ident
+    private Map<String, Supplier<String>> randomMap;
+    //Map primitive idents to OBJModel
+    private final Map<String, OBJModel> models;
     private final String compare;
     private final double size;
     private final double height;
@@ -32,31 +34,40 @@ public class TrackModel {
 
     public TrackModel(String condition, Identifier resource, double modelGaugeM, double spacing) throws Exception {
         OBJModel model = new OBJModel(resource, 0, Gauges.STANDARD / modelGaugeM);
-        this.models = Collections.singletonMap(resource, model);
+        this.models = Collections.singletonMap("single", model);
         this.compare = condition.substring(0, 1);
         this.size = Double.parseDouble(condition.substring(1));
         this.height = calculateRailHeight(model);
         this.spacing = spacing * (Gauges.STANDARD / modelGaugeM);
-        this.mapper = null;
-        this.randomMap = null;
+    }
+
+    public TrackModel(String condition, Map<String, OBJModel> map, double modelGaugeM, double spacing, double maxHeight) throws Exception {
+        this.models = map;
+        this.compare = condition.substring(0, 1);
+        this.size = Double.parseDouble(condition.substring(1));
+        this.height = maxHeight;
+        this.spacing = spacing * (Gauges.STANDARD / modelGaugeM);
     }
 
     public static TrackModel parse(String condition, DataBlock block, double modelGaugeM, double spacing) throws Exception{
         Map<String, Supplier<String>> mapper = new HashMap<>();
-        Map<String, Identifier> models = new HashMap<>();
+        Map<String, Identifier> identifiers = new HashMap<>();
 
         List<DataBlock> subModels = block.getBlocks("sub_models");
         if(subModels != null){
             subModels.forEach(b -> {
+                //Use idents to represent pieces in "order" block
+                //Primitive idents point at real model
                 String ident = b.getValue("ident").asString();
-                models.put(ident, b.getValue("path").asIdentifier());
-                mapper.put(ident, () -> ident);
+                identifiers.put(ident, b.getValue("path").asIdentifier());
+                mapper.put(ident, () -> ident); //Non-random
             });
         }
 
         List<DataBlock> randomized = block.getBlocks("randomized");
         if(randomized != null){
             randomized.forEach(b -> {
+                //Randomized models represent possibilities replaced by primitives
                 String ident = b.getValue("ident").asString();
                 Random ran = new Random(ident.hashCode());
                 Map<String, Integer> partWeights = b.getBlock("part_weights").getValueMap().entrySet()
@@ -66,67 +77,65 @@ public class TrackModel {
                 List<String> strs = new ArrayList<>();
                 AtomicInteger integer = new AtomicInteger(0);
 
-                int overallGcd = partWeights.values().stream()
-                                       .reduce(0, MathUtil::gcd);
+                int gcd = partWeights.values().stream().reduce(0, MathUtil::gcd);
 
                 partWeights.forEach((s, i) -> {
-                    i = i / overallGcd;
+                    i = i / gcd;
                     for(int j = 0; j < i; j++){
                         strs.add(s);
                     }
                     integer.addAndGet(i);
                 });
 
-                mapper.put(ident, () -> strs.get(ran.nextInt(integer.get())));
+                mapper.put(ident, () -> strs.get(ran.nextInt(integer.get()))); //Random
             });
         }
 
-        BiFunction<String, DataBlock, List<String>> getTrackList = (s, b) -> b.getValues(s)
-                                                                              .stream()
-                                                                              .map(DataBlock.Value::asString)
-                                                                              .collect(Collectors.toList());
+        //Parse order
+        Function<List<DataBlock.Value>, List<String>> mapToStr = s -> s.stream()
+                                                                       .map(DataBlock.Value::asString).collect(Collectors.toList());
         DataBlock orderBlock = block.getBlock("order");
         List<DataBlock.Value> orderArray = block.getValues("order");
         TrackOrder trackOrder;
         if(orderBlock != null){
-            List<String> near = getTrackList.apply("near", orderBlock);
-            List<String> mid = getTrackList.apply("mid", orderBlock);
-            List<String> far = getTrackList.apply("far", orderBlock);
+            List<String> mid = mapToStr.apply(orderBlock.getValues("mid"));
             trackOrder = new TrackOrder(mid);
-            trackOrder.setNear(near);
-            trackOrder.setFar(far);
+            Optional.ofNullable(orderBlock.getValues("near"))
+                    .ifPresent(arr -> trackOrder.setNear(arr.stream()
+                                                            .map(DataBlock.Value::asString)
+                                                            .collect(Collectors.toList())));
+            Optional.ofNullable(orderBlock.getValues("far"))
+                    .ifPresent(arr -> trackOrder.setFar(arr.stream()
+                                                            .map(DataBlock.Value::asString)
+                                                            .collect(Collectors.toList())));
         } else if(orderArray != null) {
-            List<String> mid = getTrackList.apply("order", block);
+            //A fallback for "order" in array format, take it as "mid"
+            List<String> mid = mapToStr.apply(block.getValues("order"));
             trackOrder = new TrackOrder(mid);
         } else {
-            throw new IllegalArgumentException("Must contains \"order\" field");
+            throw new IllegalArgumentException("Must contains \"order\" field with advanced track definition");
         }
 
-        TrackModel model1 = new TrackModel(condition, models, modelGaugeM, spacing);
+        //Map Identifiers to OBJModel
+        final AtomicDouble maxHeight = new AtomicDouble(0);
+        Map<String, OBJModel> models = identifiers.entrySet().stream().map(entry -> {
+            OBJModel model;
+            try {
+                model = new OBJModel(entry.getValue(), 0, Gauges.STANDARD / modelGaugeM);
+                maxHeight.getAndSet(Math.max(maxHeight.get(), calculateRailHeight(model)));
+                return new AbstractMap.SimpleEntry<>(entry.getKey(), model);
+            } catch (Exception e) {
+                throw new RuntimeException(e);
+            }
+        }).collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
+
+        TrackModel model1 = new TrackModel(condition, models, modelGaugeM, spacing, maxHeight.get());
         model1.order = trackOrder;
         model1.randomMap = mapper;
         return model1;
     }
 
-    public TrackModel(String condition, Map<String, Identifier> map, double modelGaugeM, double spacing) throws Exception {
-        this.models = new HashMap<>();
-        this.mapper = map;
-        this.randomMap = new HashMap<>();
-
-        double maxHeight = 0;
-        for (Map.Entry<String, Identifier> entry : map.entrySet()) {
-            OBJModel model = new OBJModel(entry.getValue(), 0, Gauges.STANDARD / modelGaugeM);
-            this.models.put(entry.getValue(), model);
-            maxHeight = Math.max(maxHeight, calculateRailHeight(model));
-        }
-
-        this.compare = condition.substring(0, 1);
-        this.size = Double.parseDouble(condition.substring(1));
-        this.height = maxHeight;
-        this.spacing = spacing * (Gauges.STANDARD / modelGaugeM);
-    }
-
-    private double calculateRailHeight(OBJModel model) {
+    private static double calculateRailHeight(OBJModel model) {
         List<String> railGroups = model.groups().stream()
                                        .filter(group -> group.contains("RAIL_LEFT") || group.contains("RAIL_RIGHT"))
                                        .collect(Collectors.toList());
@@ -147,11 +156,12 @@ public class TrackModel {
             return renderSingle(info, data);
         }
 
+        //Otherwise use generated order to build
         Map<String, OBJRender.Builder> vboMap = new HashMap<>();
         List<String> names = order.getRenderOrder(data.size());
         for (int i = 0; i < names.size(); i++) {
             String modelKey = randomMap.get(names.get(i)).get();
-            OBJModel model = models.get(mapper.get(modelKey));
+            OBJModel model = this.models.get(modelKey);
 
             if (!vboMap.containsKey(modelKey)) {
                 vboMap.put(modelKey, model.binder().builder());
@@ -281,6 +291,7 @@ public class TrackModel {
         }
 
         private static List<String> parseCounts(List<String> orig) {
+            // ["Str*3"] will be ["Str","Str","Str"]
             List<String> result = new ArrayList<>();
             for(String s : orig){
                 String[] str = s.split("\\*");
