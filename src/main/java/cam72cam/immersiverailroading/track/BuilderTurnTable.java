@@ -88,7 +88,7 @@ public class BuilderTurnTable extends BuilderBase {
 		}
 
 		float angle = (float)info.tablePos - info.placementInfo.facing().getAngle();
-		data.add(new VecYawPitch(offset.x, offset.y, offset.z, -angle, 0, info.settings.length * 2, "RAIL_RIGHT", "RAIL_LEFT"));
+		data.add(new VecYawPitch(offset.x, offset.y, offset.z, -angle, 0, info.settings.length * 2, "RAIL_RIGHT", "RAIL_LEFT", "RENDERTABLE"));
 		
 		return data;
 	}

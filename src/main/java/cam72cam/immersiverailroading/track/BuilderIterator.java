@@ -222,14 +222,15 @@ public abstract class BuilderIterator extends BuilderBase implements IIterableTr
 				angle = delta(prev.yaw, next.yaw);
 			}
 			if (angle != 0) {
+				VecYawPitch vec = new VecYawPitch(cur.x, cur.y, cur.z, cur.yaw, cur.pitch, (float) scale, "RAIL_BASE");
 				if (direction == TrackDirection.RIGHT) {
-					data.add(new VecYawPitch(switchPos.x, switchPos.y, switchPos.z, switchPos.yaw, switchPos.pitch, (1 - angle / 180) * (float) scale, "RAIL_LEFT"));
-					data.add(new VecYawPitch(cur.x, cur.y, cur.z, cur.yaw, cur.pitch, (1 + angle / 180) * (float) scale, "RAIL_RIGHT"));
+					vec.addChild(new VecYawPitch(switchPos.x, switchPos.y, switchPos.z, switchPos.yaw, switchPos.pitch, (1 - angle / 180) * (float) scale, "RAIL_LEFT"));
+					vec.addChild(new VecYawPitch(cur.x, cur.y, cur.z, cur.yaw, cur.pitch, (1 + angle / 180) * (float) scale, "RAIL_RIGHT"));
 				} else {
-					data.add(new VecYawPitch(cur.x, cur.y, cur.z, cur.yaw, cur.pitch, (1 - angle / 180) * (float) scale, "RAIL_LEFT"));
-					data.add(new VecYawPitch(switchPos.x, switchPos.y, switchPos.z, switchPos.yaw, switchPos.pitch, (1 + angle / 180) * (float) scale, "RAIL_RIGHT"));
+					vec.addChild(new VecYawPitch(cur.x, cur.y, cur.z, cur.yaw, cur.pitch, (1 - angle / 180) * (float) scale, "RAIL_LEFT"));
+					vec.addChild(new VecYawPitch(switchPos.x, switchPos.y, switchPos.z, switchPos.yaw, switchPos.pitch, (1 + angle / 180) * (float) scale, "RAIL_RIGHT"));
 				}
-				data.add(new VecYawPitch(cur.x, cur.y, cur.z, cur.yaw, cur.pitch, (float) scale, "RAIL_BASE"));
+				data.add(vec);
 			} else {
 				data.add(new VecYawPitch(cur.x, cur.y, cur.z, cur.yaw, cur.pitch, (float) scale));
 			}
