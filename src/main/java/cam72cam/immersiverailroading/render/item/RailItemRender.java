@@ -21,7 +21,7 @@ public class RailItemRender implements ItemRender.IItemModel {
 			baseRailModel = DefinitionManager.getTracks().stream().findFirst().get().getTrackForGauge(0);
 			List<String> groups = new ArrayList<>();
 
-			for (String groupName : baseRailModel.getFirstModel().groups())  {
+			for (String groupName : baseRailModel.groups())  {
 				if (groupName.contains("RAIL_LEFT")) {
 					groups.add(groupName);
 				}
@@ -32,7 +32,7 @@ public class RailItemRender implements ItemRender.IItemModel {
 
 		return new StandardModel().addCustom((state, pt) -> {
 			state.translate(0.5, 0.2, -0.3);
-			try (OBJRender.Binding vbo = baseRailModel.getFirstModel().binder().bind(state)) {
+			try (OBJRender.Binding vbo = baseRailModel.binder().bind(state)) {
                 vbo.draw(left);
             }
 		});
