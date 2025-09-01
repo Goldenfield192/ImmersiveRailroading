@@ -14,6 +14,7 @@ public class PartSound {
     private final float attenuationDistance;
     private final Supplier<Float> category;
 
+    private final ExpireableMap<UUID, Sounds> entitySounds = new ExpireableMap<>((k, v) -> v.terminate());
 
     public PartSound(SoundDefinition def, boolean canLoop, float attenuationDistance, Supplier<Float> category) {
         this.def = def;
@@ -55,13 +56,6 @@ public class PartSound {
             }
         }
     }
-
-    private final ExpireableMap<UUID, Sounds> entitySounds = new ExpireableMap<UUID, Sounds>() {
-        @Override
-        public void onRemove(UUID key, Sounds value) {
-            value.terminate();
-        }
-    };
 
     public void effects(EntityMoveableRollingStock stock, boolean enabled) {
         effects(stock, enabled ? 1 : 0, 1);

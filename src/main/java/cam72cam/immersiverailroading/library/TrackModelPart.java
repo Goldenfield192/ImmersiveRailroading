@@ -7,6 +7,9 @@ public enum TrackModelPart {
     TABLE;
 
     public boolean is(String str) {
-        return str.contains(this.name());
+        if(this != RAIL_BASE) {
+            return str.contains(this.name());
+        }
+        return !(RAIL_LEFT.is(str) || RAIL_RIGHT.is(str) || TABLE.is(str));
     }
 }
