@@ -61,7 +61,9 @@ public class TrackModel extends OBJModel{
                                                                        .collect(Collectors.toList());
 
         List<DataBlock> groupsList = block.getBlocks("groups");
-        if (groupsList != null) {
+        if (groupsList == null || groupsList.isEmpty()){
+            throw new IllegalArgumentException("You must have at least 1 entry in \"groups\", or you should use legacy format!");
+        } else {
             groupsList.forEach(groupBlock -> {
                 String ident = groupBlock.getValue("ident").asString();
                 DataBlock parts = groupBlock.getBlock("parts");
@@ -163,7 +165,7 @@ public class TrackModel extends OBJModel{
 
     private VBO renderSingle(RailInfo info, List<BuilderBase.VecYawPitch> data) {
         OBJRender.Builder builder = this.binder().builder();
-        Map<TrackModelPart, List<String>> groupNames = this.groupNamesMapper.get("single");
+        Map<TrackModelPart, List<String>> groupNames = this.groupNamesMapper.values().stream().findFirst().get();
 
         for (BuilderBase.VecYawPitch piece : data) {
             renderPiece(info, piece, builder, groupNames);
