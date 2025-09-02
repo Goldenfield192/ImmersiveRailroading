@@ -46,7 +46,7 @@ public class TrackDefinition {
         }
 
         for (Map.Entry<String, DataBlock.Value> entry : models.getValueMap().entrySet()) {
-            this.models.add(new TrackModel(entry.getKey(), entry.getValue().asIdentifier(), model_gauge_m, spacing));
+            this.models.add(new TrackModel(entry.getKey(), entry.getValue().asIdentifier(), model_gauge_m, spacing, true));
         }
 
         DataBlock mats = object.getBlock("materials");
