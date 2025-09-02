@@ -28,12 +28,14 @@ public class TrackModel extends OBJModel{
     private final String compare;
     private final double size;
     private final double height;
+    private final boolean isLegacyDefinition;
     public final double spacing;
 
     public TrackModel(String condition, Identifier resource, double modelGaugeM, double spacing, boolean isSingle) throws Exception {
         super(resource, 0, Gauges.STANDARD / modelGaugeM);
         this.compare = condition.substring(0, 1);
         this.groupNamesMapper = new HashMap<>();
+        this.isLegacyDefinition = isSingle;
         if(isSingle) {
             Map<TrackModelPart, List<String>> groups = new HashMap<>();
             for(TrackModelPart part : TrackModelPart.values()){
@@ -141,7 +143,7 @@ public class TrackModel extends OBJModel{
     }
 
     public VBO getModel(RailInfo info, List<BuilderBase.VecYawPitch> data) {
-        if(info.settings.type.isTable() || this.groupNamesMapper.size() == 1){
+        if(info.settings.type.isTable() || isLegacyDefinition){
             return renderSingle(info, data);
         }
 
