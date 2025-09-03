@@ -10,7 +10,6 @@ import cam72cam.mod.model.obj.OBJModel;
 import cam72cam.mod.render.obj.OBJRender;
 import cam72cam.mod.render.opengl.VBO;
 import cam72cam.mod.resource.Identifier;
-import org.apache.commons.lang3.tuple.Pair;
 import trackapi.lib.Gauges;
 import util.Matrix4;
 
@@ -28,14 +27,12 @@ public class TrackModel extends OBJModel{
     private final String compare;
     private final double size;
     private final double height;
-    private final boolean isLegacyDefinition;
     public final double spacing;
 
     public TrackModel(String condition, Identifier resource, double modelGaugeM, double spacing, boolean isSingle) throws Exception {
         super(resource, 0, Gauges.STANDARD / modelGaugeM);
         this.compare = condition.substring(0, 1);
         this.groupNamesMapper = new HashMap<>();
-        this.isLegacyDefinition = isSingle;
         if(isSingle) {
             Map<TrackModelPart, List<String>> groups = new HashMap<>();
             for(TrackModelPart part : TrackModelPart.values()){
@@ -43,6 +40,8 @@ public class TrackModel extends OBJModel{
                 groups.put(part, parts);
             }
             groupNamesMapper.put("single", groups);
+            randomMap.put("single", () -> "single");
+            this.order = new TrackOrder(Collections.singletonList("single"));
         }
         this.size = Double.parseDouble(condition.substring(1));
         List<String> rails = this.groups().stream()
@@ -87,8 +86,7 @@ public class TrackModel extends OBJModel{
                 Random rand = new Random(ident.hashCode());
                 Map<String, Integer> partWeights = b.getBlock("part_weights").getValueMap().entrySet()
                                                     .stream()
-                                                    .map(entry -> Pair.of(entry.getKey(), entry.getValue().asInteger()))
-                                                    .collect(Collectors.toMap(Pair::getKey, Pair::getValue));
+                                                    .collect(Collectors.toMap(Map.Entry::getKey, entry -> entry.getValue().asInteger()));
 
                 int gcd = partWeights.values().stream().reduce(0, MathUtil::gcd);
                 int totalWeight = partWeights.values().stream().mapToInt(i -> i / gcd).sum();
@@ -145,8 +143,8 @@ public class TrackModel extends OBJModel{
     }
 
     public VBO getModel(RailInfo info, List<BuilderBase.VecYawPitch> data) {
-        if(info.settings.type.isTable() || isLegacyDefinition){
-            return renderSingle(info, data);
+        if(info.settings.type.isTable()){
+            return renderTable(info, data);
         }
 
         //Otherwise use generated order to build
@@ -156,14 +154,13 @@ public class TrackModel extends OBJModel{
             String modelKey = randomMap.get(names.get(i)).get();
             Map<TrackModelPart, List<String>> groups = this.groupNamesMapper.get(modelKey);
 
-
             renderPiece(info, data.get(i), builder, groups);
         }
 
         return builder.build();
     }
 
-    private VBO renderSingle(RailInfo info, List<BuilderBase.VecYawPitch> data) {
+    private VBO renderTable(RailInfo info, List<BuilderBase.VecYawPitch> data) {
         OBJRender.Builder builder = this.binder().builder();
         Map<TrackModelPart, List<String>> groupNames = this.groupNamesMapper.values().stream().findFirst().get();
 
