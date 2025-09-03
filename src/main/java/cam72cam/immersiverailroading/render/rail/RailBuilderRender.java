@@ -28,7 +28,7 @@ public class RailBuilderRender {
         }
 
         MinecraftClient.startProfiler("irTrackModel");
-        try (VBO.Binding vbo = cached.bind(state, info.settings.type == TrackItems.TURNTABLE)) {
+        try (VBO.Binding vbo = cached.bind(state, info.settings.type.isTable())) {
             vbo.draw();
         }
         MinecraftClient.endProfiler();
