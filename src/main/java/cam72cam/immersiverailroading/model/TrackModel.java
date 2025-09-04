@@ -26,7 +26,7 @@ public class TrackModel extends OBJModel{
     private final Map<String, Map<TrackModelPart, List<String>>> groupNamesMapper;
     private final String compare;
     private final double size;
-    private final double height;
+    private double height;
     public final double spacing;
 
     public TrackModel(String condition, Identifier resource, double modelGaugeM, double spacing, boolean isSingle) throws Exception {
@@ -42,12 +42,12 @@ public class TrackModel extends OBJModel{
             groupNamesMapper.put("single", groups);
             randomMap.put("single", () -> "single");
             this.order = new TrackOrder(Collections.singletonList("single"));
+            List<String> rails = this.groups().stream()
+                                     .filter(group -> TrackModelPart.RAIL_LEFT.is(group) || TrackModelPart.RAIL_RIGHT.is(group))
+                                     .collect(Collectors.toList());
+            this.height = maxOfGroup(rails).y;
         }
         this.size = Double.parseDouble(condition.substring(1));
-        List<String> rails = this.groups().stream()
-                                       .filter(group -> TrackModelPart.RAIL_LEFT.is(group) || TrackModelPart.RAIL_RIGHT.is(group))
-                                       .collect(Collectors.toList());
-        this.height = maxOfGroup(rails).y;
         this.spacing = spacing * (Gauges.STANDARD / modelGaugeM);
     }
 
@@ -59,6 +59,7 @@ public class TrackModel extends OBJModel{
                                                                        .map(DataBlock.Value::asString)
                                                                        .collect(Collectors.toList());
 
+        double[] height = {Double.MIN_VALUE};
         List<DataBlock> groupsList = block.getBlocks("groups");
         if (groupsList == null || groupsList.isEmpty()){
             throw new IllegalArgumentException("You must have at least 1 entry in \"groups\", or you should use legacy format!");
@@ -75,9 +76,23 @@ public class TrackModel extends OBJModel{
                                                                                          .orElse(Collections.emptyList())
                                                                  ));
 
+                List<String> rails = new ArrayList<>();
+                groups.entrySet().stream()
+                                 .filter(entry -> entry.getKey() == TrackModelPart.RAIL_LEFT
+                                 || entry.getKey() == TrackModelPart.RAIL_RIGHT)
+                                 .map(Map.Entry::getValue)
+                                 .forEach(rails::addAll);
+
+                height[0] = Math.max(height[0], model.maxOfGroup(rails).y);
                 model.groupNamesMapper.put(ident, groups);
                 mapper.put(ident, () -> ident);
             });
+        }
+
+        if (height[0] != Double.MIN_VALUE) {
+            model.height = height[0];
+        } else {
+            throw new IllegalArgumentException("Unable to get any rail in model groups definition!");
         }
 
         List<DataBlock> randomized = block.getBlocks("randomized");
