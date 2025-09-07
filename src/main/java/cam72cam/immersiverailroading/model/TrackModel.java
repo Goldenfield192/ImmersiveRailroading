@@ -200,11 +200,11 @@ public class TrackModel extends OBJModel{
         List<String> tables = groupNames.get(TrackModelPart.TABLE);
 
         if(piece.getParts().contains(TrackModelPart.TABLE)){
-            builder.draw(tables, matrix);
+            builder.draw(tables, matrix.copy());
         }
 
         if (piece.getLength() != -1) {
-            matrix = matrix.copy().scale(piece.getLength() / info.settings.gauge.scale(), 1, 1);
+            matrix.scale(piece.getLength() / info.settings.gauge.scale(), 1, 1);
         }
 
         List<String> groups = new ArrayList<>();
