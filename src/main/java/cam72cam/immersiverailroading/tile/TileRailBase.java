@@ -127,6 +127,8 @@ public class TileRailBase extends BlockEntityTrackTickable implements IRedstoneP
 		redstoneMode = RedstoneMode.ENABLED;
 		this.markDirty();
 	}
+
+	//TODO
 	public boolean setAugmentFilter(String definitionID) {
 		if (definitionID != null && !definitionID.equals(augmentFilterID)) {
 			this.augmentFilterID = definitionID;
