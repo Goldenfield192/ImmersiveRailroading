@@ -62,6 +62,7 @@ public abstract class EntityRollingStockDefinition {
     private String name;
     private String modelerName;
     private String packName;
+    protected Set<String> tags;
     private ValveGearConfig valveGear;
     public float darken;
     public Identifier modelLoc;
@@ -398,7 +399,13 @@ public abstract class EntityRollingStockDefinition {
     public void loadData(DataBlock data) throws Exception {
         name = data.getValue("name").asString();
         modelerName = data.getValue("modeler").asString();
-        packName = data.getValue("pack").asString();
+        packName = data.getValue("pack").asString();tags = new HashSet<>();
+        tags = new HashSet<>();
+        List<DataBlock.Value> tagValues = data.getValues("tags");
+        if (tagValues != null) {
+            tagValues.forEach(v -> tags.add(v.asString()));
+        }
+
         darken = data.getValue("darken_model").asFloat();
         internal_model_scale = 1;
         internal_inv_scale = 1;
