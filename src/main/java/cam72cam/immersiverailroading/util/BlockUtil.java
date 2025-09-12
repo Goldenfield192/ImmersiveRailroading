@@ -1,8 +1,10 @@
 package cam72cam.immersiverailroading.util;
 
+import cam72cam.immersiverailroading.Config;
 import cam72cam.immersiverailroading.IRBlocks;
 import cam72cam.immersiverailroading.tile.TileRailBase;
 import cam72cam.mod.math.Vec3i;
+import cam72cam.mod.world.BlockInfo;
 import cam72cam.mod.world.World;
 
 public class BlockUtil {
@@ -25,4 +27,8 @@ public class BlockUtil {
 		return world.isBlock(pos, IRBlocks.BLOCK_RAIL_GAG) || world.isBlock(pos, IRBlocks.BLOCK_RAIL);
 	}
 
+	public static boolean isWhitelisted(World world, Vec3i pos) {
+		BlockInfo info = world.getBlock(pos);
+		return Config.ConfigDamage.whitelistBlocks.containsKey(info.getBlockRegistryName().toString());
+	}
 }
