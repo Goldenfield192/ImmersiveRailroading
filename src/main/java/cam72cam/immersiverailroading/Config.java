@@ -43,11 +43,6 @@ public class Config {
 			// Other
 			ConfigBalance.dieselFuels.put("olive_oil", 40);
 		}
-
-		if (ConfigDamage.whitelistBlocks.isEmpty()) {
-			//Little tiles
-			ConfigDamage.whitelistBlocks.put("littletiles:blocklittletiles", true);
-		}
 	}
 
 	@Name("damage")
@@ -66,7 +61,9 @@ public class Config {
 		public static boolean TrainsBreakBlocks = true;
 
 		@Comment("Which block is reserved if TrainsBreakBlocks is true")
-		public static Map<String, Boolean> whitelistBlocks = new HashMap<>();
+		public static String[] whitelistBlocks = new String[]{
+				"littletiles:blocklittletiles"
+		};
 
 		@Comment("How hard are blocks to break by rolling stock?")
 		@Range(min = 0, max = 500)

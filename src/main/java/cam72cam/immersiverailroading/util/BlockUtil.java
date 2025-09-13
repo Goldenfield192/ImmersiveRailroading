@@ -3,11 +3,18 @@ package cam72cam.immersiverailroading.util;
 import cam72cam.immersiverailroading.Config;
 import cam72cam.immersiverailroading.IRBlocks;
 import cam72cam.immersiverailroading.tile.TileRailBase;
+import cam72cam.mod.item.Fuzzy;
+import cam72cam.mod.item.ItemStack;
 import cam72cam.mod.math.Vec3i;
-import cam72cam.mod.world.BlockInfo;
 import cam72cam.mod.world.World;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+
 public class BlockUtil {
+	private static List<Fuzzy> whitelist;
+
 	public static boolean canBeReplaced(World world, Vec3i pos, boolean allowFlex) {
 		if (world.isReplaceable(pos)) {
 			return true;
@@ -28,7 +35,13 @@ public class BlockUtil {
 	}
 
 	public static boolean isWhitelisted(World world, Vec3i pos) {
-		BlockInfo info = world.getBlock(pos);
-		return Config.ConfigDamage.whitelistBlocks.containsKey(info.getBlockRegistryName().toString());
+		if (whitelist == null) {
+			whitelist = new ArrayList<>();
+			Arrays.stream(Config.ConfigDamage.whitelistBlocks).forEach(s -> whitelist.add(Fuzzy.get(s)));
+		}
+
+		ItemStack stack = world.getItemStack(pos);
+
+		return whitelist.stream().anyMatch(fuzzy -> fuzzy.matches(stack));
 	}
 }
