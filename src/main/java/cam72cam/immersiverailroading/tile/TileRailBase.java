@@ -14,6 +14,7 @@ import cam72cam.immersiverailroading.items.ItemTrackExchanger;
 import cam72cam.immersiverailroading.library.*;
 import cam72cam.immersiverailroading.model.part.Door;
 import cam72cam.immersiverailroading.physics.MovementTrack;
+import cam72cam.immersiverailroading.registry.DefinitionManager;
 import cam72cam.immersiverailroading.thirdparty.trackapi.BlockEntityTrackTickable;
 import cam72cam.immersiverailroading.util.*;
 import cam72cam.mod.block.IRedstoneProvider;
@@ -35,7 +36,9 @@ import cam72cam.immersiverailroading.thirdparty.trackapi.ITrack;
 import cam72cam.mod.util.SingleCache;
 import org.apache.commons.lang3.ArrayUtils;
 
+import javax.annotation.Nonnull;
 import java.util.*;
+import java.util.function.Predicate;
 
 public class TileRailBase extends BlockEntityTrackTickable implements IRedstoneProvider {
 	@TagField("parent")
@@ -46,8 +49,9 @@ public class TileRailBase extends BlockEntityTrackTickable implements IRedstoneP
 	private float railHeight = 0;
 	@TagField("augment")
 	private Augment augment;
-	@TagField("augmentFilterID")
-	private String augmentFilterID;
+	@TagField("augment_filter")
+	private String filter;
+	private final List<Predicate<EntityRollingStock>> compiledFilter = new ArrayList<>();
 	@TagField("snowLayers")
 	private int snowLayers = 0;
 	@TagField("flexible")
@@ -123,18 +127,53 @@ public class TileRailBase extends BlockEntityTrackTickable implements IRedstoneP
 				}
 			}
 		}
-		setAugmentFilter(null);
+		setAugmentFilter("");
 		redstoneMode = RedstoneMode.ENABLED;
 		this.markDirty();
 	}
-	public boolean setAugmentFilter(String definitionID) {
-		if (definitionID != null && !definitionID.equals(augmentFilterID)) {
-			this.augmentFilterID = definitionID;
-		} else {
-			this.augmentFilterID = null;
-		}
+
+	//TODO
+	public boolean setAugmentFilter(@Nonnull String input) {
+		this.filter = input;
+
 		this.markDirty();
-		return this.augmentFilterID != null;
+		return !this.compiledFilter.isEmpty();
+	}
+
+	public void compileFilter() {
+		compiledFilter.clear();
+
+		String[] filters = filter.split(" ");
+		for (String str : filters) {
+			str = str.trim();
+			if (str.startsWith("type:")) {
+				switch (str.substring(5)) {
+					case "diesel":
+						compiledFilter.add(s -> s instanceof LocomotiveDiesel);
+						break;
+					case "steam":
+						compiledFilter.add(s -> s instanceof LocomotiveSteam);
+						break;
+					case "handcar":
+						compiledFilter.add(s -> s instanceof HandCar);
+						break;
+					case "passenger":
+						compiledFilter.add(s -> s instanceof CarPassenger);
+						break;
+					case "tender":
+						compiledFilter.add(s -> s instanceof Tender);
+						break;
+					case "tank":
+						compiledFilter.add(s -> s instanceof CarTank);
+						break;
+					case "freight":
+						compiledFilter.add(s -> s instanceof CarFreight);
+				}
+			} else if (str.startsWith("tag:")) {
+				String tag = str.substring(4);
+				compiledFilter.add(s -> DefinitionManager.isTaggedWith(s.getDefinition(), tag));
+			}
+		}
 	}
 
 	public PlayerMessage nextAugmentRedstoneMode(boolean isPiston) {
@@ -171,6 +210,9 @@ public class TileRailBase extends BlockEntityTrackTickable implements IRedstoneP
 	}
 	public Augment getAugment() {
 		return this.augment;
+	}
+	public String getAugmentFilter() {
+		return filter;
 	}
 	public int getSnowLayers() {
 		return this.snowLayers;
@@ -460,7 +502,7 @@ public class TileRailBase extends BlockEntityTrackTickable implements IRedstoneP
 		if (overhead == null) {
 			return null;
 		}
-		if (augmentFilterID != null && !augmentFilterID.equals(overhead.getDefinitionID())) {
+		if (!compiledFilter.isEmpty() && compiledFilter.stream().noneMatch(p -> p.test(overhead))) {
 			return null;
 		}
 		if (stockTag != null && !stockTag.equals(overhead.tag)) {
@@ -888,6 +930,10 @@ public class TileRailBase extends BlockEntityTrackTickable implements IRedstoneP
 
 	@Override
 	public boolean onClick(Player player, Player.Hand hand, Facing facing, Vec3d hit) {
+		if (this.augment != null) {
+			GuiTypes.RAIL_AUGMENT.open(player, this.getPos());
+			return true;
+		}
 		ItemStack stack = player.getHeldItem(hand);
 		if (stack.is(IRItems.ITEM_TRACK_EXCHANGER) && player.hasPermission(Permissions.EXCHANGE_TRACK)) {
 			TileRail tileRail = this.getParentTile();

@@ -150,7 +150,8 @@ public class ItemRollingStock extends BaseItemRollingStock {
 				case ITEM_UNLOADER:
 					if (world.isServer) {
 						Data data = new Data(player.getHeldItem(hand));
-						boolean set = te.setAugmentFilter(data.def != null ? data.def.defID : null);
+						//TODO
+						boolean set = te.setAugmentFilter(data.def != null ? data.def.defID : "");
 						if (set) {
 							player.sendMessage(ChatText.SET_AUGMENT_FILTER.getMessage(data.def != null ? data.def.name() : "Unknown"));
 						} else {

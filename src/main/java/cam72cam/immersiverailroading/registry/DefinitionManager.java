@@ -376,15 +376,15 @@ public class DefinitionManager {
         return definitions.keySet();
     }
 
-    public static Set<EntityRollingStockDefinition> getTaggedStocks (String tag) {
+    public static Set<EntityRollingStockDefinition> getTaggedStocks(String tag) {
         return stockTags.getValues(tag);
     }
 
-    public static Set<String> getStockTags (EntityRollingStockDefinition def) {
+    public static Set<String> getStockTags(EntityRollingStockDefinition def) {
         return stockTags.getKeys(def);
     }
 
-    public static boolean isTaggedWith (EntityRollingStockDefinition def, String tag) {
+    public static boolean isTaggedWith(EntityRollingStockDefinition def, String tag) {
         return stockTags.containsEntry(tag, def);
     }
 
