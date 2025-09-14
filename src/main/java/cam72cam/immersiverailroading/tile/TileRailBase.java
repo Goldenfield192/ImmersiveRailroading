@@ -202,7 +202,7 @@ public class TileRailBase extends BlockEntityTrackTickable implements IRedstoneP
 				} else if (str.startsWith("pack:")) {
 					String pack = str.substring(5);
 					list.add(s -> s.getDefinition().packName.equals(pack));
-				} else if (str.startsWith("nametag;")) {
+				} else if (str.startsWith("nametag:")) {
 					String nameTag = str.substring(8);
 					list.add(s -> s.tag.equals(nameTag));
 				}
@@ -254,7 +254,7 @@ public class TileRailBase extends BlockEntityTrackTickable implements IRedstoneP
 				} else if (str.startsWith("pack:")) {
 					String pack = str.substring(5);
 					list.add(s -> !s.getDefinition().packName.equals(pack));
-				} else if (str.startsWith("nametag;")) {
+				} else if (str.startsWith("nametag:")) {
 					String nameTag = str.substring(8);
 					list.add(s -> !s.tag.equals(nameTag));
 				}
@@ -265,19 +265,24 @@ public class TileRailBase extends BlockEntityTrackTickable implements IRedstoneP
 
 		compiledFilter = list;
 	}
+
 	public Augment getAugment() {
 		return this.augment;
 	}
+
 	public Augment.Properties getAugmentProperties() {
 		return new Augment.Properties(positive, negative, couplerMode, controlMode, redstoneMode, pushPull, detectorMode);
 	}
+
 	public int getSnowLayers() {
 		return this.snowLayers;
 	}
+
 	public void setSnowLayers(int snowLayers) {
 		this.snowLayers = snowLayers;
 		this.markDirty();
 	}
+
 	public float getFullHeight() {
 		return this.bedHeight + this.snowLayers / 8.0f;
 	}
