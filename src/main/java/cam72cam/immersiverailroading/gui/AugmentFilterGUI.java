@@ -99,7 +99,7 @@ public class AugmentFilterGUI implements IScreen {
                             || this.augment == Augment.ITEM_UNLOADER
                             || this.augment == Augment.FLUID_LOADER
                             || this.augment == Augment.FLUID_UNLOADER);
-        yOffset += 25;
+        yOffset += 15;
 
         couplerMode = new Button(screen, xtop + xOffset, ytop + yOffset, "Coupler Mode: " + translate.apply(properties.couplerAugmentMode)) {
             @Override

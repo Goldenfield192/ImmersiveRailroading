@@ -550,7 +550,7 @@ public class TileRailBase extends BlockEntityTrackTickable implements IRedstoneP
 		if (overhead == null) {
 			return null;
 		}
-		if (!compiledFilter.isEmpty() && !compiledFilter.stream().allMatch(p -> p.test(overhead))) {
+		if(!canInteractWith(overhead)) {
 			return null;
 		}
 		if (stockTag != null && !stockTag.equals(overhead.tag)) {
@@ -559,6 +559,10 @@ public class TileRailBase extends BlockEntityTrackTickable implements IRedstoneP
 
 		return overhead.as(type);
 	}
+
+	public boolean canInteractWith(EntityRollingStock stock) {
+        return compiledFilter == null || compiledFilter.isEmpty() || compiledFilter.stream().allMatch(p -> p.test(stock));
+    }
 
 	private boolean canOperate() {
 		switch (this.redstoneMode) {
@@ -978,7 +982,9 @@ public class TileRailBase extends BlockEntityTrackTickable implements IRedstoneP
 
 	@Override
 	public boolean onClick(Player player, Player.Hand hand, Facing facing, Vec3d hit) {
-		if (this.augment != null && player.hasPermission(Permissions.AUGMENT_TRACK)) {
+		if (this.augment != null
+			&& player.hasPermission(Permissions.AUGMENT_TRACK)
+			&& !player.getHeldItem(Player.Hand.PRIMARY).is(IRItems.ITEM_ROLLING_STOCK)) {
 			GuiTypes.RAIL_AUGMENT.open(player, this.getPos());
 			return true;
 		}
