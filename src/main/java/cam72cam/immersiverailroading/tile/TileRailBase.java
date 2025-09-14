@@ -48,6 +48,9 @@ public class TileRailBase extends BlockEntityTrackTickable implements IRedstoneP
 	private float railHeight = 0;
 	@TagField("augment")
 	private Augment augment;
+	@Deprecated
+	@TagField("augmentFilterID")
+	private String augmentFilterID;
 	@TagField("positive_filter")
 	private String positive;
 	@TagField("negative_filter")
@@ -76,6 +79,7 @@ public class TileRailBase extends BlockEntityTrackTickable implements IRedstoneP
 	private int ticksExisted;
 	public boolean blockUpdate;
 	private Gauge augmentGauge;
+	@Deprecated
 	@TagField("stockTag")
 	private String stockTag;
 	private EntityMoveableRollingStock overhead;
@@ -366,6 +370,10 @@ public class TileRailBase extends BlockEntityTrackTickable implements IRedstoneP
 		case 5:
 			if (this.stockTag != null && !this.stockTag.isEmpty()) {
 				this.positive = this.positive + ",nametag:" + stockTag;
+			}
+			if (this.augmentFilterID != null && !this.augmentFilterID.isEmpty()) {
+				this.positive = this.positive + ",stock:" + augmentFilterID.split("/")[2]
+						.replace(".json", "").replace(".caml", "");
 			}
 		}
 		this.compileFilter();
