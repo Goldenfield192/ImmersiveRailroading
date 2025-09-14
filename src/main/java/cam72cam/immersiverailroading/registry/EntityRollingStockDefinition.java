@@ -59,9 +59,9 @@ public abstract class EntityRollingStockDefinition {
     public Identifier collision_sound;
     public double flange_min_yaw;
     double internal_inv_scale;
-    private String name;
-    private String modelerName;
-    private String packName;
+    public String name;
+    public String modelerName;
+    public String packName;
     protected Set<String> tags;
     private ValveGearConfig valveGear;
     public float darken;
@@ -399,7 +399,7 @@ public abstract class EntityRollingStockDefinition {
     public void loadData(DataBlock data) throws Exception {
         name = data.getValue("name").asString();
         modelerName = data.getValue("modeler").asString();
-        packName = data.getValue("pack").asString();tags = new HashSet<>();
+        packName = data.getValue("pack").asString();
         tags = new HashSet<>();
         List<DataBlock.Value> tagValues = data.getValues("tags");
         if (tagValues != null) {

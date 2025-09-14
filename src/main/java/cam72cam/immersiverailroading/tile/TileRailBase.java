@@ -29,7 +29,6 @@ import cam72cam.mod.serialization.TagField;
 import cam72cam.mod.sound.Audio;
 import cam72cam.mod.sound.SoundCategory;
 import cam72cam.mod.sound.StandardSound;
-import cam72cam.mod.text.PlayerMessage;
 import cam72cam.mod.util.Facing;
 import cam72cam.mod.serialization.TagCompound;
 import cam72cam.immersiverailroading.thirdparty.trackapi.ITrack;
@@ -49,9 +48,11 @@ public class TileRailBase extends BlockEntityTrackTickable implements IRedstoneP
 	private float railHeight = 0;
 	@TagField("augment")
 	private Augment augment;
-	@TagField("augment_filter")
-	private String filter;
-	private final List<Predicate<EntityRollingStock>> compiledFilter = new ArrayList<>();
+	@TagField("positive_filter")
+	private String positive;
+	@TagField("negative_filter")
+	private String negative;
+	private List<Predicate<EntityRollingStock>> compiledFilter = new LinkedList<>();
 	@TagField("snowLayers")
 	private int snowLayers = 0;
 	@TagField("flexible")
@@ -65,13 +66,13 @@ public class TileRailBase extends BlockEntityTrackTickable implements IRedstoneP
 	private final IInventory emptyInventory = new ItemStackHandler(0);
 	private int redstoneLevel = 0;
 	@TagField("redstoneMode")
-	private StockDetectorMode detectorMode = StockDetectorMode.SIMPLE;
+	private StockDetectorMode detectorMode;
 	@TagField("controlMode")
-	private LocoControlMode controlMode = LocoControlMode.THROTTLE;
+	private LocoControlMode controlMode;
 	@TagField("couplerMod")
-	private CouplerAugmentMode couplerMode = CouplerAugmentMode.ENGAGED;
+	private CouplerAugmentMode couplerMode;
 	@TagField("redstoneSensitivity")
-	private RedstoneMode redstoneMode = RedstoneMode.ENABLED;
+	private RedstoneMode redstoneMode;
 	private int ticksExisted;
 	public boolean blockUpdate;
 	private Gauge augmentGauge;
@@ -114,105 +115,151 @@ public class TileRailBase extends BlockEntityTrackTickable implements IRedstoneP
 	
 	public void setAugment(Augment augment) {
 		this.augment = augment;
+		Augment.Properties properties = new Augment.Properties("", "",
+															   CouplerAugmentMode.ENGAGED,
+															   LocoControlMode.THROTTLE,
+															   RedstoneMode.ENABLED,
+															   true,
+															   StockDetectorMode.SIMPLE);
 		if (getParentTile() != null) {
 			augmentGauge = getParentTile().info.settings.gauge;
 			if (ConfigDebug.defaultAugmentComputer && augment != null) {
 				switch (augment) {
 					case DETECTOR:
-						detectorMode = StockDetectorMode.COMPUTER;
+						properties.stockDetectorMode = StockDetectorMode.COMPUTER;
 						break;
 					case LOCO_CONTROL:
-						controlMode = LocoControlMode.COMPUTER;
+						properties.locoControlMode = LocoControlMode.COMPUTER;
 						break;
 				}
 			}
 		}
-		setAugmentFilter("");
-		redstoneMode = RedstoneMode.ENABLED;
+		properties.redstoneMode = RedstoneMode.ENABLED;
+		setAugmentProperties(properties);
 		this.markDirty();
 	}
 
-	//TODO
-	public boolean setAugmentFilter(@Nonnull String input) {
-		this.filter = input;
+	public void setAugmentProperties(@Nonnull Augment.Properties properties) {
+		this.positive = properties.positiveFilter;
+		this.negative = properties.negativeFilter;
+		this.couplerMode = properties.couplerAugmentMode;
+		this.controlMode = properties.locoControlMode;
+		this.redstoneMode = properties.redstoneMode;
+		this.pushPull = properties.pushpull;
+		this.detectorMode = properties.stockDetectorMode;
 
+		this.compileFilter();
 		this.markDirty();
-		return !this.compiledFilter.isEmpty();
 	}
 
 	public void compileFilter() {
-		compiledFilter.clear();
+		List<Predicate<EntityRollingStock>> list = new LinkedList<>();
 
-		String[] filters = filter.split(" ");
-		for (String str : filters) {
-			str = str.trim();
-			if (str.startsWith("type:")) {
-				switch (str.substring(5)) {
-					case "diesel":
-						compiledFilter.add(s -> s instanceof LocomotiveDiesel);
-						break;
-					case "steam":
-						compiledFilter.add(s -> s instanceof LocomotiveSteam);
-						break;
-					case "handcar":
-						compiledFilter.add(s -> s instanceof HandCar);
-						break;
-					case "passenger":
-						compiledFilter.add(s -> s instanceof CarPassenger);
-						break;
-					case "tender":
-						compiledFilter.add(s -> s instanceof Tender);
-						break;
-					case "tank":
-						compiledFilter.add(s -> s instanceof CarTank);
-						break;
-					case "freight":
-						compiledFilter.add(s -> s instanceof CarFreight);
+		if (positive != null && !positive.isEmpty()) {
+			String[] positiveFilters = positive.split(",");
+			for (String str : positiveFilters) {
+				str = str.trim();
+				if (str.startsWith("type:")) {
+					switch (str.substring(5)) {
+						case "diesel":
+							list.add(s -> s instanceof LocomotiveDiesel);
+							break;
+						case "steam":
+							list.add(s -> s instanceof LocomotiveSteam);
+							break;
+						case "handcar":
+							list.add(s -> s instanceof HandCar);
+							break;
+						case "passenger":
+							list.add(s -> s instanceof CarPassenger);
+							break;
+						case "tender":
+							list.add(s -> s instanceof Tender);
+							break;
+						case "tank":
+							list.add(s -> s instanceof CarTank);
+							break;
+						case "freight":
+							list.add(s -> s instanceof CarFreight);
+					}
+				} else if (str.startsWith("tag:")) {
+					String tag = str.substring(4);
+					list.add(s -> DefinitionManager.isTaggedWith(s.getDefinition(), tag));
+				} else if (str.startsWith("stock:")) {
+					String defID = str.substring(6);
+					list.add(s -> s.getDefinitionID().split("/")[2]
+							.replace(".json", "").replace(".caml", "").equals(defID));
+				} else if (str.startsWith("works:")) {
+					String works = str.substring(6);
+					list.add(s -> s instanceof Locomotive && ((Locomotive) s).getDefinition().works.equals(works));
+				} else if (str.startsWith("author:")) {
+					String author = str.substring(7);
+					list.add(s -> s.getDefinition().modelerName.equals(author));
+				} else if (str.startsWith("pack:")) {
+					String pack = str.substring(5);
+					list.add(s -> s.getDefinition().packName.equals(pack));
 				}
-			} else if (str.startsWith("tag:")) {
-				String tag = str.substring(4);
-				compiledFilter.add(s -> DefinitionManager.isTaggedWith(s.getDefinition(), tag));
 			}
+		} else {
+			list.add(s -> true);
 		}
-	}
 
-	public PlayerMessage nextAugmentRedstoneMode(boolean isPiston) {
-		if (this.augment == null) {
-			return null;
-		}
-		switch (this.augment) {
-			case DETECTOR:
-				detectorMode = StockDetectorMode.values()[((detectorMode.ordinal() + 1) % (StockDetectorMode.values().length))];
-				return PlayerMessage.translate(detectorMode.toString());
-			case LOCO_CONTROL:
-				controlMode = LocoControlMode.values()[((controlMode.ordinal() + 1) % (LocoControlMode.values().length))];
-				return PlayerMessage.translate(controlMode.toString());
-			case COUPLER:
-				if (isPiston) {
-					couplerMode = CouplerAugmentMode.values()[((couplerMode.ordinal() + 1) % (CouplerAugmentMode.values().length))];
-					return PlayerMessage.translate(couplerMode.toString());
+		if (negative != null && !negative.isEmpty()) {
+			String[] negativeFilters = negative.split(",");
+			for (String str : negativeFilters) {
+				str = str.trim();
+				if (str.startsWith("type:")) {
+					switch (str.substring(5)) {
+						case "diesel":
+							list.add(s -> !(s instanceof LocomotiveDiesel));
+							break;
+						case "steam":
+							list.add(s -> !(s instanceof LocomotiveSteam));
+							break;
+						case "handcar":
+							list.add(s -> !(s instanceof HandCar));
+							break;
+						case "passenger":
+							list.add(s -> !(s instanceof CarPassenger));
+							break;
+						case "tender":
+							list.add(s -> !(s instanceof Tender));
+							break;
+						case "tank":
+							list.add(s -> !(s instanceof CarTank));
+							break;
+						case "freight":
+							list.add(s -> !(s instanceof CarFreight));
+					}
+				} else if (str.startsWith("tag:")) {
+					String tag = str.substring(4);
+					list.add(s -> !DefinitionManager.isTaggedWith(s.getDefinition(), tag));
+				} else if (str.startsWith("stock:")) {
+					String defID = str.substring(6);
+					list.add(s -> !s.getDefinitionID().split("/")[2]
+							.replace(".json", "").replace(".caml", "").equals(defID));
+				} else if (str.startsWith("works:")) {
+					String works = str.substring(6);
+					list.add(s -> !(s instanceof Locomotive && ((Locomotive) s).getDefinition().works.equals(works)));
+				} else if (str.startsWith("author:")) {
+					String author = str.substring(7);
+					list.add(s -> !s.getDefinition().modelerName.equals(author));
+				} else if (str.startsWith("pack:")) {
+					String pack = str.substring(5);
+					list.add(s -> !s.getDefinition().packName.equals(pack));
 				}
-				// Fall through to redstone control setting
-			case ITEM_LOADER:
-			case ITEM_UNLOADER:
-			case FLUID_LOADER:
-			case FLUID_UNLOADER:
-				if (isPiston) {
-					this.pushPull = !this.pushPull;
-					return PlayerMessage.translate("immersiverailroading:augment.pushpull." + (this.pushPull ? "enabled" : "disabled"));
-				} else {
-					this.redstoneMode = RedstoneMode.values()[(redstoneMode.ordinal() + 1) % RedstoneMode.values().length];
-					return PlayerMessage.translate(redstoneMode.toString());
-				}
-			default:
-				return null;
+			}
+		} else {
+			list.add(s -> true);
 		}
+
+		compiledFilter = list;
 	}
 	public Augment getAugment() {
 		return this.augment;
 	}
-	public String getAugmentFilter() {
-		return filter;
+	public Augment.Properties getAugmentProperties() {
+		return new Augment.Properties(positive, negative, couplerMode, controlMode, redstoneMode, pushPull, detectorMode);
 	}
 	public int getSnowLayers() {
 		return this.snowLayers;
@@ -311,6 +358,7 @@ public class TileRailBase extends BlockEntityTrackTickable implements IRedstoneP
 				}
 			}
 		}
+		this.compileFilter();
 	}
 	@Override
 	public void save(TagCompound nbt) {
@@ -502,7 +550,7 @@ public class TileRailBase extends BlockEntityTrackTickable implements IRedstoneP
 		if (overhead == null) {
 			return null;
 		}
-		if (!compiledFilter.isEmpty() && compiledFilter.stream().noneMatch(p -> p.test(overhead))) {
+		if (!compiledFilter.isEmpty() && !compiledFilter.stream().allMatch(p -> p.test(overhead))) {
 			return null;
 		}
 		if (stockTag != null && !stockTag.equals(overhead.tag)) {
@@ -587,7 +635,7 @@ public class TileRailBase extends BlockEntityTrackTickable implements IRedstoneP
 
 		if (ticksExisted > 5 && blockUpdate || (ticksExisted % (20 * 5) == 0 && ticksExisted > (20 * 20))) {
 			// Double check every 5 seconds that the master is not gone
-			// Wont fire on first due to incr above
+			// Won't fire on first due to incr above
 			blockUpdate = false;
 
 			if (this.getParent() == null || !getWorld().isBlockLoaded(this.getParent())) {
@@ -930,10 +978,11 @@ public class TileRailBase extends BlockEntityTrackTickable implements IRedstoneP
 
 	@Override
 	public boolean onClick(Player player, Player.Hand hand, Facing facing, Vec3d hit) {
-		if (this.augment != null) {
+		if (this.augment != null && player.hasPermission(Permissions.AUGMENT_TRACK)) {
 			GuiTypes.RAIL_AUGMENT.open(player, this.getPos());
 			return true;
 		}
+
 		ItemStack stack = player.getHeldItem(hand);
 		if (stack.is(IRItems.ITEM_TRACK_EXCHANGER) && player.hasPermission(Permissions.EXCHANGE_TRACK)) {
 			TileRail tileRail = this.getParentTile();
@@ -969,6 +1018,7 @@ public class TileRailBase extends BlockEntityTrackTickable implements IRedstoneP
 			}
 			return true;
 		}
+
 		if (stack.is(Fuzzy.NAME_TAG) && player.hasPermission(Permissions.AUGMENT_TRACK)) {
 			if (getWorld().isServer) {
 				if (player.isCrouching()) {
@@ -981,15 +1031,7 @@ public class TileRailBase extends BlockEntityTrackTickable implements IRedstoneP
 			}
 			return true;
 		}
-		if (player.hasPermission(Permissions.AUGMENT_TRACK) && (stack.is(Fuzzy.REDSTONE_TORCH) || stack.is(Fuzzy.REDSTONE_DUST) || stack.is(Fuzzy.PISTON))) {
-			PlayerMessage next = this.nextAugmentRedstoneMode(stack.is(Fuzzy.PISTON));
-			if (next != null) {
-				if (this.getWorld().isServer) {
-					player.sendMessage(next);
-				}
-				return true;
-			}
-		}
+
 		if (stack.is(Fuzzy.SNOW_LAYER)) {
 			if (this.getWorld().isServer) {
 				this.handleSnowTick();

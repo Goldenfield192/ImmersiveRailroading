@@ -138,32 +138,15 @@ public class ItemRollingStock extends BaseItemRollingStock {
 	
 	@Override
 	public ClickResult onClickBlock(Player player, World world, Vec3i pos, Player.Hand hand, Facing facing, Vec3d hit) {
-		if (BlockUtil.isIRRail(world, pos)) {
-			TileRailBase te = world.getBlockEntity(pos, TileRailBase.class);
-			if (te.getAugment() != null) {
-				switch(te.getAugment()) {
-				case DETECTOR:
-				case LOCO_CONTROL:
-				case FLUID_LOADER:
-				case FLUID_UNLOADER:
-				case ITEM_LOADER:
-				case ITEM_UNLOADER:
-					if (world.isServer) {
-						Data data = new Data(player.getHeldItem(hand));
-						//TODO
-						boolean set = te.setAugmentFilter(data.def != null ? data.def.defID : "");
-						if (set) {
-							player.sendMessage(ChatText.SET_AUGMENT_FILTER.getMessage(data.def != null ? data.def.name() : "Unknown"));
-						} else {
-							player.sendMessage(ChatText.RESET_AUGMENT_FILTER.getMessage());
-						}
-					}
-					return ClickResult.ACCEPTED;
-				default:
-					break;
-				}
+		if(world.isServer && BlockUtil.isIRRail(world, pos)) {
+			TileRailBase base = world.getBlockEntity(pos, TileRailBase.class);
+			//TODO
+			if (base.getAugment() != null) {
+				Augment.Properties properties = base.getAugmentProperties();
+//				properties.positiveFilter +=
 			}
 		}
+
 		return tryPlaceStock(player, world, pos, hand, null);
 	}
 	
