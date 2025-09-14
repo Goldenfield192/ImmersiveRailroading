@@ -138,14 +138,14 @@ public class ItemRollingStock extends BaseItemRollingStock {
 	
 	@Override
 	public ClickResult onClickBlock(Player player, World world, Vec3i pos, Player.Hand hand, Facing facing, Vec3d hit) {
-		if(world.isServer && BlockUtil.isIRRail(world, pos)) {
-			TileRailBase base = world.getBlockEntity(pos, TileRailBase.class);
-			//TODO
-			if (base.getAugment() != null) {
-				Augment.Properties properties = base.getAugmentProperties();
-//				properties.positiveFilter +=
-			}
-		}
+//		if(world.isServer && BlockUtil.isIRRail(world, pos)) {
+//			TileRailBase base = world.getBlockEntity(pos, TileRailBase.class);
+//			//TODO
+//			if (base.getAugment() != null) {
+//				Augment.Properties properties = base.getAugmentProperties();
+////				properties.positiveFilter +=
+//			}
+//		}
 
 		return tryPlaceStock(player, world, pos, hand, null);
 	}

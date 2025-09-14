@@ -198,6 +198,9 @@ public class TileRailBase extends BlockEntityTrackTickable implements IRedstoneP
 				} else if (str.startsWith("pack:")) {
 					String pack = str.substring(5);
 					list.add(s -> s.getDefinition().packName.equals(pack));
+				} else if (str.startsWith("nametag;")) {
+					String nameTag = str.substring(8);
+					list.add(s -> s.tag.equals(nameTag));
 				}
 			}
 		} else {
@@ -247,6 +250,9 @@ public class TileRailBase extends BlockEntityTrackTickable implements IRedstoneP
 				} else if (str.startsWith("pack:")) {
 					String pack = str.substring(5);
 					list.add(s -> !s.getDefinition().packName.equals(pack));
+				} else if (str.startsWith("nametag;")) {
+					String nameTag = str.substring(8);
+					list.add(s -> !s.tag.equals(nameTag));
 				}
 			}
 		} else {
@@ -357,12 +363,16 @@ public class TileRailBase extends BlockEntityTrackTickable implements IRedstoneP
 					});
 				}
 			}
+		case 5:
+			if (this.stockTag != null && !this.stockTag.isEmpty()) {
+				this.positive = this.positive + ",nametag:" + stockTag;
+			}
 		}
 		this.compileFilter();
 	}
 	@Override
 	public void save(TagCompound nbt) {
-		nbt.setInteger("version", 5);
+		nbt.setInteger("version", 6);
 	}
 
 	public TileRail getParentTile() {
@@ -551,9 +561,6 @@ public class TileRailBase extends BlockEntityTrackTickable implements IRedstoneP
 			return null;
 		}
 		if(!canInteractWith(overhead)) {
-			return null;
-		}
-		if (stockTag != null && !stockTag.equals(overhead.tag)) {
 			return null;
 		}
 
@@ -1020,19 +1027,6 @@ public class TileRailBase extends BlockEntityTrackTickable implements IRedstoneP
 				} else {
 					tileRail.info = info;
 					tileRail.markAllDirty();
-				}
-			}
-			return true;
-		}
-
-		if (stack.is(Fuzzy.NAME_TAG) && player.hasPermission(Permissions.AUGMENT_TRACK)) {
-			if (getWorld().isServer) {
-				if (player.isCrouching()) {
-					stockTag = null;
-					player.sendMessage(ChatText.RESET_AUGMENT_FILTER.getMessage());
-				} else {
-					stockTag = stack.getDisplayName();
-					player.sendMessage(ChatText.SET_AUGMENT_FILTER.getMessage(stockTag));
 				}
 			}
 			return true;
