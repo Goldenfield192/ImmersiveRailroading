@@ -90,6 +90,12 @@ gui.immersiverailroading:selector.cast_repeat=Repeat Casting
 gui.immersiverailroading:selector.paintbrush_random=Apply random variant
 gui.immersiverailroading:selector.paintbrush_apply_to_stock=Apply to single stock
 gui.immersiverailroading:selector.paintbrush_apply_to_train=Apply to whole train
+# Migrated from old detector translations which already contain "Detecting", don't need for this
+gui.immersiverailroading:selector.augment.detect=Current:
+gui.immersiverailroading:selector.augment.redstone=Redstone Mode:
+gui.immersiverailroading:selector.augment.pushpull=Pushpull
+gui.immersiverailroading:selector.augment.coupler=Coupler Mode:
+gui.immersiverailroading:selector.augment.control=Locomotive Control Mode:
 
 gui.immersiverailroading:item.switch_key=Right-Click a switch to cycle between: [ locked straight, locked turn, unlocked ]. Redstone is ignored when locked!
 gui.immersiverailroading:item.switch_key.data=Last locked switch: %s in %s
@@ -128,6 +134,10 @@ gui.immersiverailroading:stock.weight=Weight:          %s Kg
 gui.immersiverailroading:stock.modeler=Modeler:        %s
 gui.immersiverailroading:stock.pack=Pack:            %s
 gui.immersiverailroading:stock.tag=Tags:            %s
+
+gui.immersiverailroading:label.current_augment=Current Augment:
+gui.immersiverailroading:label.included_tag=Included Tags:
+gui.immersiverailroading:label.excluded_tag=Excluded Tags:
 
 gui.immersiverailroading:overlay.on=On
 gui.immersiverailroading:overlay.off=Off

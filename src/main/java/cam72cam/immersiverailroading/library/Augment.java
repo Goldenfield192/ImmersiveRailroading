@@ -5,6 +5,7 @@ import cam72cam.mod.serialization.SerializationException;
 import cam72cam.mod.serialization.TagCompound;
 import cam72cam.mod.serialization.TagField;
 import cam72cam.mod.serialization.TagMapped;
+import cam72cam.mod.text.TextUtil;
 
 public enum Augment {
 	SPEED_RETARDER,
@@ -43,6 +44,11 @@ public enum Augment {
 			return Color.SILVER;
 		}
 		return Color.WHITE;
+	}
+
+	@Override
+	public String toString() {
+		return TextUtil.translate("item.immersiverailroading:item_augment." + this.name() + ".name");
 	}
 
 	@TagMapped(PropertyMapper.class)

@@ -43,8 +43,10 @@ public class AugmentFilterGUI implements IScreen {
         int xOffset = 0;
         int yOffset = 40;
 
-        includeTags = new TextField(screen, xtop + xOffset, ytop + yOffset,
-                                    200-1, 20);
+        int buttonWidth = 220;
+        int buttonHeight = 20;
+
+        includeTags = new TextField(screen, xtop + xOffset, ytop + yOffset, buttonWidth-1, buttonHeight);
         includeTags.setText(properties.positiveFilter);
         includeTags.setValidator(s -> {
             properties.positiveFilter = s;
@@ -52,8 +54,7 @@ public class AugmentFilterGUI implements IScreen {
         });
         yOffset += 40;
 
-        excludeTags = new TextField(screen, xtop + xOffset, ytop + yOffset,
-                                    200-1, 20);
+        excludeTags = new TextField(screen, xtop + xOffset, ytop + yOffset, buttonWidth-1, buttonHeight);
         excludeTags.setText(properties.negativeFilter);
         excludeTags.setValidator(s -> {
             properties.negativeFilter = s;
@@ -63,21 +64,21 @@ public class AugmentFilterGUI implements IScreen {
 
         Function<Enum<?>, String> translate = e -> TextUtil.translate(e.toString());
 
-        stockDetectorMode = new Button(screen, xtop + xOffset, ytop + yOffset, "Stock Detect Mode: " + translate.apply(properties.stockDetectorMode)) {
+        stockDetectorMode = new Button(screen, xtop + xOffset, ytop + yOffset, buttonWidth, buttonHeight, GuiText.SELECTOR_AUGMENT_DETECT + translate.apply(properties.stockDetectorMode)) {
             @Override
             public void onClick(Player.Hand hand) {
                 properties.stockDetectorMode = next(properties.stockDetectorMode, Player.Hand.PRIMARY);
-                stockDetectorMode.setText("Detecting: " + translate.apply(properties.stockDetectorMode));
+                stockDetectorMode.setText(GuiText.SELECTOR_AUGMENT_DETECT + translate.apply(properties.stockDetectorMode));
             }
         };
         stockDetectorMode.setEnabled(this.augment == Augment.DETECTOR);
         yOffset += 25;
 
-        redstoneMode = new Button(screen, xtop + xOffset, ytop + yOffset, "Redstone Mode: " + translate.apply(properties.redstoneMode)) {
+        redstoneMode = new Button(screen, xtop + xOffset, ytop + yOffset, buttonWidth, buttonHeight, GuiText.SELECTOR_AUGMENT_REDSTONE + translate.apply(properties.redstoneMode)) {
             @Override
             public void onClick(Player.Hand hand) {
                 properties.redstoneMode = next(properties.redstoneMode, Player.Hand.PRIMARY);
-                redstoneMode.setText("Redstone Mode: " + translate.apply(properties.redstoneMode));
+                redstoneMode.setText(GuiText.SELECTOR_AUGMENT_REDSTONE + translate.apply(properties.redstoneMode));
             }
         };
         redstoneMode.setEnabled(this.augment == Augment.COUPLER
@@ -87,7 +88,7 @@ public class AugmentFilterGUI implements IScreen {
                                 || this.augment == Augment.FLUID_UNLOADER);
         yOffset += 25;
 
-        pushpull = new CheckBox(screen, xtop + xOffset, ytop + yOffset, "Enable Pushpull", properties.pushpull) {
+        pushpull = new CheckBox(screen, xtop + xOffset, ytop + yOffset, GuiText.SELECTOR_AUGMENT_PUSHPULL.toString(), properties.pushpull) {
             @Override
             public void onClick(Player.Hand hand) {
                 properties.pushpull = !properties.pushpull;
@@ -101,21 +102,21 @@ public class AugmentFilterGUI implements IScreen {
                             || this.augment == Augment.FLUID_UNLOADER);
         yOffset += 15;
 
-        couplerMode = new Button(screen, xtop + xOffset, ytop + yOffset, "Coupler Mode: " + translate.apply(properties.couplerAugmentMode)) {
+        couplerMode = new Button(screen, xtop + xOffset, ytop + yOffset, buttonWidth, buttonHeight, GuiText.SELECTOR_AUGMENT_COUPLER + translate.apply(properties.couplerAugmentMode)) {
             @Override
             public void onClick(Player.Hand hand) {
                 properties.couplerAugmentMode = next(properties.couplerAugmentMode, Player.Hand.PRIMARY);
-                couplerMode.setText("Coupler Mode: " + translate.apply(properties.couplerAugmentMode));
+                couplerMode.setText(GuiText.SELECTOR_AUGMENT_COUPLER + translate.apply(properties.couplerAugmentMode));
             }
         };
         couplerMode.setEnabled(this.augment == Augment.COUPLER);
         yOffset += 25;
 
-        locoControlMode = new Button(screen, xtop + xOffset, ytop + yOffset, "Locomotive Control Mode: " + translate.apply(properties.locoControlMode)) {
+        locoControlMode = new Button(screen, xtop + xOffset, ytop + yOffset, buttonWidth, buttonHeight, GuiText.SELECTOR_AUGMENT_CONTROL + translate.apply(properties.locoControlMode)) {
             @Override
             public void onClick(Player.Hand hand) {
                 properties.locoControlMode = next(properties.locoControlMode, Player.Hand.PRIMARY);
-                locoControlMode.setText("Locomotive Control Mode: " + translate.apply(properties.locoControlMode));
+                locoControlMode.setText(GuiText.SELECTOR_AUGMENT_CONTROL + translate.apply(properties.locoControlMode));
             }
         };
         locoControlMode.setEnabled(this.augment == Augment.LOCO_CONTROL);
@@ -143,20 +144,20 @@ public class AugmentFilterGUI implements IScreen {
 
         GUIHelpers.drawRect(0, 0, GUIHelpers.getScreenWidth(), GUIHelpers.getScreenHeight(), 0x88000000);
 
-        GUIHelpers.drawRect(0, 0, 200, GUIHelpers.getScreenHeight(), 0xCC000000);
+        GUIHelpers.drawRect(0, 0, 220, GUIHelpers.getScreenHeight(), 0xCC000000);
 
         int xtop = -GUIHelpers.getScreenWidth() / 2;
         int ytop = -GUIHelpers.getScreenHeight() / 4;
 
-        int xOffset = 100;
+        int xOffset = 110;
         int yOffset = 30;
-        GUIHelpers.drawCenteredString("Current Augment: " + TextUtil.translate("item.immersiverailroading:item_augment." + this.augment.toString() + ".name"), xOffset,  10, 0xFFFFFFFF);
+        GUIHelpers.drawCenteredString(GuiText.LABEL_CURRENT_AUGMENT + this.augment.toString(), xOffset,  10, 0xFFFFFFFF);
 
-        GUIHelpers.drawCenteredString("Included Tags", xOffset,  yOffset, 0xFFFFFFFF);
+        GUIHelpers.drawCenteredString(GuiText.LABEL_INCLUDED_TAG.toString(), xOffset,  yOffset, 0xFFFFFFFF);
         includeTags.setText(properties.positiveFilter);
         yOffset+=40;
 
-        GUIHelpers.drawCenteredString("Excluded Tags", xOffset,  yOffset, 0xFFFFFFFF);
+        GUIHelpers.drawCenteredString(GuiText.LABEL_EXCLUDED_TAG.toString(), xOffset,  yOffset, 0xFFFFFFFF);
         excludeTags.setText(properties.negativeFilter);
     }
 
