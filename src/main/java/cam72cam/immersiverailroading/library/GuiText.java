@@ -59,6 +59,7 @@ public enum GuiText {
 	RADIO_CARD_NOT_LINKED("item.radio_card.not_linked"),
 	MODELER_TOOLTIP("stock.modeler"),
 	PACK_TOOLTIP("stock.pack"),
+	TAG_TOOLTIP("stock.tag"),
 	TRACK_SWITCHER_TOOLTIP("item.track_exchanger"),
 	PAINT_BRUSH_MODE_TOOLTIP("item.paint_brush.mode"),
 	PAINT_BRUSH_DESCRIPTION_TOOLTIP("item.paint_brush.description"),

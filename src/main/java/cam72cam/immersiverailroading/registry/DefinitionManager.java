@@ -212,6 +212,7 @@ public class DefinitionManager {
 
         Progress.Bar bar = Progress.push("Loading Models", definitionIDMap.size());
 
+        stockTags = new BiMultiMap<>();
         Map<String, EntityRollingStockDefinition> loaded = getStockLoadingStream(definitionIDMap.entrySet()).map(tuple -> {
             String defID = tuple.getKey();
             String defType = tuple.getValue();
@@ -258,7 +259,6 @@ public class DefinitionManager {
         }).filter(Objects::nonNull).collect(Collectors.toMap(Pair::getKey, Pair::getValue));
 
         definitions = new LinkedHashMap<>();
-        stockTags = new BiMultiMap<>();
         definitionIDMap.keySet().stream().filter(loaded::containsKey).forEach(x -> definitions.put(x, loaded.get(x)));
 
         Progress.pop(bar);

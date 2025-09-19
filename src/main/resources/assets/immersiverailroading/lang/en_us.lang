@@ -127,6 +127,7 @@ gui.immersiverailroading:stock.freight_capacity=Capacity:       %s Stacks
 gui.immersiverailroading:stock.weight=Weight:          %s Kg
 gui.immersiverailroading:stock.modeler=Modeler:        %s
 gui.immersiverailroading:stock.pack=Pack:            %s
+gui.immersiverailroading:stock.tag=Tags:            %s
 
 gui.immersiverailroading:overlay.on=On
 gui.immersiverailroading:overlay.off=Off

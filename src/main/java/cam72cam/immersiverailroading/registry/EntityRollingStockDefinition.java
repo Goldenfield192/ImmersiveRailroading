@@ -821,6 +821,10 @@ public abstract class EntityRollingStockDefinition {
         tips.add(GuiText.WEIGHT_TOOLTIP.toString(this.getWeight(gauge)));
         tips.add(GuiText.MODELER_TOOLTIP.toString(modelerName));
         tips.add(GuiText.PACK_TOOLTIP.toString(packName));
+        if (!tags.isEmpty()) {
+            String tag = String.join(",", tags);
+            tips.add(GuiText.TAG_TOOLTIP.toString(tag));
+        }
         return tips;
     }
 
