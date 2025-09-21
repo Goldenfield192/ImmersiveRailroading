@@ -9,10 +9,12 @@ public enum TrackItems {
 	CROSSING(1),
 	SLOPE(2),
 	TURN(3),
+	//Legacy switch
 	SWITCH(4),
-	TURNTABLE(5),
-	CUSTOM(7),
-	TRANSFERTABLE(6);
+	TURNTABLE(6),
+	CUSTOM(8),
+	TRANSFERTABLE(7),
+	Y_SWITCH(5);
 
 	private final int order;
 

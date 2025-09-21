@@ -11,14 +11,14 @@ import org.apache.commons.lang3.tuple.Pair;
 import java.util.ArrayList;
 import java.util.List;
 
-public class BuilderSwitch extends BuilderBase implements IIterableTrack {
+public class BuilderStraightSwitch extends BuilderBase implements IIterableTrack {
 
 	private BuilderIterator turnBuilder;
 	private BuilderStraight straightBuilder;
 	private BuilderStraight realStraightBuilder;
 	private final BuilderStraight straightBuilderReal;
 
-	public BuilderSwitch(RailInfo info, World world, Vec3i pos) {
+	public BuilderStraightSwitch(RailInfo info, World world, Vec3i pos) {
 		super(info, world, pos);
 		
 		RailInfo turnInfo = info.withSettings(b -> b.type = info.customInfo.placementPosition.equals(info.placementInfo.placementPosition) ? TrackItems.TURN : TrackItems.CUSTOM);

@@ -187,7 +187,9 @@ public class RailInfo {
 		case TURN:
 			return new BuilderTurn(this, world, pos);
 		case SWITCH:
-			return new BuilderSwitch(this, world, pos);
+			return new BuilderStraightSwitch(this, world, pos);
+		case Y_SWITCH:
+			return new BuilderYSwitch(this, world, pos);
 		case TURNTABLE:
 			return new BuilderTurnTable(this, world, pos);
 		case TRANSFERTABLE:
