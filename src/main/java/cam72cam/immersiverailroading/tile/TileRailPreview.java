@@ -4,6 +4,7 @@ import cam72cam.immersiverailroading.IRItems;
 import cam72cam.immersiverailroading.items.nbt.RailSettings;
 import cam72cam.immersiverailroading.library.GuiTypes;
 import cam72cam.immersiverailroading.library.TrackDirection;
+import cam72cam.immersiverailroading.library.TrackItems;
 import cam72cam.immersiverailroading.net.PreviewRenderPacket;
 import cam72cam.immersiverailroading.track.IIterableTrack;
 import cam72cam.immersiverailroading.util.BlockUtil;
@@ -28,6 +29,8 @@ public class TileRailPreview extends BlockEntityTickable {
 	private PlacementInfo placementInfo;
 	@TagField
 	private PlacementInfo customInfo;
+	@TagField("custominfo2")
+	private PlacementInfo customInfo2;
 	@TagField
 	private boolean isAboveRails = false;
 
@@ -67,26 +70,32 @@ public class TileRailPreview extends BlockEntityTickable {
 		info = null;
 	}
 
-	public void setCustomInfo(PlacementInfo info) {
-		this.customInfo = info;
-		if (customInfo != null) {
-			RailSettings settings = RailSettings.from(item);
-			double lx = Math.abs(customInfo.placementPosition.x - placementInfo.placementPosition.x);
-			double lz = Math.abs(customInfo.placementPosition.z - placementInfo.placementPosition.z);
-			switch (settings.type) {
-				case TURN:
-					settings = settings.with(b -> {
-						double length = (lx + lz )/2+1;
-						length *= 90/b.degrees;
-						b.length = (int) Math.round(length);
-					});
-					break;
-				case STRAIGHT:
-				case SLOPE:
-					settings = settings.with(b -> b.length = (int) Math.round(Math.max(lx, lz) + 1));
+	public void setCustomInfo(PlacementInfo info, int customRailIndex) {
+		RailSettings settings = RailSettings.from(item);
+		if (customRailIndex % 2 == 1) {
+			if (settings.type == TrackItems.Y_SWITCH) {
+				this.customInfo2 = info;
 			}
+		} else {
+			this.customInfo = info;
+			if (customInfo != null) {
+				double lx = Math.abs(customInfo.placementPosition.x - placementInfo.placementPosition.x);
+				double lz = Math.abs(customInfo.placementPosition.z - placementInfo.placementPosition.z);
+				switch (settings.type) {
+					case TURN:
+						settings = settings.with(b -> {
+							double length = (lx + lz) / 2 + 1;
+							length *= 90 / b.degrees;
+							b.length = (int) Math.round(length);
+						});
+						break;
+					case STRAIGHT:
+					case SLOPE:
+						settings = settings.with(b -> b.length = (int) Math.round(Math.max(lx, lz) + 1));
+				}
 
-			settings.write(item);
+				settings.write(item);
+			}
 		}
 		this.markDirty();
 	}

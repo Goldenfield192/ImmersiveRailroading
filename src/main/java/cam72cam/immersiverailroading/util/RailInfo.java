@@ -27,6 +27,7 @@ public class RailInfo {
 	public final RailSettings settings;
 	public final PlacementInfo placementInfo;
 	public final PlacementInfo customInfo;
+	public final PlacementInfo customInfo2;
 
 	// Used for tile rendering only
 	public final SwitchState switchState;
@@ -37,11 +38,12 @@ public class RailInfo {
 	public final boolean itemHeld;
 
 
-	public RailInfo(RailSettings settings, PlacementInfo placementInfo, PlacementInfo customInfo, SwitchState switchState, SwitchState switchForced, double tablePos) {
-		this(settings, placementInfo, customInfo, switchState, switchForced, tablePos, false);
+	public RailInfo(RailSettings settings, PlacementInfo placementInfo, PlacementInfo customInfo, PlacementInfo customInfo2, SwitchState switchState, SwitchState switchForced, double tablePos) {
+		this(settings, placementInfo, customInfo, customInfo2, switchState, switchForced, tablePos, false);
 	}
 
-	public RailInfo(RailSettings settings, PlacementInfo placementInfo, PlacementInfo customInfo, SwitchState switchState, SwitchState switchForced, double tablePos, boolean itemHeld) {
+	public RailInfo(RailSettings settings, PlacementInfo placementInfo, PlacementInfo customInfo, PlacementInfo customInfo2,
+					SwitchState switchState, SwitchState switchForced, double tablePos, boolean itemHeld) {
 		if (customInfo == null) {
 			customInfo = placementInfo;
 		}
@@ -49,6 +51,7 @@ public class RailInfo {
 		this.settings = settings;
 		this.placementInfo = placementInfo;
 		this.customInfo = customInfo;
+		this.customInfo2 = customInfo2;
 		this.switchState = switchState;
 		this.switchForced = switchForced;
 		this.tablePos = tablePos;
@@ -97,8 +100,8 @@ public class RailInfo {
 		return id;
 	}
 
-	public RailInfo(ItemStack settings, PlacementInfo placementInfo, PlacementInfo customInfo) {
-		this(RailSettings.from(settings), placementInfo, customInfo, SwitchState.NONE, SwitchState.NONE, 0);
+	public RailInfo(ItemStack settings, PlacementInfo placementInfo, PlacementInfo customInfo, PlacementInfo customInfo2) {
+		this(RailSettings.from(settings), placementInfo, customInfo, customInfo2, SwitchState.NONE, SwitchState.NONE, 0);
 	}
 
 	public RailInfo withSettings(Consumer<RailSettings.Mutable> mod) {
@@ -109,6 +112,7 @@ public class RailInfo {
 		return with(b -> {
 			b.placementInfo = placementInfo.offset(offset);
 			b.customInfo = b.customInfo != null ? b.customInfo.offset(offset) : null;
+			b.customInfo2 = b.customInfo2 != null ? b.customInfo2.offset(offset) : null;
 		});
 	}
 
@@ -119,6 +123,8 @@ public class RailInfo {
 		public PlacementInfo placementInfo;
 		@TagField("custom")
 		public PlacementInfo customInfo;
+		@TagField("custom2")
+		public PlacementInfo customInfo2;
 		@TagField("switchState")
 		public SwitchState switchState;
 		@TagField("switchForced")
@@ -133,6 +139,7 @@ public class RailInfo {
 			this.settings = info.settings;
 			this.placementInfo = info.placementInfo;
 			this.customInfo = info.customInfo;
+			this.customInfo2 = info.customInfo2;
 			this.switchState = info.switchState;
 			this.switchForced = info.switchForced;
 			this.tablePos = info.tablePos;
@@ -152,6 +159,7 @@ public class RailInfo {
 					settings,
 					placementInfo,
 					customInfo,
+					customInfo2,
 					switchState,
 					switchForced,
 					tablePos,

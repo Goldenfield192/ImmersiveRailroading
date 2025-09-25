@@ -41,8 +41,11 @@ public class TileRail extends TileRailBase {
 		}
 		if (boundingBox == null) {
 			int length = info.settings.length;
-			if (info.settings.type == TrackItems.CUSTOM && !info.customInfo.placementPosition.equals(info.placementInfo.placementPosition)) {
-				length = (int) info.customInfo.placementPosition.distanceTo(info.placementInfo.placementPosition);
+			if (info.settings.type == TrackItems.CUSTOM
+					&& (!info.customInfo.placementPosition.equals(info.placementInfo.placementPosition)
+					    ||!info.customInfo2.placementPosition.equals(info.placementInfo.placementPosition))) {
+				length = (int) Math.max(info.customInfo.placementPosition.distanceTo(info.placementInfo.placementPosition),
+										info.customInfo2.placementPosition.distanceTo(info.placementInfo.placementPosition));
 			}
 			if (info.settings.type == TrackItems.TRANSFERTABLE) {
 				//It is rectangular and length&width may differ a lot

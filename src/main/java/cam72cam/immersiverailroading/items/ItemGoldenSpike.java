@@ -46,12 +46,14 @@ public class ItemGoldenSpike extends CustomItem {
 		if (world.isBlock(pos, IRBlocks.BLOCK_RAIL_PREVIEW)) {
 			Data d = new Data(held);
 			d.pos = pos;
+			d.index++;
 			d.write();
 			Audio.playSound(world, pos, StandardSound.BLOCK_ANVIL_PLACE, SoundCategory.BLOCKS, 0.5f, 0.2f);
 		} else {
 			pos = pos.up();
 
-			Vec3i tepos = new Data(held).pos;
+			Data data = new Data(held);
+			Vec3i tepos = data.pos;
 			if (tepos != null) {
 				if (BlockUtil.canBeReplaced(world, pos.down(), true)) {
 					if (!BlockUtil.isIRRail(world, pos.down()) || world.getBlockEntity(pos.down(), TileRailBase.class).getRailHeight() < 0.5) {
@@ -63,7 +65,8 @@ public class ItemGoldenSpike extends CustomItem {
 					if (tr.isAboveRails()) {
 						tepos = tepos.down();
 					}
-					tr.setCustomInfo(new PlacementInfo(tr.getItem(), player.getYawHead(), hit.subtract(0, hit.y, 0).add(pos).subtract(tepos)));
+					tr.setCustomInfo(new PlacementInfo(tr.getItem(), player.getYawHead(), hit.subtract(0, hit.y, 0).add(pos).subtract(tepos)),
+									 data.index);
 				}
 			}
 		}
@@ -86,6 +89,9 @@ public class ItemGoldenSpike extends CustomItem {
 	public static class Data extends ItemDataSerializer {
 		@TagField("pos")
 		public Vec3i pos;
+
+		@TagField
+		public int index = 0;
 
 		protected Data(ItemStack stack) {
 			super(stack);

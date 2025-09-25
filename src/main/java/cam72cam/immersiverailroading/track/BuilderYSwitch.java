@@ -13,51 +13,24 @@ import java.util.List;
 
 public class BuilderYSwitch extends BuilderBase implements IIterableTrack {
 
-    private BuilderIterator turnBuilder1;
-    private BuilderIterator turnBuilder2;
-    private BuilderStraight straightBuilder;
-    private BuilderStraight realStraightBuilder;
-    private final BuilderStraight straightBuilderReal;
+    private final BuilderIterator turnBuilder1;
+    private final BuilderIterator turnBuilder2;
 
     public BuilderYSwitch(RailInfo info, World world, Vec3i pos) {
         super(info, world, pos);
 
-        RailInfo turnInfo = info.withSettings(b -> b.type = info.customInfo.placementPosition.equals(info.placementInfo.placementPosition) ? TrackItems.TURN : TrackItems.CUSTOM);
-        RailInfo straightInfo = info;
+        RailInfo turnInfo1 = info.withSettings(b -> b.type = info.customInfo.placementPosition.equals(info.placementInfo.placementPosition) ? TrackItems.TURN : TrackItems.CUSTOM);
+        RailInfo turnInfo2 = info.withSettings(b -> b.type = info.customInfo.placementPosition.equals(info.placementInfo.placementPosition) ? TrackItems.TURN : TrackItems.CUSTOM);
 
-        {
-            turnBuilder1 = (BuilderIterator) turnInfo.getBuilder(world, pos);
-            straightBuilder = new BuilderStraight(straightInfo, world, pos, true);
-            realStraightBuilder = new BuilderStraight(straightInfo, world, pos, true);
-
-            straightInfo = straightInfo.withSettings(b -> {
-                double maxOverlap = 0;
-
-                straightBuilder.positions.retainAll(turnBuilder1.positions);
-
-                for (Pair<Integer, Integer> straight : straightBuilder.positions) {
-                    maxOverlap = Math.max(maxOverlap, new Vec3d(straight.getKey(), 0, straight.getValue()).length());
-                }
-
-                maxOverlap *= 1.2;
-                b.length = (int) Math.ceil(maxOverlap) + 3;
-            });
-        }
-
-
-        straightBuilder = new BuilderStraight(straightInfo, world, pos, true);
-        straightBuilderReal = new BuilderStraight(straightInfo.withSettings(b -> b.type = TrackItems.STRAIGHT), world, pos, true);
+        turnBuilder1 = (BuilderIterator) turnInfo1.getBuilder(world, pos);
+        turnBuilder2 = (BuilderIterator) turnInfo2.getBuilder(world, pos);
 
         turnBuilder1.overrideFlexible = true;
+        turnBuilder2.overrideFlexible = true;
 
-        for(TrackBase turn : turnBuilder1.tracks) {
+        for(TrackBase turn : turnBuilder2.tracks) {
             if (turn instanceof TrackRail) {
-                turn.overrideParent(straightBuilder.getParentPos());
-            }
-        }
-        for (TrackBase straight : straightBuilder.tracks) {
-            if (straight instanceof TrackGag) {
-                straight.setFlexible();
+                turn.overrideParent(turnBuilder1.getParentPos());
             }
         }
     }
@@ -65,9 +38,9 @@ public class BuilderYSwitch extends BuilderBase implements IIterableTrack {
     @Override
     public List<BuilderBase> getSubBuilders() {
         List<BuilderBase> subTurns = turnBuilder1.getSubBuilders();
-        List<BuilderBase> subStraights = straightBuilderReal.getSubBuilders();
+        List<BuilderBase> subTurnsOther = turnBuilder2.getSubBuilders();
 
-        if (subTurns == null && subStraights == null) {
+        if (subTurns == null && subTurnsOther == null) {
             return null;
         }
 
@@ -77,73 +50,73 @@ public class BuilderYSwitch extends BuilderBase implements IIterableTrack {
         } else {
             res.addAll(subTurns);
         }
-        if (subStraights == null) {
-            res.add(straightBuilderReal);
+        if (subTurnsOther == null) {
+            res.add(turnBuilder2);
         } else {
-            res.addAll(subStraights);
+            res.addAll(subTurnsOther);
         }
         return res;
     }
 
     @Override
     public int costTies() {
-        return straightBuilder.costTies() + turnBuilder1.costTies();
+        return turnBuilder2.costTies() + turnBuilder1.costTies();
     }
 
     @Override
     public int costRails() {
-        return straightBuilder.costRails() + turnBuilder1.costRails();
+        return turnBuilder2.costRails() + turnBuilder1.costRails();
     }
 
     @Override
     public int costBed() {
-        return straightBuilder.costBed() + turnBuilder1.costBed();
+        return turnBuilder2.costBed() + turnBuilder1.costBed();
     }
 
     @Override
     public int costFill() {
-        return straightBuilder.costFill() + turnBuilder1.costFill();
+        return turnBuilder2.costFill() + turnBuilder1.costFill();
     }
 
     @Override
     public void setDrops(List<ItemStack> drops) {
-        straightBuilder.setDrops(drops);
+        turnBuilder1.setDrops(drops);
     }
 
 
     @Override
     public boolean canBuild() {
-        return straightBuilder.canBuild() && turnBuilder1.canBuild();
+        return turnBuilder2.canBuild() && turnBuilder1.canBuild();
     }
 
     @Override
     public void build() {
-        straightBuilder.build();
+        turnBuilder2.build();
         turnBuilder1.build();
     }
 
     @Override
     public void clearArea() {
-        straightBuilder.clearArea();
+        turnBuilder2.clearArea();
         turnBuilder1.clearArea();
     }
 
     @Override
     public List<TrackBase> getTracksForRender() {
-        List<TrackBase> data = straightBuilder.getTracksForRender();
+        List<TrackBase> data = turnBuilder2.getTracksForRender();
         data.addAll(turnBuilder1.getTracksForRender());
         return data;
     }
 
     @Override
     public List<VecYawPitch> getRenderData() {
-        List<VecYawPitch> data = straightBuilder.getRenderData();
+        List<VecYawPitch> data = turnBuilder2.getRenderData();
         data.addAll(turnBuilder1.getRenderData());
         return data;
     }
 
     @Override
     public List<PosStep> getPath(double stepSize) {
-        return realStraightBuilder.getPath(stepSize);
+        return turnBuilder2.getPath(stepSize);
     }
 }
