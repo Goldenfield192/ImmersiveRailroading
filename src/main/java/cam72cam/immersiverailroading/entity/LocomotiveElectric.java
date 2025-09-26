@@ -1,10 +1,14 @@
 package cam72cam.immersiverailroading.entity;
 
 import cam72cam.immersiverailroading.Config;
+import cam72cam.immersiverailroading.entity.physics.SimulationState;
 import cam72cam.immersiverailroading.library.KeyTypes;
 import cam72cam.immersiverailroading.library.ModelComponentType;
 import cam72cam.immersiverailroading.model.part.Control;
+import cam72cam.immersiverailroading.physics.MovementTrack;
 import cam72cam.immersiverailroading.registry.LocomotiveElectricDefinition;
+import cam72cam.immersiverailroading.thirdparty.trackapi.ITrack;
+import cam72cam.immersiverailroading.tile.TileRailBase;
 import cam72cam.immersiverailroading.util.BurnUtil;
 import cam72cam.immersiverailroading.util.FluidQuantity;
 import cam72cam.immersiverailroading.util.Speed;
@@ -29,6 +33,10 @@ public class LocomotiveElectric extends Locomotive {
 	@TagSync
 	@TagField("INTERNAL_BATTERY")
 	private Energy energy = new Energy(0, 0);
+
+	@TagSync
+	@TagField
+	private boolean isOnPoweredTrack = false;
 
 	private int throttleCooldown;
 	private int reverserCooldown;
@@ -191,6 +199,21 @@ public class LocomotiveElectric extends Locomotive {
 		}
 
 		//Take 1RF as 1J
+		if (getDefinition().isCog() && getTickCount() % 20 == 0) {
+			SimulationState state = getCurrentState();
+			if (state != null) {
+				ITrack found = MovementTrack.findTrack(getWorld(), state.couplerPositionFront, state.yaw, gauge.value());
+				if (found instanceof TileRailBase) {
+					TileRailBase onTrack = (TileRailBase) found;
+					isOnPoweredTrack = onTrack.isElectricPowered();
+				}
+			}
+		}
+
+		if (isOnPoweredTrack) {
+			this.energy.receive(1000, false);
+		}
+
 		if (isTurnedOn() && !Config.ConfigBalance.FuelRequired) {
 			if (this.getBatteryAmount() > 0) {
 				int consumption = (getDefinition().getHorsePower(gauge) * 745) / 200 / 20;
