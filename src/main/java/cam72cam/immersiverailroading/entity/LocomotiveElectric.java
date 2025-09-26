@@ -65,6 +65,7 @@ public class LocomotiveElectric extends Locomotive {
 	
 	@Override
 	public boolean openGui(Player player) {
+		//TODO
 //		if (!getDefinition().isCabCar() && player.hasPermission(Permissions.LOCOMOTIVE_CONTROL)) {
 //			GuiTypes.ELECTRIC_LOCOMOTIVE.open(player, this);
 //			return true;
@@ -159,10 +160,6 @@ public class LocomotiveElectric extends Locomotive {
 	public void onTick() {
 		super.onTick();
 
-		if (isTurnedOn()) {
-			this.energy.receive(1000, false);
-		}
-
 		if (turnOnOffDelay > 0) {
 			turnOnOffDelay -= 1;
 		}
@@ -194,7 +191,7 @@ public class LocomotiveElectric extends Locomotive {
 		}
 
 		//Take 1RF as 1J
-		if (isTurnedOn()) {
+		if (isTurnedOn() && !Config.ConfigBalance.FuelRequired) {
 			if (this.getBatteryAmount() > 0) {
 				int consumption = (getDefinition().getHorsePower(gauge) * 745) / 200 / 20;
 
