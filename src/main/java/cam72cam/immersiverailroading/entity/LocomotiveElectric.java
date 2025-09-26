@@ -8,10 +8,10 @@ import cam72cam.immersiverailroading.registry.LocomotiveElectricDefinition;
 import cam72cam.immersiverailroading.util.BurnUtil;
 import cam72cam.immersiverailroading.util.FluidQuantity;
 import cam72cam.immersiverailroading.util.Speed;
+import cam72cam.mod.energy.Energy;
 import cam72cam.mod.entity.Player;
 import cam72cam.mod.entity.sync.TagSync;
 import cam72cam.mod.fluid.Fluid;
-import cam72cam.mod.fluid.FluidStack;
 import cam72cam.mod.serialization.TagField;
 
 import java.util.List;
@@ -20,39 +20,26 @@ import java.util.OptionalDouble;
 public class LocomotiveElectric extends Locomotive {
 
 	private float relativeRPM;
-	private float internalBurn = 0;
 	private int turnOnOffDelay = 0;
-
-	@TagSync
-	@TagField("ENGINE_TEMPERATURE")
-	private float engineTemperature;
 
 	@TagSync
 	@TagField("TURNED_ON")
 	private boolean turnedOn = false;
 
 	@TagSync
-	@TagField("ENGINE_OVERHEATED")
-	private boolean engineOverheated = false;
+	@TagField("INTERNAL_BATTERY")
+	private Energy energy = new Energy(0, 0);
 
 	private int throttleCooldown;
 	private int reverserCooldown;
 
 	public LocomotiveElectric() {
-		engineTemperature = ambientTemperature();
+
 	}
 
 	@Override
 	public int getInventoryWidth() {
 		return getDefinition().isCabCar() ? 0 : 2;
-	}
-
-	public float getEngineTemperature() {
-		return engineTemperature;
-	}
-	
-	private void setEngineTemperature(float temp) {
-		engineTemperature = temp;
 	}
 	
 	public void setTurnedOn(boolean value) {
@@ -63,20 +50,12 @@ public class LocomotiveElectric extends Locomotive {
 	public boolean isTurnedOn() {
 		return turnedOn;
 	}
-	
-	public void setEngineOverheated(boolean value) {
-		engineOverheated = value;
-	}
-	
-	public boolean isEngineOverheated() {
-		return engineOverheated && Config.ConfigBalance.canDieselEnginesOverheat;
-	}
-	
+
 	public boolean isRunning() {
 		if (!Config.isFuelRequired(gauge)) {
 			return isTurnedOn();
 		}
-		return isTurnedOn() && !isEngineOverheated() && this.getLiquidAmount() > 0;
+		return isTurnedOn() && this.getBatteryAmount() > 0;
 	}
 	
 	@Override
@@ -158,7 +137,7 @@ public class LocomotiveElectric extends Locomotive {
 
 	@Override
 	public double getAppliedTractiveEffort(Speed speed) {
-		if (isRunning() && (getEngineTemperature() > 75 || !Config.isFuelRequired(gauge))) {
+		if (isRunning() && (/*getEngineTemperature() > 75 ||*/ !Config.isFuelRequired(gauge))) {
 			double maxPower_W = this.getDefinition().getHorsePower(gauge) * 745.7d;
 			double efficiency = 0.82; // Similar to a *lot* of imperial references
 			double speed_M_S = (Math.abs(speed.metric())/3.6);
@@ -179,6 +158,10 @@ public class LocomotiveElectric extends Locomotive {
 	@Override
 	public void onTick() {
 		super.onTick();
+
+		if (isTurnedOn()) {
+			this.energy.receive(1000, false);
+		}
 
 		if (turnOnOffDelay > 0) {
 			turnOnOffDelay -= 1;
@@ -202,11 +185,6 @@ public class LocomotiveElectric extends Locomotive {
 			this.setHorn(10, hornPlayer);
 		}
 
-		float engineTemperature = getEngineTemperature();
-		float heatUpSpeed = 0.0029167f * Config.ConfigBalance.dieselLocoHeatTimeScale / 1.7f;
-		float ambientDelta = engineTemperature - ambientTemperature();
-		float coolDownSpeed = heatUpSpeed * Math.copySign((float)Math.pow(ambientDelta / 130, 2), ambientDelta);
-
 		if (throttleCooldown > 0) {
 			throttleCooldown--;
 		}
@@ -215,41 +193,31 @@ public class LocomotiveElectric extends Locomotive {
 			reverserCooldown--;
 		}
 
-		engineTemperature -= coolDownSpeed;
-		
-		if (this.getLiquidAmount() > 0 && isRunning()) {
-			float consumption = Math.abs(getThrottle()) + 0.05f;
-			float burnTime = BurnUtil.getBurnTime(this.getLiquid());
-			if (burnTime == 0) {
-				burnTime = 200; //Default to 200 for unregistered liquids
-			}
-			burnTime *= getDefinition().getFuelEfficiency()/100f;
-			burnTime *= (Config.ConfigBalance.locoDieselFuelEfficiency / 100f);
-			burnTime *= 10; // This is a workaround for the 10x tank size bug that existed for a long time and was tuned to
+		//Take 1RF as 1J
+		if (isTurnedOn()) {
+			if (this.getBatteryAmount() > 0) {
+				int consumption = (getDefinition().getHorsePower(gauge) * 745) / 200 / 20;
 
-			while (internalBurn < 0 && this.getLiquidAmount() > 0) {
-				internalBurn += burnTime;
-				theTank.drain(new FluidStack(theTank.getContents().getFluid(), 1), false);
-			}
-			
-			consumption *= 100;
-			consumption *= gauge.scale();
-			
-			internalBurn -= consumption;
-			
-			engineTemperature += heatUpSpeed * (Math.abs(getThrottle()) + 0.2f);
-			
-			if (engineTemperature > 150) {
-				engineTemperature = 150;
-				setEngineOverheated(true);
+				this.energy.extract(consumption, false);
+				if (this.energy.getCurrent() == 0) {
+					setTurnedOn(false);
+				}
+			} else {
+				setTurnedOn(false);
 			}
 		}
-		
-		if (engineTemperature < 100 && isEngineOverheated()) {
-			setEngineOverheated(false);
-		}
+	}
 
-		setEngineTemperature(engineTemperature);
+	public int getBatteryCapacity() {
+		return getDefinition().getBatteryCapacity(this.gauge);
+	}
+
+	public int getBatteryAmount() {
+		return energy.getCurrent();
+	}
+
+	public float getBatteryPercentage() {
+		return ((float) energy.getCurrent()) / energy.getMax();
 	}
 	
 	@Override
@@ -259,15 +227,20 @@ public class LocomotiveElectric extends Locomotive {
 
 	@Override
 	public FluidQuantity getTankCapacity() {
-		return this.getDefinition().getFuelCapacity(gauge);
+		return FluidQuantity.ZERO;
+	}
+
+	@Override
+	public void onAssemble() {
+		super.onAssemble();
+		this.energy = new Energy(0, getBatteryCapacity());
 	}
 	
 	@Override
 	public void onDissassemble() {
 		super.onDissassemble();
-		setEngineTemperature(ambientTemperature());
-		setEngineOverheated(false);
 		setTurnedOn(false);
+		this.energy = null;
 	}
 
 	public float getRelativeRPM() {

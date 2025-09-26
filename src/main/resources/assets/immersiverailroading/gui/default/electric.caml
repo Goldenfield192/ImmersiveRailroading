@@ -17,7 +17,7 @@ element:
             x = 5
             y = 75
             image = "immersiverailroading:gui/fluid.png"
-            readout = "LIQUID"
+            readout = "ENERGY"
             translate =
                 x = 0
                 y = -50
@@ -101,7 +101,7 @@ element:
             element:
                 x = 10
                 text =
-                    value = "stat.liquidstat.units_liquid"
+                    value = "stat.energystat.units_energy"
                     height = 4
             element:
                 x = 30
@@ -124,7 +124,7 @@ element:
             element:
                 x = 10
                 text =
-                    value = "stat.max_liquidstat.units_liquid"
+                    value = "stat.max_energystat.units_energy"
                     height = 4
             element:
                 x = 30
