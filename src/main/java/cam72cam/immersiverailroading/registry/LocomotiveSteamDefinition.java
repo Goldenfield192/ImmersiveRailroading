@@ -51,9 +51,10 @@ public class LocomotiveSteamDefinition extends LocomotiveDefinition {
             DataBlock firebox = data.getBlock("firebox");
 
             tankCapacity_l = properties.getValue("water_capacity_l").asInteger() * internal_inv_scale;
-            if (properties.getValue("max_psi") != null){
+            //Ugly...
+            try {
                 maxPSI = Math.ceil(properties.getValue("max_psi").asInteger() * internal_inv_scale);
-            } else {
+            } catch (Exception e) {
                 maxPSI = Math.ceil(properties.getValue("max_kpa").asInteger() * 0.145033 * internal_inv_scale);
             }
             numSlots = Math.ceil(firebox.getValue("slots").asInteger() * internal_inv_scale);

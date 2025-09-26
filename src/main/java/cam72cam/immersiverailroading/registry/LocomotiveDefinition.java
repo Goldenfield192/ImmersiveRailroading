@@ -54,14 +54,14 @@ public abstract class LocomotiveDefinition extends FreightDefinition {
             muliUnitCapable = true;
             factorOfAdhesion = 0;
         } else {
-            if (properties.getValue("horsepower") != null) {
+            try {
                 power = properties.getValue("horsepower").asInteger() * internal_inv_scale * 0.745699872;
-            } else  {
+            } catch (Exception e) {
                 power = properties.getValue("kilo_watt").asInteger() * internal_inv_scale;
             }
-            if (properties.getValue("tractive_effort_lbf") != null) {
+            try {
                 traction = properties.getValue("tractive_effort_lbf").asInteger() * 4.44822 * internal_inv_scale;
-            } else {
+            } catch (Exception e) {
                 traction = properties.getValue("tractive_effort_newton").asInteger() * internal_inv_scale;
             }
             factorOfAdhesion = properties.getValue("factor_of_adhesion").asDouble(4);
