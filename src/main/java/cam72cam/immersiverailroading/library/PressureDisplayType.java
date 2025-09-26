@@ -1,16 +1,23 @@
 package cam72cam.immersiverailroading.library;
 
-import java.util.Locale;
-
 public enum PressureDisplayType {
     psi,
-    bar;
+    bar,
+    kpa;
 
     public float convertFromPSI(float value) {
-        return this == psi ? value : value * 0.0689476f;
+        switch (this) {
+            case bar: return value * 0.0689476f;
+            case kpa: return value * 6.89476f;
+            default: return value;
+        }
     }
 
     public String toUnitString() {
-        return toString().toUpperCase(Locale.ROOT);
+        switch (this) {
+            case bar: return "BAR";
+            case kpa: return "kPa";
+            default: return "PSI";
+        }
     }
 }

@@ -16,8 +16,8 @@ public abstract class LocomotiveDefinition extends FreightDefinition {
     public boolean toggleBell;
     public SoundDefinition bell;
     private String works;
-    private double power;
-    private double traction;
+    private double power;    //kW
+    private double traction; //N
     private Speed maxSpeed;
     private boolean hasRadioEquipment;
     public boolean muliUnitCapable;
@@ -53,8 +53,16 @@ public abstract class LocomotiveDefinition extends FreightDefinition {
             muliUnitCapable = true;
             factorOfAdhesion = 0;
         } else {
-            power = properties.getValue("horsepower").asInteger() * internal_inv_scale;
-            traction = properties.getValue("tractive_effort_lbf").asInteger() * internal_inv_scale;
+            if (properties.getValue("horsepower") != null) {
+                power = properties.getValue("horsepower").asInteger() * internal_inv_scale * 0.745699872;
+            } else  {
+                power = properties.getValue("kilo_watt").asInteger() * internal_inv_scale;
+            }
+            if (properties.getValue("tractive_effort_lbf") != null) {
+                traction = properties.getValue("tractive_effort_lbf").asInteger() * 4.44822 * internal_inv_scale;
+            } else {
+                traction = properties.getValue("tractive_effort_newton").asInteger() * internal_inv_scale;
+            }
             factorOfAdhesion = properties.getValue("factor_of_adhesion").asDouble(4);
             maxSpeed = Speed.fromMetric(properties.getValue("max_speed_kmh").asDouble() * internal_inv_scale);
             muliUnitCapable = properties.getValue("multi_unit_capable").asBoolean();
@@ -86,14 +94,18 @@ public abstract class LocomotiveDefinition extends FreightDefinition {
     }
 
     public int getHorsePower(Gauge gauge) {
-        return (int) Math.ceil(gauge.scale() * this.power);
+        return (int) Math.ceil(gauge.scale() * this.power * 1.34102209);
+    }
+
+    public int getWatt(Gauge gauge) {
+        return (int) Math.ceil(gauge.scale() * this.power / 1000);
     }
 
     /**
      * @return tractive effort in newtons
      */
     public int getStartingTractionNewtons(Gauge gauge) {
-        return (int) Math.ceil(gauge.scale() * this.traction * 4.44822);
+        return (int) Math.ceil(gauge.scale() * this.traction);
     }
 
     public Speed getMaxSpeed(Gauge gauge) {
