@@ -198,7 +198,7 @@ public class LocomotiveElectric extends Locomotive {
 			reverserCooldown--;
 		}
 
-		//Take 1RF as 1J
+		//Take 1RF as 200J
 		if (getDefinition().isCog() && getTickCount() % 20 == 0) {
 			SimulationState state = getCurrentState();
 			if (state != null) {
