@@ -1,5 +1,6 @@
 package cam72cam.immersiverailroading;
 
+import cam72cam.immersiverailroading.library.PowerDisplayType;
 import cam72cam.immersiverailroading.library.PressureDisplayType;
 import cam72cam.immersiverailroading.library.SpeedDisplayType;
 import cam72cam.immersiverailroading.library.TemperatureDisplayType;
@@ -25,11 +26,14 @@ public class ConfigGraphics {
 	@Comment( "What unit to use for speedometer. (kmh, mph or ms)" )
 	public static SpeedDisplayType speedUnit = SpeedDisplayType.kmh;
 
-	@Comment("What units to display pressure in (psi, bar)")
+	@Comment("What units to display pressure in (psi, bar, kpa)")
 	public static PressureDisplayType pressureUnit = PressureDisplayType.psi;
 
 	@Comment("What units to display pressure in (psi, bar)")
 	public static TemperatureDisplayType temperatureUnit = TemperatureDisplayType.celcius;
+
+	@Comment("What units to display locomotive power in (W, kW, horsepower)")
+	public static PowerDisplayType powerDisplayType = PowerDisplayType.w;
 
 	@Comment( "How long to keep textures in memory after they have left the screen (higher numbers = smoother game play, lower numbers = less GPU memory used)")
 	@Range(min = 0, max = 100)

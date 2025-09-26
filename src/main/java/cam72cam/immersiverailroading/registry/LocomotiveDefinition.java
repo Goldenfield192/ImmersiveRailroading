@@ -1,5 +1,6 @@
 package cam72cam.immersiverailroading.registry;
 
+import cam72cam.immersiverailroading.ConfigGraphics;
 import cam72cam.immersiverailroading.ImmersiveRailroading;
 import cam72cam.immersiverailroading.entity.EntityRollingStock;
 import cam72cam.immersiverailroading.util.DataBlock;
@@ -86,7 +87,9 @@ public abstract class LocomotiveDefinition extends FreightDefinition {
         List<String> tips = super.getTooltip(gauge);
         tips.add(GuiText.LOCO_WORKS.toString(this.works));
         if (!isCabCar) {
-            tips.add(GuiText.LOCO_HORSE_POWER.toString(this.getHorsePower(gauge)));
+//            tips.add(GuiText.LOCO_HORSE_POWER.toString(this.getHorsePower(gauge)));
+            int power = ConfigGraphics.powerDisplayType.convertFromWatt(this.getWatt(gauge));
+            tips.add(GuiText.LOCO_POWER.toString(power) + ConfigGraphics.powerDisplayType.toUnitString());
             tips.add(GuiText.LOCO_TRACTION.toString(this.getStartingTractionNewtons(gauge)));
             tips.add(GuiText.LOCO_MAX_SPEED.toString(this.getMaxSpeed(gauge).metricString()));
         }
@@ -98,7 +101,7 @@ public abstract class LocomotiveDefinition extends FreightDefinition {
     }
 
     public int getWatt(Gauge gauge) {
-        return (int) Math.ceil(gauge.scale() * this.power / 1000);
+        return (int) Math.ceil(gauge.scale() * this.power * 1000);
     }
 
     /**
