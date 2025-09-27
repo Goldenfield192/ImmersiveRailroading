@@ -6,6 +6,9 @@ public enum PowerDisplayType {
     kw,
     ;
 
+    public static final float kwToHp = 1.359621f;
+    public static final float wToHp = 0.00135962f;
+
     public float convertFromWatt(float value) {
         switch (this) {
             case w:
@@ -14,7 +17,7 @@ public enum PowerDisplayType {
                 return value / 1000f;
             case horsepower:
             default:
-                return value * 1.341022f;
+                return value * wToHp;
         }
     }
 

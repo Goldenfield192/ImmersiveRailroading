@@ -3,6 +3,7 @@ package cam72cam.immersiverailroading.registry;
 import cam72cam.immersiverailroading.ConfigGraphics;
 import cam72cam.immersiverailroading.ImmersiveRailroading;
 import cam72cam.immersiverailroading.entity.EntityRollingStock;
+import cam72cam.immersiverailroading.library.unit.PowerDisplayType;
 import cam72cam.immersiverailroading.util.DataBlock;
 import cam72cam.immersiverailroading.library.Gauge;
 import cam72cam.immersiverailroading.library.GuiText;
@@ -101,7 +102,7 @@ public abstract class LocomotiveDefinition extends FreightDefinition {
     }
 
     public int getHorsePower(Gauge gauge) {
-        return (int) Math.ceil(gauge.scale() * this.power_kW * 1.34102209);
+        return (int) Math.ceil(gauge.scale() * this.power_kW * PowerDisplayType.kwToHp);
     }
 
     public int getWatt(Gauge gauge) {
