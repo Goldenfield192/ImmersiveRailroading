@@ -17,8 +17,8 @@ public abstract class LocomotiveDefinition extends FreightDefinition {
     public boolean toggleBell;
     public SoundDefinition bell;
     private String works;
-    private double power;    //kW
-    private double traction; //N
+    private double power_kW;
+    private double traction_N;
     private Speed maxSpeed;
     private boolean hasRadioEquipment;
     public boolean muliUnitCapable;
@@ -48,21 +48,21 @@ public abstract class LocomotiveDefinition extends FreightDefinition {
 
         isCabCar = readCabCarFlag(data);
         if (isCabCar) {
-            power = 0;
-            traction = 0;
+            power_kW = 0;
+            traction_N = 0;
             maxSpeed = Speed.ZERO;
             muliUnitCapable = true;
             factorOfAdhesion = 0;
         } else {
             try {
-                power = properties.getValue("horsepower").asInteger() * internal_inv_scale * 0.745699872;
+                power_kW = properties.getValue("horsepower").asInteger() * internal_inv_scale * 0.745699872;
             } catch (Exception e) {
-                power = properties.getValue("kilowatt").asInteger() * internal_inv_scale;
+                power_kW = properties.getValue("kilowatt").asInteger() * internal_inv_scale;
             }
             try {
-                traction = properties.getValue("tractive_effort_lbf").asInteger() * 4.44822 * internal_inv_scale;
+                traction_N = properties.getValue("tractive_effort_lbf").asInteger() * 4.44822 * internal_inv_scale;
             } catch (Exception e) {
-                traction = properties.getValue("tractive_effort_newton").asInteger() * internal_inv_scale;
+                traction_N = properties.getValue("tractive_effort_newton").asInteger() * internal_inv_scale;
             }
             factorOfAdhesion = properties.getValue("factor_of_adhesion").asDouble(4);
             maxSpeed = Speed.fromMetric(properties.getValue("max_speed_kmh").asDouble() * internal_inv_scale);
@@ -101,18 +101,18 @@ public abstract class LocomotiveDefinition extends FreightDefinition {
     }
 
     public int getHorsePower(Gauge gauge) {
-        return (int) Math.ceil(gauge.scale() * this.power * 1.34102209);
+        return (int) Math.ceil(gauge.scale() * this.power_kW * 1.34102209);
     }
 
     public int getWatt(Gauge gauge) {
-        return (int) Math.ceil(gauge.scale() * this.power * 1000);
+        return (int) Math.ceil(gauge.scale() * this.power_kW * 1000);
     }
 
     /**
      * @return tractive effort in newtons
      */
     public int getStartingTractionNewtons(Gauge gauge) {
-        return (int) Math.ceil(gauge.scale() * this.traction);
+        return (int) Math.ceil(gauge.scale() * this.traction_N);
     }
 
     public Speed getMaxSpeed(Gauge gauge) {
