@@ -59,12 +59,12 @@ public abstract class LocomotiveDefinition extends FreightDefinition {
             if (properties.getValue("horsepower").asInteger() != null) {
                 power_kW = properties.getValue("horsepower").asInteger() * PowerDisplayType.hpToKW * internal_inv_scale;
             } else {
-                power_kW = properties.getValue("kilowatt").asInteger() *  internal_inv_scale;
+                power_kW = properties.getValue("kilowatt").asInteger() * internal_inv_scale;
             }
             if (properties.getValue("tractive_effort_lbf").asInteger() != null) {
                 traction_N = properties.getValue("tractive_effort_lbf").asInteger() * ForceDisplayType.lbfToNewton * internal_inv_scale;
             } else {
-                traction_N = properties.getValue("tractive_effort_newton").asInteger() *  internal_inv_scale;
+                traction_N = properties.getValue("tractive_effort_newton").asInteger() * internal_inv_scale;
             }
             factorOfAdhesion = properties.getValue("factor_of_adhesion").asDouble(4);
             maxSpeed = Speed.fromMetric(properties.getValue("max_speed_kmh").asDouble() * internal_inv_scale);
