@@ -57,7 +57,7 @@ public abstract class LocomotiveDefinition extends FreightDefinition {
             try {
                 power = properties.getValue("horsepower").asInteger() * internal_inv_scale * 0.745699872;
             } catch (Exception e) {
-                power = properties.getValue("kilo_watt").asInteger() * internal_inv_scale;
+                power = properties.getValue("kilowatt").asInteger() * internal_inv_scale;
             }
             try {
                 traction = properties.getValue("tractive_effort_lbf").asInteger() * 4.44822 * internal_inv_scale;
@@ -87,11 +87,15 @@ public abstract class LocomotiveDefinition extends FreightDefinition {
         List<String> tips = super.getTooltip(gauge);
         tips.add(GuiText.LOCO_WORKS.toString(this.works));
         if (!isCabCar) {
-//            tips.add(GuiText.LOCO_HORSE_POWER.toString(this.getHorsePower(gauge)));
-            int power = ConfigGraphics.powerDisplayType.convertFromWatt(this.getWatt(gauge));
-            tips.add(GuiText.LOCO_POWER.toString(power) + ConfigGraphics.powerDisplayType.toUnitString());
-            tips.add(GuiText.LOCO_TRACTION.toString(this.getStartingTractionNewtons(gauge)));
-            tips.add(GuiText.LOCO_MAX_SPEED.toString(this.getMaxSpeed(gauge).metricString()));
+            float power = ConfigGraphics.powerUnit.convertFromWatt(this.getWatt(gauge));
+            String p = String.format("%.2f", power);
+            tips.add(GuiText.LOCO_POWER.toString(p) + ConfigGraphics.powerUnit.toUnitString());
+            float force = ConfigGraphics.forceUnit.convertFromNewton(this.getStartingTractionNewtons(gauge));
+            String f = String.format("%.2f", force);
+            tips.add(GuiText.LOCO_TRACTION.toString(f) + ConfigGraphics.forceUnit.toUnitString());
+            float speed = (float) ConfigGraphics.speedUnit.convertFromKmh(this.getMaxSpeed(gauge).metric());
+            String v = String.format("%.2f", speed);
+            tips.add(GuiText.LOCO_MAX_SPEED.toString(v) + ConfigGraphics.speedUnit.toUnitString());
         }
         return tips;
     }

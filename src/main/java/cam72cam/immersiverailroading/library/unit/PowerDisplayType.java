@@ -1,4 +1,4 @@
-package cam72cam.immersiverailroading.library;
+package cam72cam.immersiverailroading.library.unit;
 
 public enum PowerDisplayType {
     horsepower,
@@ -6,15 +6,15 @@ public enum PowerDisplayType {
     kw,
     ;
 
-    public int convertFromWatt(int value) {
+    public float convertFromWatt(float value) {
         switch (this) {
             case w:
                 return value;
             case kw:
-                return value / 1000;
+                return value / 1000f;
             case horsepower:
             default:
-                return (int) (value * 1.34102209);
+                return value * 1.341022f;
         }
     }
 

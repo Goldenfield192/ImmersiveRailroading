@@ -1,4 +1,4 @@
-package cam72cam.immersiverailroading.library;
+package cam72cam.immersiverailroading.library.unit;
 
 public enum PressureDisplayType {
     psi,
@@ -15,9 +15,13 @@ public enum PressureDisplayType {
 
     public String toUnitString() {
         switch (this) {
-            case bar: return "BAR";
-            case kpa: return "kPa";
-            default: return "PSI";
+            case bar:
+                return "bar";
+            case kpa:
+                return "kPa";
+            case psi:
+            default:
+                return "psi";
         }
     }
 }
