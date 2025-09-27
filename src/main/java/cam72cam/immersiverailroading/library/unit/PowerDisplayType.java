@@ -7,6 +7,7 @@ public enum PowerDisplayType {
     ;
 
     public static final float kwToHp = 1.359621f;
+    public static final float hpToKW = 0.735499f;
     public static final float wToHp = 0.00135962f;
 
     public float convertFromWatt(float value) {

@@ -3,6 +3,7 @@ package cam72cam.immersiverailroading.registry;
 import cam72cam.immersiverailroading.ConfigGraphics;
 import cam72cam.immersiverailroading.ImmersiveRailroading;
 import cam72cam.immersiverailroading.entity.EntityRollingStock;
+import cam72cam.immersiverailroading.library.unit.ForceDisplayType;
 import cam72cam.immersiverailroading.library.unit.PowerDisplayType;
 import cam72cam.immersiverailroading.util.DataBlock;
 import cam72cam.immersiverailroading.library.Gauge;
@@ -55,15 +56,15 @@ public abstract class LocomotiveDefinition extends FreightDefinition {
             muliUnitCapable = true;
             factorOfAdhesion = 0;
         } else {
-            try {
-                power_kW = properties.getValue("horsepower").asInteger() * internal_inv_scale * 0.745699872;
-            } catch (Exception e) {
-                power_kW = properties.getValue("kilowatt").asInteger() * internal_inv_scale;
+            if (properties.getValue("horsepower").asInteger() != null) {
+                power_kW = properties.getValue("horsepower").asInteger() * PowerDisplayType.hpToKW * internal_inv_scale;
+            } else {
+                power_kW = properties.getValue("kilowatt").asInteger() *  internal_inv_scale;
             }
-            try {
-                traction_N = properties.getValue("tractive_effort_lbf").asInteger() * 4.44822 * internal_inv_scale;
-            } catch (Exception e) {
-                traction_N = properties.getValue("tractive_effort_newton").asInteger() * internal_inv_scale;
+            if (properties.getValue("tractive_effort_lbf").asInteger() != null) {
+                traction_N = properties.getValue("tractive_effort_lbf").asInteger() * ForceDisplayType.lbfToNewton * internal_inv_scale;
+            } else {
+                traction_N = properties.getValue("tractive_effort_newton").asInteger() *  internal_inv_scale;
             }
             factorOfAdhesion = properties.getValue("factor_of_adhesion").asDouble(4);
             maxSpeed = Speed.fromMetric(properties.getValue("max_speed_kmh").asDouble() * internal_inv_scale);

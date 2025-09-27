@@ -6,6 +6,8 @@ public enum ForceDisplayType {
     lbf,
     ;
 
+    public static final float lbfToNewton = 4.448221f;
+
     public float convertFromNewton(float value) {
         switch (this) {
             case n:
