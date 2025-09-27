@@ -61,7 +61,7 @@ public class Config {
 		public static boolean TrainsBreakBlocks = true;
 
 		@Comment("Which block is reserved if TrainsBreakBlocks is true")
-		public static String[] whitelistBlocks = new String[]{
+		public static String[] TrainsIgnoreBlocks = new String[]{
 				"littletiles:blocklittletiles"
 		};
 

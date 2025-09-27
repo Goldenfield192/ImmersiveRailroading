@@ -37,7 +37,7 @@ public class BlockUtil {
 	public static boolean isWhitelisted(World world, Vec3i pos) {
 		if (whitelist == null) {
 			whitelist = new ArrayList<>();
-			Arrays.stream(Config.ConfigDamage.whitelistBlocks).forEach(s -> whitelist.add(Fuzzy.get(s)));
+			Arrays.stream(Config.ConfigDamage.TrainsIgnoreBlocks).forEach(s -> whitelist.add(Fuzzy.get(s)));
 		}
 
 		ItemStack stack = world.getItemStack(pos);
