@@ -71,6 +71,7 @@ public enum GuiText {
 	PAINT_BRUSH_DESCRIPTION_TOOLTIP("item.paint_brush.description"),
 
 	LABEL_CURRENT_AUGMENT("label.current_augment"),
+	LABEL_ACTUATOR_FILTER("label.actuator_filter"),
 	LABEL_INCLUDED_TAG("label.included_tag"),
 	LABEL_EXCLUDED_TAG("label.excluded_tag"),
 

@@ -55,7 +55,9 @@ public class TileRailBase extends BlockEntityTrackTickable implements IRedstoneP
 	private String positive;
 	@TagField("negative_filter")
 	private String negative;
-	private Predicate<EntityRollingStock> compiledFilter = s -> true;
+	private Predicate<EntityRollingStock> compiledFilter;
+	@TagField("actuator_filter")
+	private String actuatorFilter;
 	@TagField("snowLayers")
 	private int snowLayers = 0;
 	@TagField("flexible")
@@ -119,7 +121,7 @@ public class TileRailBase extends BlockEntityTrackTickable implements IRedstoneP
 	
 	public void setAugment(Augment augment) {
 		this.augment = augment;
-		Augment.Properties properties = new Augment.Properties("", "",
+		Augment.Properties properties = new Augment.Properties("", "","",
 															   CouplerAugmentMode.ENGAGED,
 															   LocoControlMode.THROTTLE,
 															   RedstoneMode.ENABLED,
@@ -146,6 +148,7 @@ public class TileRailBase extends BlockEntityTrackTickable implements IRedstoneP
 	public void setAugmentProperties(@Nonnull Augment.Properties properties) {
 		this.positive = properties.positiveFilter;
 		this.negative = properties.negativeFilter;
+		this.actuatorFilter = properties.doorActuatorFilter;
 		this.couplerMode = properties.couplerAugmentMode;
 		this.controlMode = properties.locoControlMode;
 		this.redstoneMode = properties.redstoneMode;
@@ -170,6 +173,7 @@ public class TileRailBase extends BlockEntityTrackTickable implements IRedstoneP
 								  PlayerMessage.translate(ChatText.AUGMENT_FILTER_FAIL.getRaw(),
 														  this.getPos().x, this.getPos().y, this.getPos().z)));
 			}
+			compiledFilter = stock -> true;
 			return;
 		}
 		positive = positive.and(negative.negate());
@@ -181,7 +185,7 @@ public class TileRailBase extends BlockEntityTrackTickable implements IRedstoneP
 	}
 
 	public Augment.Properties getAugmentProperties() {
-		return new Augment.Properties(positive, negative, couplerMode, controlMode, redstoneMode, pushPull, detectorMode);
+		return new Augment.Properties(positive, negative, actuatorFilter, couplerMode, controlMode, redstoneMode, pushPull, detectorMode);
 	}
 
 	public int getSnowLayers() {
@@ -781,9 +785,22 @@ public class TileRailBase extends BlockEntityTrackTickable implements IRedstoneP
 				EntityRollingStock stock = this.getStockNearBy(EntityRollingStock.class);
 				if (stock != null) {
 					float value = getWorld().getRedstone(getPos())/15f;
-					for (Door d : stock.getDefinition().getModel().getDoors()) {
-						if (d.type == Door.Types.EXTERNAL) {
-							stock.setControlPosition(d, value);
+					if (actuatorFilter == null || actuatorFilter.isEmpty()) {
+						for (Door d : stock.getDefinition().getModel().getDoors()) {
+							if (d.type == Door.Types.EXTERNAL) {
+								stock.setControlPosition(d, value);
+							}
+						}
+					} else {
+						String[] cgs = actuatorFilter.split(",");
+						for (String cg : cgs){
+							cg = cg.trim();
+							if(cg.isEmpty()) continue;
+							for (Door<?> d : stock.getDefinition().getModel().getDoors()) {
+								if (d.controlGroup.equals(cg)) {
+									stock.setControlPosition(d, value);
+								}
+							}
 						}
 					}
 				}

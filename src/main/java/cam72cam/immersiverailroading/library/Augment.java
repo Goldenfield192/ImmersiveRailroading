@@ -53,7 +53,7 @@ public enum Augment {
 
 	@TagMapped(PropertyMapper.class)
 	public static class Properties {
-		public static final Properties EMPTY = new Properties("", "",
+		public static final Properties EMPTY = new Properties("", "", "",
 															  CouplerAugmentMode.ENGAGED,
 															  LocoControlMode.THROTTLE,
 															  RedstoneMode.ENABLED,
@@ -62,6 +62,7 @@ public enum Augment {
 
 		public String positiveFilter;
 		public String negativeFilter;
+		public String doorActuatorFilter;
 		public CouplerAugmentMode couplerAugmentMode;
 		public LocoControlMode locoControlMode;
 		public RedstoneMode redstoneMode;
@@ -71,10 +72,11 @@ public enum Augment {
 		public Properties() {
 		}
 
-		public Properties(String positiveFilter, String negativeFilter, CouplerAugmentMode couplerAugmentMode,
+		public Properties(String positiveFilter, String negativeFilter, String doorActuatorFilter, CouplerAugmentMode couplerAugmentMode,
 						  LocoControlMode locoControlMode, RedstoneMode redstoneMode, boolean pushpull, StockDetectorMode stockDetectorMode) {
 			this.positiveFilter = positiveFilter;
 			this.negativeFilter = negativeFilter;
+			this.doorActuatorFilter = doorActuatorFilter;
 			this.couplerAugmentMode = couplerAugmentMode;
 			this.locoControlMode = locoControlMode;
 			this.redstoneMode = redstoneMode;
@@ -86,6 +88,7 @@ public enum Augment {
 			TagCompound compound = new TagCompound();
 			compound.setString("positive", positiveFilter);
 			compound.setString("negative", negativeFilter);
+			compound.setString("door_actuator", doorActuatorFilter);
 			compound.setString("coupler", couplerAugmentMode.name());
 			compound.setString("loco", locoControlMode.name());
 			compound.setString("redstone", redstoneMode.name());
@@ -98,6 +101,7 @@ public enum Augment {
 			Properties properties = new Properties(
 					compound.getString("positive"),
 					compound.getString("negative"),
+					compound.getString("door_actuator"),
 					CouplerAugmentMode.valueOf(compound.getString("coupler")),
 					LocoControlMode.valueOf(compound.getString("loco")),
 					RedstoneMode.valueOf(compound.getString("redstone")),

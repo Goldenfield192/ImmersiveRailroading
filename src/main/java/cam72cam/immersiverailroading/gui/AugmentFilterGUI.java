@@ -21,6 +21,7 @@ public class AugmentFilterGUI implements IScreen {
     private final Augment.Properties properties;
     private TextField includeTags;
     private TextField excludeTags;
+    private TextField doorActuatorFilter;
     private Button stockDetectorMode;
     private Button redstoneMode;
     private CheckBox pushpull;
@@ -45,6 +46,14 @@ public class AugmentFilterGUI implements IScreen {
 
         int buttonWidth = 220;
         int buttonHeight = 20;
+
+        doorActuatorFilter = new TextField(screen, xtop + xOffset + 240, ytop + yOffset, buttonWidth - 50, buttonHeight);
+        doorActuatorFilter.setText(properties.doorActuatorFilter);
+        doorActuatorFilter.setVisible(augment.equals(Augment.ACTUATOR));
+        doorActuatorFilter.setValidator(s -> {
+            properties.doorActuatorFilter = s;
+            return true;
+        });
 
         includeTags = new TextField(screen, xtop + xOffset, ytop + yOffset, buttonWidth-1, buttonHeight);
         includeTags.setText(properties.positiveFilter);
@@ -135,6 +144,9 @@ public class AugmentFilterGUI implements IScreen {
         if (properties.negativeFilter == null) {
             properties.negativeFilter = "";
         }
+        if (properties.doorActuatorFilter == null) {
+            properties.doorActuatorFilter = "";
+        }
         new AugmentFilterChangePacket(pos, properties).sendToServer();
     }
 
@@ -155,6 +167,10 @@ public class AugmentFilterGUI implements IScreen {
 
         GUIHelpers.drawCenteredString(GuiText.LABEL_INCLUDED_TAG.toString(), xOffset,  yOffset, 0xFFFFFFFF);
         includeTags.setText(properties.positiveFilter);
+        if (augment == Augment.ACTUATOR) {
+            GUIHelpers.drawCenteredString(GuiText.LABEL_ACTUATOR_FILTER.toString(), xOffset + 210, yOffset, 0xFFFFFFFF);
+            doorActuatorFilter.setText(properties.doorActuatorFilter);
+        }
         yOffset+=40;
 
         GUIHelpers.drawCenteredString(GuiText.LABEL_EXCLUDED_TAG.toString(), xOffset,  yOffset, 0xFFFFFFFF);

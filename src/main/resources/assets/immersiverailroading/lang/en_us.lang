@@ -138,6 +138,7 @@ gui.immersiverailroading:stock.pack=Pack:            %s
 gui.immersiverailroading:stock.tag=Tags:            %s
 
 gui.immersiverailroading:label.current_augment=Current Augment:
+gui.immersiverailroading:label.actuator_filter=Door Actuator CG filter
 gui.immersiverailroading:label.included_tag=Included Tags:
 gui.immersiverailroading:label.excluded_tag=Excluded Tags:
 
