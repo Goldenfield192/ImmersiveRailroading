@@ -28,6 +28,7 @@ import cam72cam.mod.serialization.TagField;
 import cam72cam.mod.sound.Audio;
 import cam72cam.mod.sound.SoundCategory;
 import cam72cam.mod.sound.StandardSound;
+import cam72cam.mod.text.PlayerMessage;
 import cam72cam.mod.util.Facing;
 import cam72cam.mod.serialization.TagCompound;
 import cam72cam.immersiverailroading.thirdparty.trackapi.ITrack;
@@ -156,10 +157,22 @@ public class TileRailBase extends BlockEntityTrackTickable implements IRedstoneP
 	}
 
 	public void compileFilter() {
-		Predicate<EntityRollingStock> positive = StockFilterCompiler.compile(this.positive);
-		Predicate<EntityRollingStock> negative = StockFilterCompiler.compile(this.negative);
-
-		positive.and(negative.negate());
+		Predicate<EntityRollingStock> positive;
+		Predicate<EntityRollingStock> negative;
+		try {
+			positive = StockFilterCompiler.compile(this.positive);
+			negative = StockFilterCompiler.compile(this.negative);
+		} catch (Exception e) {
+			if (getWorld().isServer) {
+				getWorld().getEntities(Player.class).stream()
+						  .filter(player -> player.getPosition().distanceTo(new Vec3d(this.getPos())) < 20)
+						  .forEach(player -> player.asPlayer().sendMessage(
+								  PlayerMessage.translate(ChatText.AUGMENT_FILTER_FAIL.getRaw(),
+														  this.getPos().x, this.getPos().y, this.getPos().z)));
+			}
+			return;
+		}
+		positive = positive.and(negative.negate());
 		compiledFilter = positive;
 	}
 
@@ -271,10 +284,10 @@ public class TileRailBase extends BlockEntityTrackTickable implements IRedstoneP
 			}
 		case 5:
 			if (this.stockTag != null && !this.stockTag.isEmpty()) {
-				this.positive = this.positive + ",nametag:" + stockTag;
+				this.positive = this.positive + "&& nametag:" + stockTag;
 			}
 			if (this.augmentFilterID != null && !this.augmentFilterID.isEmpty()) {
-				this.positive = this.positive + ",stock:" + augmentFilterID.split("/")[2]
+				this.positive = this.positive + "&& stock:" + augmentFilterID.split("/")[2]
 						.replace(".json", "").replace(".caml", "");
 			}
 		}
