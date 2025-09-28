@@ -14,7 +14,6 @@ import cam72cam.immersiverailroading.items.ItemTrackExchanger;
 import cam72cam.immersiverailroading.library.*;
 import cam72cam.immersiverailroading.model.part.Door;
 import cam72cam.immersiverailroading.physics.MovementTrack;
-import cam72cam.immersiverailroading.registry.DefinitionManager;
 import cam72cam.immersiverailroading.thirdparty.trackapi.BlockEntityTrackTickable;
 import cam72cam.immersiverailroading.util.*;
 import cam72cam.mod.block.IRedstoneProvider;
@@ -55,7 +54,7 @@ public class TileRailBase extends BlockEntityTrackTickable implements IRedstoneP
 	private String positive;
 	@TagField("negative_filter")
 	private String negative;
-	private List<Predicate<EntityRollingStock>> compiledFilter = new LinkedList<>();
+	private Predicate<EntityRollingStock> compiledFilter = s -> true;
 	@TagField("snowLayers")
 	private int snowLayers = 0;
 	@TagField("flexible")
@@ -157,113 +156,11 @@ public class TileRailBase extends BlockEntityTrackTickable implements IRedstoneP
 	}
 
 	public void compileFilter() {
-		List<Predicate<EntityRollingStock>> list = new LinkedList<>();
+		Predicate<EntityRollingStock> positive = StockFilterCompiler.compile(this.positive);
+		Predicate<EntityRollingStock> negative = StockFilterCompiler.compile(this.negative);
 
-		if (positive != null && !positive.isEmpty()) {
-			String[] positiveFilters = positive.split(",");
-			for (String str : positiveFilters) {
-				str = str.trim();
-				if (str.startsWith("type:")) {
-					switch (str.substring(5)) {
-						case "diesel":
-							list.add(s -> s instanceof LocomotiveDiesel);
-							break;
-						case "steam":
-							list.add(s -> s instanceof LocomotiveSteam);
-							break;
-						case "handcar":
-							list.add(s -> s instanceof HandCar);
-							break;
-						case "passenger":
-							list.add(s -> s instanceof CarPassenger);
-							break;
-						case "tender":
-							list.add(s -> s instanceof Tender);
-							break;
-						case "tank":
-							list.add(s -> s instanceof CarTank);
-							break;
-						case "freight":
-							list.add(s -> s instanceof CarFreight);
-					}
-				} else if (str.startsWith("tag:")) {
-					String tag = str.substring(4);
-					list.add(s -> DefinitionManager.isTaggedWith(s.getDefinition(), tag));
-				} else if (str.startsWith("stock:")) {
-					String defID = str.substring(6);
-					list.add(s -> s.getDefinitionID().split("/")[2]
-							.replace(".json", "").replace(".caml", "").equals(defID));
-				} else if (str.startsWith("works:")) {
-					String works = str.substring(6);
-					list.add(s -> s instanceof Locomotive && ((Locomotive) s).getDefinition().works.equals(works));
-				} else if (str.startsWith("author:")) {
-					String author = str.substring(7);
-					list.add(s -> s.getDefinition().modelerName.equals(author));
-				} else if (str.startsWith("pack:")) {
-					String pack = str.substring(5);
-					list.add(s -> s.getDefinition().packName.equals(pack));
-				} else if (str.startsWith("nametag:")) {
-					String nameTag = str.substring(8);
-					list.add(s -> s.tag.equals(nameTag));
-				}
-			}
-		} else {
-			list.add(s -> true);
-		}
-
-		if (negative != null && !negative.isEmpty()) {
-			String[] negativeFilters = negative.split(",");
-			for (String str : negativeFilters) {
-				str = str.trim();
-				if (str.startsWith("type:")) {
-					switch (str.substring(5)) {
-						case "diesel":
-							list.add(s -> !(s instanceof LocomotiveDiesel));
-							break;
-						case "steam":
-							list.add(s -> !(s instanceof LocomotiveSteam));
-							break;
-						case "handcar":
-							list.add(s -> !(s instanceof HandCar));
-							break;
-						case "passenger":
-							list.add(s -> !(s instanceof CarPassenger));
-							break;
-						case "tender":
-							list.add(s -> !(s instanceof Tender));
-							break;
-						case "tank":
-							list.add(s -> !(s instanceof CarTank));
-							break;
-						case "freight":
-							list.add(s -> !(s instanceof CarFreight));
-					}
-				} else if (str.startsWith("tag:")) {
-					String tag = str.substring(4);
-					list.add(s -> !DefinitionManager.isTaggedWith(s.getDefinition(), tag));
-				} else if (str.startsWith("stock:")) {
-					String defID = str.substring(6);
-					list.add(s -> !s.getDefinitionID().split("/")[2]
-							.replace(".json", "").replace(".caml", "").equals(defID));
-				} else if (str.startsWith("works:")) {
-					String works = str.substring(6);
-					list.add(s -> !(s instanceof Locomotive && ((Locomotive) s).getDefinition().works.equals(works)));
-				} else if (str.startsWith("author:")) {
-					String author = str.substring(7);
-					list.add(s -> !s.getDefinition().modelerName.equals(author));
-				} else if (str.startsWith("pack:")) {
-					String pack = str.substring(5);
-					list.add(s -> !s.getDefinition().packName.equals(pack));
-				} else if (str.startsWith("nametag:")) {
-					String nameTag = str.substring(8);
-					list.add(s -> !s.tag.equals(nameTag));
-				}
-			}
-		} else {
-			list.add(s -> true);
-		}
-
-		compiledFilter = list;
+		positive.and(negative.negate());
+		compiledFilter = positive;
 	}
 
 	public Augment getAugment() {
@@ -581,7 +478,7 @@ public class TileRailBase extends BlockEntityTrackTickable implements IRedstoneP
 	}
 
 	public boolean canInteractWith(EntityRollingStock stock) {
-        return compiledFilter == null || compiledFilter.isEmpty() || compiledFilter.stream().allMatch(p -> p.test(stock));
+        return compiledFilter == null || compiledFilter.test(stock);
     }
 
 	private boolean canOperate() {
