@@ -214,7 +214,6 @@ public class StockFilterCompiler {
                     if (current.parent != null) {
                         if (current.parent.symbol == null) {
                             current = current.parent;
-                            current.symbol = or;
                         } else {
                             //OR's priority is lower than AND so no check
                             Node insert = new Node();
@@ -225,8 +224,8 @@ public class StockFilterCompiler {
                             }
                             current.parent = insert;
                             current = insert;
-                            current.symbol = or;
                         }
+                        current.symbol = or;
                         Node inter = current;
                         current.predicate = () -> inter.leftChild.predicate.get().or(inter.rightChild.predicate.get());
                     } else {
@@ -273,9 +272,10 @@ public class StockFilterCompiler {
     }
 
     private static class Node {
-        //If is leaf...
+        //If this node is a leaf...
         Supplier<Predicate<EntityRollingStock>> predicate;
-        //It is not leaf...
+        //If this node isn't a leaf...
+        //May not need a function here, but reserved for scalability
         BiFunction<Boolean, Boolean, Boolean> symbol;
 
         Node parent;
