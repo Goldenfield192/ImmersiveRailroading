@@ -49,7 +49,8 @@ public enum GuiText {
 	TRACK_PLACE_BLUEPRINT_FALSE("track.place_blueprint_false"),
 	
 	LOCO_WORKS("loco.works"),
-	LOCO_HORSE_POWER("loco.horse_power"),
+//	LOCO_HORSE_POWER("loco.horse_power"),
+	LOCO_POWER("loco.power"),
 	LOCO_TRACTION("loco.tractive_effort"),
 	LOCO_MAX_SPEED("loco.max_speed"),
 	GAUGE_TOOLTIP("stock.gauge"),
@@ -79,7 +80,7 @@ public enum GuiText {
 	;
 
 	private final String value;
-
+  
 	GuiText(String value) {
 		this.value = value;
 	}
