@@ -132,10 +132,11 @@ public class StockFilterCompiler {
         BiFunction<Boolean, Boolean, Boolean> and = (b1, b2) -> b1 && b2;
         BiFunction<Boolean, Boolean, Boolean> or = (b1, b2) -> b1 || b2;
 
-        //I used a complex way to build it but it works...
+        //I used a complex way to build it, but it works...
         for (String token : tokens) {
             switch (token) {
                 case START_PAREN:
+                    //Add a new child node and move current pointer to it
                     Node child = new Node();
                     if (current.leftChild == null) {
                         current.leftChild = child;
@@ -144,18 +145,32 @@ public class StockFilterCompiler {
                     }
                     child.parent = current;
                     current = child;
+                    //Store status
                     paren.push(current);
                     break;
                 case END_PAREN:
+                    //Revert status
                     current = paren.pop();
                     break;
                 case AND:
-                    if (current.parent != null) {
-                        if (current.parent.function == null) {
+                    if (current.parent == null) {
+                        //If current is root node then add a new root, then move current pointer to it
+                        Node newParent = new Node();
+                        newParent.leftChild = current;
+                        current.parent = newParent;
+                        current = newParent;
+                        current.symbol = and;
+                        //Change root
+                        root = newParent;
+                    } else {
+                        if (current.parent.symbol == null) {
+                            //Move current pointer to parent and change symbol to &&
                             current = current.parent;
-                            current.function = and;
+                            current.symbol = and;
                         } else {
-                            if (current.parent.function == and) {
+                            if (current.parent.symbol == and) {
+                                //If current token's symbol has higher or equal priority than parent's, insert
+                                //a node between them and move current pointer to inserted
                                 Node insert = new Node();
                                 if (current.parent.leftChild == current) {
                                     current.parent.leftChild = insert;
@@ -164,15 +179,17 @@ public class StockFilterCompiler {
                                 }
                                 current.parent = insert;
                                 current = insert;
-                                current.function = and;
+                                current.symbol = and;
                             } else {
+                                //Otherwise insert a node between parent and grandparent
                                 Node parent = current.parent;
                                 if (parent == root) {
+                                    //If parent is root then add a new root, then move current pointer to it
                                     Node newRoot = new Node();
                                     root.parent = newRoot;
                                     root = newRoot;
                                     current = root;
-                                    current.function = and;
+                                    current.symbol = and;
                                 } else {
                                     Node grand = parent.parent;
                                     Node insert = new Node();
@@ -183,27 +200,23 @@ public class StockFilterCompiler {
                                     }
                                     parent.parent = insert;
                                     current = insert;
-                                    current.function = and;
+                                    current.symbol = and;
                                 }
                             }
                         }
                         Node inter = current;
+                        //The tree may not be completed, use Supplier to avoid NPE
                         current.predicate = () -> inter.leftChild.predicate.get().and(inter.rightChild.predicate.get());
-                    } else {
-                        Node newParent = new Node();
-                        newParent.leftChild = current;
-                        current.parent = newParent;
-                        current = newParent;
-                        current.function = and;
-                        root = newParent;
                     }
                     break;
                 case OR:
+                    //Same as above
                     if (current.parent != null) {
-                        if (current.parent.function == null) {
+                        if (current.parent.symbol == null) {
                             current = current.parent;
-                            current.function = or;
+                            current.symbol = or;
                         } else {
+                            //OR's priority is lower than AND so no check
                             Node insert = new Node();
                             if (current.parent.leftChild == current) {
                                 current.parent.leftChild = insert;
@@ -212,7 +225,7 @@ public class StockFilterCompiler {
                             }
                             current.parent = insert;
                             current = insert;
-                            current.function = or;
+                            current.symbol = or;
                         }
                         Node inter = current;
                         current.predicate = () -> inter.leftChild.predicate.get().or(inter.rightChild.predicate.get());
@@ -221,11 +234,12 @@ public class StockFilterCompiler {
                         newParent.leftChild = current;
                         current.parent = newParent;
                         current = newParent;
-                        current.function = or;
+                        current.symbol = or;
                         root = newParent;
                     }
                     break;
                 default:
+                    //Add a new child node and move current pointer to it
                     Node newNode = new Node();
                     newNode.predicate = () -> getPredicate(token);
                     newNode.parent = current;
@@ -238,6 +252,7 @@ public class StockFilterCompiler {
             }
         }
 
+        //Remove empty nodes from root
         while (root.leftChild == null || root.rightChild == null) {
             if (root.leftChild == null && root.rightChild == null) {
                 break;
@@ -261,7 +276,7 @@ public class StockFilterCompiler {
         //If is leaf...
         Supplier<Predicate<EntityRollingStock>> predicate;
         //It is not leaf...
-        BiFunction<Boolean, Boolean, Boolean> function;
+        BiFunction<Boolean, Boolean, Boolean> symbol;
 
         Node parent;
         Node leftChild;
