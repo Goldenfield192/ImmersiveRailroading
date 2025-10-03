@@ -49,6 +49,7 @@ public class TrackGui implements IScreen {
 	private Button directionButton;
 	private Button bedTypeButton;
 	private Button bedFillButton;
+	private Button advancedSettings;
 
 	private Slider transfertableEntryCountSlider;
 	private Slider transfertableEntrySpacingSlider;
@@ -62,6 +63,8 @@ public class TrackGui implements IScreen {
 	private ListSelector<TrackDefinition>  trackSelector;
 	private ListSelector<ItemStack> railBedSelector;
 	private ListSelector<ItemStack> railBedFillSelector;
+
+	private int page = 1;
 
 	private double zoom = 1;
 
@@ -100,7 +103,7 @@ public class TrackGui implements IScreen {
 		this.lengthInput = new TextField(screen, xtop, ytop, width-1, height);
 		this.lengthInput.setText("" + settings.length);
 		this.lengthInput.setValidator(s -> {
-			if (s == null || s.length() == 0) {
+			if (s == null || s.isEmpty()) {
 				return true;
 			}
 			int val;
@@ -122,6 +125,13 @@ public class TrackGui implements IScreen {
 			return false;
 		});
 		this.lengthInput.setFocused(true);
+
+		this.advancedSettings = new Button(screen, -150 - xtop, ytop, width, height,  "Open more setting"){
+			@Override
+			public void onClick(Player.Hand hand) {
+				page = (page + 1) % 2;
+			}
+		};
 		ytop += height;
 
 		gaugeSelector = new ListSelector<Gauge>(screen, width, 100, height, settings.gauge,
@@ -374,96 +384,110 @@ public class TrackGui implements IScreen {
 	@Override
 	public void draw(IScreenBuilder builder, RenderState state) {
 		frame++;
+		switch (page) {
+			case 0:
+				GUIHelpers.drawRect(200, 0, GUIHelpers.getScreenWidth() - 200, GUIHelpers.getScreenHeight(), 0xCC000000);
+				GUIHelpers.drawRect(0, 0, 200, GUIHelpers.getScreenHeight(), 0xEE000000);
 
-		GUIHelpers.drawRect(200, 0, GUIHelpers.getScreenWidth() - 200, GUIHelpers.getScreenHeight(), 0xCC000000);
-		GUIHelpers.drawRect(0, 0, 200, GUIHelpers.getScreenHeight(), 0xEE000000);
-
-		if (gaugeSelector.isVisible()) {
-			double textScale = 1.5;
-			GUIHelpers.drawCenteredString(GuiText.SELECTOR_GAUGE.toString(settings.gauge.toString()), (int) ((300 + (GUIHelpers.getScreenWidth()-300) / 2) / textScale), (int) (10 / textScale), 0xFFFFFF, new Matrix4().scale(textScale, textScale, textScale));
-
-			RailInfo info = new RailInfo(
-					settings.immutable().with(rendered -> {
-						rendered.length = 5;
-						rendered.type = TrackItems.STRAIGHT;
-					}),
-					new PlacementInfo(new Vec3d(0.5, 0, 0.5), TrackDirection.NONE, 0, null),
-					null, SwitchState.NONE, SwitchState.NONE, 0, true);
-
-			double scale = GUIHelpers.getScreenWidth() / 12.0 * zoom;
-
-			state.translate(300 + (GUIHelpers.getScreenWidth() - 300) / 2, builder.getHeight(), 100);
-			state.rotate(90, 1, 0, 0);
-			state.scale(-scale, scale, scale);
-			state.translate(0, 0, 1);
-			RailRender.get(info).renderRailModel(state);
-			state.translate(-0.5, 0, -0.5);
-			RailRender.get(info).renderRailBase(state);
-			return;
-		}
-
-		if (trackSelector.isVisible() || railBedSelector.isVisible() || railBedFillSelector.isVisible()) {
-			ListSelector.ButtonRenderer<ItemStack> icons = (button, x, y, value) -> {
-				Matrix4 zMatrix = new Matrix4();
-				zMatrix.translate(0, 0, 100);
-
-				GUIHelpers.drawItem(value, x+2, y+2, zMatrix);
-			};
-
-			railBedSelector.render(icons);
-			railBedFillSelector.render(icons);
-
-
-			double textScale = 1.5;
-			String str = trackSelector.isVisible() ? GuiText.SELECTOR_TRACK.toString(DefinitionManager.getTrack(settings.track).name) :
-					railBedSelector.isVisible() ? GuiText.SELECTOR_RAIL_BED.toString(getStackName(settings.railBed)) :
-							GuiText.SELECTOR_RAIL_BED_FILL.toString(getStackName(settings.railBedFill));
-
-			GUIHelpers.drawCenteredString(str, (int) ((450 + (GUIHelpers.getScreenWidth()-450) / 2) / textScale), (int) (10 / textScale), 0xFFFFFF, new Matrix4().scale(textScale, textScale, textScale));
-
-			RailInfo info = new RailInfo(
-					settings.immutable().with(rendered -> {
-						rendered.length = 3;
-						rendered.type = TrackItems.STRAIGHT;
-					}),
-					new PlacementInfo(new Vec3d(0.5, 0, 0.5), TrackDirection.NONE, 0, null),
-					null, SwitchState.NONE, SwitchState.NONE, 0, true);
-
-			double scale = GUIHelpers.getScreenWidth() / 15.0 * zoom;
-
-			state.translate(450 + (GUIHelpers.getScreenWidth() - 450) / 2, builder.getHeight()/2, 500);
-			state.rotate(90, 1, 0, 0);
-			state.scale(-scale, scale, scale);
-			state.translate(0, 0, -1);
-			//state.rotate(60, 1, -1, -0.6);
-			state.rotate(60, 1, 0, 0);
-
-			state.translate(0, 0, 1);
-			state.rotate(frame/2.0, 0, 1, 0);
-			state.translate(0, 0, -1);
-
-			RailRender.get(info).renderRailModel(state);
-			state.translate(-0.5, 0, -0.5);
-			RailRender.get(info).renderRailBase(state);
-
-			if (!info.settings.railBedFill.isEmpty()) {
-				StandardModel model = new StandardModel();
-				for (TrackBase base : info.getBuilder(MinecraftClient.getPlayer().getWorld()).getTracksForRender()) {
-					Vec3i basePos = base.getPos();
-					model.addItemBlock(info.settings.railBedFill, new Matrix4()
-							.translate(basePos.x, basePos.y-1, basePos.z)
-					);
+				if (gaugeSelector.isVisible()) {
+					renderGauge(builder, state);
+					return;
 				}
-				model.render(state);
+
+				if (trackSelector.isVisible() || railBedSelector.isVisible() || railBedFillSelector.isVisible()) {
+					renderBlockIcons(builder, state);
+					return;
+				}
+
+				if (!lengthInput.getText().isEmpty()) {
+					renderRail(builder, state);
+					return;
+				}
+				break;
+			case 1:
+				GUIHelpers.drawRect(200, 0, GUIHelpers.getScreenWidth(), GUIHelpers.getScreenHeight(), 0xCC000000);
+		}
+	}
+
+	private void renderGauge(IScreenBuilder builder, RenderState state) {
+		double textScale = 1.5;
+		GUIHelpers.drawCenteredString(GuiText.SELECTOR_GAUGE.toString(settings.gauge.toString()), (int) ((300 + (GUIHelpers.getScreenWidth()-300) / 2) / textScale), (int) (10 / textScale), 0xFFFFFF, new Matrix4().scale(textScale, textScale, textScale));
+
+		RailInfo info = new RailInfo(
+				settings.immutable().with(rendered -> {
+					rendered.length = 5;
+					rendered.type = TrackItems.STRAIGHT;
+				}),
+				new PlacementInfo(new Vec3d(0.5, 0, 0.5), TrackDirection.NONE, 0, null),
+				null, SwitchState.NONE, SwitchState.NONE, 0, true);
+
+		double scale = GUIHelpers.getScreenWidth() / 12.0 * zoom;
+
+		state.translate(300 + (GUIHelpers.getScreenWidth() - 300) / 2, builder.getHeight(), 100);
+		state.rotate(90, 1, 0, 0);
+		state.scale(-scale, scale, scale);
+		state.translate(0, 0, 1);
+		RailRender.get(info).renderRailModel(state);
+		state.translate(-0.5, 0, -0.5);
+		RailRender.get(info).renderRailBase(state);
+	}
+
+	private void renderBlockIcons(IScreenBuilder builder, RenderState state) {
+		ListSelector.ButtonRenderer<ItemStack> icons = (button, x, y, value) -> {
+			Matrix4 zMatrix = new Matrix4();
+			zMatrix.translate(0, 0, 100);
+
+			GUIHelpers.drawItem(value, x+2, y+2, zMatrix);
+		};
+
+		railBedSelector.render(icons);
+		railBedFillSelector.render(icons);
+
+		double textScale = 1.5;
+		String str = trackSelector.isVisible() ? GuiText.SELECTOR_TRACK.toString(DefinitionManager.getTrack(settings.track).name) :
+				railBedSelector.isVisible() ? GuiText.SELECTOR_RAIL_BED.toString(getStackName(settings.railBed)) :
+						GuiText.SELECTOR_RAIL_BED_FILL.toString(getStackName(settings.railBedFill));
+
+		GUIHelpers.drawCenteredString(str, (int) ((450 + (GUIHelpers.getScreenWidth()-450) / 2) / textScale), (int) (10 / textScale), 0xFFFFFF, new Matrix4().scale(textScale, textScale, textScale));
+
+		RailInfo info = new RailInfo(
+				settings.immutable().with(rendered -> {
+					rendered.length = 3;
+					rendered.type = TrackItems.STRAIGHT;
+				}),
+				new PlacementInfo(new Vec3d(0.5, 0, 0.5), TrackDirection.NONE, 0, null),
+				null, SwitchState.NONE, SwitchState.NONE, 0, true);
+
+		double scale = GUIHelpers.getScreenWidth() / 15.0 * zoom;
+
+		state.translate(450 + (GUIHelpers.getScreenWidth() - 450) / 2, builder.getHeight()/2, 500);
+		state.rotate(90, 1, 0, 0);
+		state.scale(-scale, scale, scale);
+		state.translate(0, 0, -1);
+		//state.rotate(60, 1, -1, -0.6);
+		state.rotate(60, 1, 0, 0);
+
+		state.translate(0, 0, 1);
+		state.rotate(frame/2.0, 0, 1, 0);
+		state.translate(0, 0, -1);
+
+		RailRender.get(info).renderRailModel(state);
+		state.translate(-0.5, 0, -0.5);
+		RailRender.get(info).renderRailBase(state);
+
+		if (!info.settings.railBedFill.isEmpty()) {
+			StandardModel model = new StandardModel();
+			for (TrackBase base : info.getBuilder(MinecraftClient.getPlayer().getWorld()).getTracksForRender()) {
+				Vec3i basePos = base.getPos();
+				model.addItemBlock(info.settings.railBedFill, new Matrix4()
+						.translate(basePos.x, basePos.y-1, basePos.z)
+				);
 			}
-
-			return;
+			model.render(state);
 		}
+	}
 
-		if (lengthInput.getText().isEmpty()) {
-			return;
-		}
-
+	private void renderRail(IScreenBuilder builder, RenderState state) {
 		// This could be more efficient...
 		double tablePos = settings.type == TrackItems.TURNTABLE
 						  ? (frame / 2.0) % 360
