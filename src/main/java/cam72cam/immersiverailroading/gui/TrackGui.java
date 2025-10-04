@@ -33,13 +33,19 @@ import static cam72cam.immersiverailroading.gui.ClickListHelper.next;
 import static cam72cam.immersiverailroading.gui.components.GuiUtils.fitString;
 
 public class TrackGui implements IScreen {
+	public static final int MAX_TRACK_LENGTH = 1000;
 	long frame;
+	private Button pagination;
 
+	//Page 0
 	private TileRailPreview te;
 	private Button typeButton;
 	private TextField lengthInput;
 	private Slider degreesSlider;
 	private Slider curvositySlider;
+	private Slider transfertableEntryCountSlider;
+	private Slider transfertableEntrySpacingSlider;
+	private Slider zoomSlider;
 	private CheckBox isPreviewCB;
 	private CheckBox isGradeCrossingCB;
 	private Button gaugeButton;
@@ -49,10 +55,7 @@ public class TrackGui implements IScreen {
 	private Button directionButton;
 	private Button bedTypeButton;
 	private Button bedFillButton;
-	private Button advancedSettings;
 
-	private Slider transfertableEntryCountSlider;
-	private Slider transfertableEntrySpacingSlider;
 
 	private final List<ItemStack> oreDict;
 
@@ -64,7 +67,8 @@ public class TrackGui implements IScreen {
 	private ListSelector<ItemStack> railBedSelector;
 	private ListSelector<ItemStack> railBedFillSelector;
 
-	private int page = 1;
+	private int page = 0;
+	private final int PAGES = 1;
 
 	private double zoom = 1;
 
@@ -93,7 +97,6 @@ public class TrackGui implements IScreen {
 	}
 
 	public void init(IScreenBuilder screen) {
-
 		// Left pane
 		int width = 200;
 		int height = 20;
@@ -112,7 +115,7 @@ public class TrackGui implements IScreen {
 			} catch (NumberFormatException e) {
 				return false;
 			}
-			int max = 1000;
+			int max = MAX_TRACK_LENGTH;
 			if (settings.type.isTable()) {
 				max = settings.type == TrackItems.TURNTABLE
 					  ? BuilderTurnTable.maxLength(settings.gauge)
@@ -126,10 +129,10 @@ public class TrackGui implements IScreen {
 		});
 		this.lengthInput.setFocused(true);
 
-		this.advancedSettings = new Button(screen, -150 - xtop, ytop, width, height,  "Open more setting"){
+		this.pagination = new Button(screen, - 120 - xtop, ytop, 120, height, GuiText.SELECTOR_PAGE.toString(page + 1, Math.max(1, PAGES))){
 			@Override
 			public void onClick(Player.Hand hand) {
-				page = (page + 1) % 2;
+				nextPage();
 			}
 		};
 		ytop += height;
@@ -334,7 +337,6 @@ public class TrackGui implements IScreen {
 				settings.isPreview = isPreviewCB.isChecked();
 			}
 		};
-//		ytop += height;
 
 		isGradeCrossingCB = new CheckBox(screen, xtop+102, ytop+2, GuiText.SELECTOR_GRADE_CROSSING.toString(), settings.isGradeCrossing) {
 			@Override
@@ -342,9 +344,8 @@ public class TrackGui implements IScreen {
 				settings.isGradeCrossing = isGradeCrossingCB.isChecked();
 			}
 		};
-		ytop += height;
 
-		Slider zoom_slider = new Slider(screen, GUIHelpers.getScreenWidth() / 2 - 150, (int) (GUIHelpers.getScreenHeight()*0.75 - height),
+		zoomSlider = new Slider(screen, - xtop - 150, ytop,
 										GuiText.SLIDER_ZOOM.toString(), 0.1, 2, 1, true) {
 			@Override
 			public void onSlider() {
@@ -354,6 +355,15 @@ public class TrackGui implements IScreen {
 	}
 
 	private void showSelector(ListSelector<?> selector) {
+		if (selector == null) {
+			gaugeSelector.setVisible(false);
+			typeSelector.setVisible(false);
+			trackSelector.setVisible(false);
+			railBedSelector.setVisible(false);
+			railBedFillSelector.setVisible(false);
+			return;
+		}
+
 		boolean isVisible = selector.isVisible();
 
 		gaugeSelector.setVisible(false);
@@ -381,6 +391,52 @@ public class TrackGui implements IScreen {
 		}
 	}
 
+	private void nextPage() {
+		page = (page + 1) % PAGES;
+		switch (this.page) {
+			case 0:
+				//Re-enable
+				lengthInput.setVisible(true);
+				typeButton.setVisible(true);
+				lengthInput.setVisible(true);
+				zoomSlider.setVisible(true);
+				isPreviewCB.setVisible(true);
+				isGradeCrossingCB.setVisible(true);
+				gaugeButton.setVisible(true);
+				trackButton.setVisible(true);
+				posTypeButton.setVisible(true);
+				bedTypeButton.setVisible(true);
+				bedFillButton.setVisible(true);
+				directionButton.setVisible(settings.type.hasDirection());
+				degreesSlider.setVisible(settings.type.hasQuarters());
+				curvositySlider.setVisible(settings.type.hasCurvosity());
+				smoothingButton.setVisible(settings.type.hasSmoothing());
+				transfertableEntryCountSlider.setVisible(settings.type == TrackItems.TRANSFERTABLE);
+				transfertableEntrySpacingSlider.setVisible(settings.type == TrackItems.TRANSFERTABLE);
+				break;
+			default:
+				//Hide all elements in main page
+				showSelector(null);
+				lengthInput.setVisible(false);
+				typeButton.setVisible(false);
+				lengthInput.setVisible(false);
+				zoomSlider.setVisible(false);
+				isPreviewCB.setVisible(false);
+				isGradeCrossingCB.setVisible(false);
+				gaugeButton.setVisible(false);
+				trackButton.setVisible(false);
+				posTypeButton.setVisible(false);
+				bedTypeButton.setVisible(false);
+				bedFillButton.setVisible(false);
+				directionButton.setVisible(false);
+				degreesSlider.setVisible(false);
+				curvositySlider.setVisible(false);
+				smoothingButton.setVisible(false);
+				transfertableEntryCountSlider.setVisible(false);
+				transfertableEntrySpacingSlider.setVisible(false);
+		}
+	}
+
 	@Override
 	public void draw(IScreenBuilder builder, RenderState state) {
 		frame++;
@@ -404,14 +460,16 @@ public class TrackGui implements IScreen {
 					return;
 				}
 				break;
-			case 1:
-				GUIHelpers.drawRect(200, 0, GUIHelpers.getScreenWidth(), GUIHelpers.getScreenHeight(), 0xCC000000);
+			default:
+				GUIHelpers.drawRect(0, 0, GUIHelpers.getScreenWidth(), GUIHelpers.getScreenHeight(), 0xCC000000);
 		}
 	}
 
 	private void renderGauge(IScreenBuilder builder, RenderState state) {
 		double textScale = 1.5;
-		GUIHelpers.drawCenteredString(GuiText.SELECTOR_GAUGE.toString(settings.gauge.toString()), (int) ((300 + (GUIHelpers.getScreenWidth()-300) / 2) / textScale), (int) (10 / textScale), 0xFFFFFF, new Matrix4().scale(textScale, textScale, textScale));
+		GUIHelpers.drawCenteredString(GuiText.SELECTOR_GAUGE.toString(settings.gauge.toString()),
+									  (int) ((300 + (GUIHelpers.getScreenWidth()-300) / 2) / textScale), (int) (10 / textScale),
+									  0xFFFFFF, new Matrix4().scale(textScale, textScale, textScale));
 
 		RailInfo info = new RailInfo(
 				settings.immutable().with(rendered -> {
@@ -448,7 +506,9 @@ public class TrackGui implements IScreen {
 				railBedSelector.isVisible() ? GuiText.SELECTOR_RAIL_BED.toString(getStackName(settings.railBed)) :
 						GuiText.SELECTOR_RAIL_BED_FILL.toString(getStackName(settings.railBedFill));
 
-		GUIHelpers.drawCenteredString(str, (int) ((450 + (GUIHelpers.getScreenWidth()-450) / 2) / textScale), (int) (10 / textScale), 0xFFFFFF, new Matrix4().scale(textScale, textScale, textScale));
+		GUIHelpers.drawCenteredString(str,
+									  (int) ((450 + (GUIHelpers.getScreenWidth()-450) / 2) / textScale), (int) (10 / textScale),
+									  0xFFFFFF, new Matrix4().scale(textScale, textScale, textScale));
 
 		RailInfo info = new RailInfo(
 				settings.immutable().with(rendered -> {
