@@ -106,7 +106,9 @@ public class TrackExchangerGui implements IScreen {
 				false,
 				false,
 				1,
-				1
+				1,
+				0,
+				0
 		);
 		ItemStack stack = new ItemStack(IRItems.ITEM_TRACK_BLUEPRINT, 1);
 		settings.write(stack);

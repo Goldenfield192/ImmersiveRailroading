@@ -30,10 +30,13 @@ public class PlacementInfo {
 	}
 	
 	public PlacementInfo(ItemStack stack, float yawHead, Vec3d hit) {
+		this(RailSettings.from(stack), yawHead, hit);
+	}
+
+	public PlacementInfo(RailSettings settings, float yawHead, Vec3d hit) {
 		yawHead = ((- yawHead % 360) + 360) % 360;
 		this.yaw = ((int)((yawHead + 90/(segmentation() * 2f)) * segmentation())) / 90 * 90 / (segmentation() * 1f);
 
-		RailSettings settings = RailSettings.from(stack);
 		TrackDirection direction = settings.direction;
 		if (direction == TrackDirection.NONE) {
 			direction = (yawHead % 90 < 45) ? TrackDirection.RIGHT : TrackDirection.LEFT;
