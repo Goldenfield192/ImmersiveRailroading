@@ -2,6 +2,7 @@ package cam72cam.immersiverailroading.items;
 
 import cam72cam.immersiverailroading.IRBlocks;
 import cam72cam.immersiverailroading.ImmersiveRailroading;
+import cam72cam.immersiverailroading.items.nbt.RailSettings;
 import cam72cam.immersiverailroading.library.GuiTypes;
 import cam72cam.immersiverailroading.tile.TileRailBase;
 import cam72cam.immersiverailroading.tile.TileRailPreview;
@@ -60,10 +61,12 @@ public class ItemGoldenSpike extends CustomItem {
 				}
 				TileRailPreview tr = world.getBlockEntity(tepos, TileRailPreview.class);
 				if (tr != null) {
+					RailSettings settings = RailSettings.from(tr.getItem());
 					if (tr.isAboveRails()) {
 						tepos = tepos.down();
 					}
-					tr.setCustomInfo(new PlacementInfo(tr.getItem(), player.getYawHead(), hit.subtract(0, hit.y, 0).add(pos).subtract(tepos)));
+					tr.setCustomInfo(new PlacementInfo(settings, player.getYawHead(), hit.subtract(0, hit.y, 0).add(pos).subtract(tepos),
+													   settings.c2HeightOffset));
 				}
 			}
 		}

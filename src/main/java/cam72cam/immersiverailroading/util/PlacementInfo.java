@@ -17,12 +17,18 @@ public class PlacementInfo {
 	public final TrackDirection direction;
 	public final float yaw;
 	public final Vec3d control;
+	public final double yOffset;
 
 	public PlacementInfo(Vec3d placementPosition, TrackDirection direction, float yaw, Vec3d control) {
-		this.placementPosition = placementPosition;
+		this(placementPosition, direction, yaw, control, 0);
+	}
+
+	public PlacementInfo(Vec3d placementPosition, TrackDirection direction, float yaw, Vec3d control, double yOffset) {
+		this.placementPosition = placementPosition.add(0, yOffset, 0);
 		this.direction = direction;
 		this.yaw = yaw;
 		this.control = control;
+		this.yOffset = yOffset;
 	}
 
 	public static int segmentation() {
@@ -34,6 +40,10 @@ public class PlacementInfo {
 	}
 
 	public PlacementInfo(RailSettings settings, float yawHead, Vec3d hit) {
+		this(settings, yawHead, hit, 0);
+	}
+
+	public PlacementInfo(RailSettings settings, float yawHead, Vec3d hit, double yOffset) {
 		yawHead = ((- yawHead % 360) + 360) % 360;
 		this.yaw = ((int)((yawHead + 90/(segmentation() * 2f)) * segmentation())) / 90 * 90 / (segmentation() * 1f);
 
@@ -100,9 +110,10 @@ public class PlacementInfo {
 				break;
 		}
 
-		this.placementPosition = new Vec3d(new Vec3i(hit)).add(hitX, 0, hitZ);
+		this.placementPosition = new Vec3d(new Vec3i(hit)).add(hitX, yOffset, hitZ);
 		this.direction = direction;
 		this.control = null;
+		this.yOffset = yOffset;
 	}
 
 	@Deprecated
@@ -125,6 +136,11 @@ public class PlacementInfo {
 			this.control = nbt.getVec3d("control");
 		} else {
 			this.control = null;
+		}
+		if (nbt.hasKey("yOffset")) {
+			this.yOffset = nbt.getDouble("yOffset");
+		} else {
+			this.yOffset = 0;
 		}
 	}
 
@@ -153,6 +169,11 @@ public class PlacementInfo {
 
 	public PlacementInfo offset(Vec3i offset) {
 		return new PlacementInfo(placementPosition.add(offset), direction, yaw, control != null ? control.add(offset) : null);
+	}
+
+	public PlacementInfo yOffset(double yOffset) {
+        return new PlacementInfo(placementPosition.add(0, - this.yOffset, 0), direction, yaw,
+								 control != null ? control.add(0, yOffset, 0) : null, yOffset);
 	}
 
 	public PlacementInfo withDirection(TrackDirection direction) {

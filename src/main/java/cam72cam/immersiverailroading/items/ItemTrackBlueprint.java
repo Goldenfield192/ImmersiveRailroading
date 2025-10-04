@@ -76,6 +76,8 @@ public class ItemTrackBlueprint extends CustomItem {
 			}
 		}
 
+		Vec3d subtract = hit.subtract(0, hit.y, 0);
+		RailSettings settings = RailSettings.from(stack);
 		if (stackInfo.isPreview) {
 			if (!BlockUtil.canBeReplaced(world, pos, false)) {
 				pos = pos.up();
@@ -83,13 +85,13 @@ public class ItemTrackBlueprint extends CustomItem {
 			world.setBlock(pos, IRBlocks.BLOCK_RAIL_PREVIEW);
 			TileRailPreview te = world.getBlockEntity(pos, TileRailPreview.class);
 			if (te != null) {
-				PlacementInfo placementInfo = new PlacementInfo(stack, player.getYawHead(), hit.subtract(0, hit.y, 0));
+				PlacementInfo placementInfo = new PlacementInfo(settings, player.getYawHead(), subtract, settings.c1HeightOffset);
 				te.setup(stack, placementInfo);
 			}
 			return ClickResult.ACCEPTED;
 		}
 
-		PlacementInfo placementInfo = new PlacementInfo(stack, player.getYawHead(), hit.subtract(0, hit.y, 0));
+		PlacementInfo placementInfo = new PlacementInfo(settings, player.getYawHead(), subtract, settings.c1HeightOffset);
 		RailInfo info = new RailInfo(stack, placementInfo, null);
 		info.build(player, pos);
 		return ClickResult.ACCEPTED;

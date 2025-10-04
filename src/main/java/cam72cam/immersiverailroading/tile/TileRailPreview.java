@@ -61,6 +61,16 @@ public class TileRailPreview extends BlockEntityTickable {
 				return;
 			}
 		}
+
+		this.placementInfo = placementInfo.yOffset(settings.c1HeightOffset);
+		if(settings.c2HeightOffset != 0) {
+			if (this.customInfo != null) {
+				this.customInfo = this.customInfo.yOffset(settings.c2HeightOffset);
+			} else {
+				this.customInfo = this.placementInfo.yOffset(settings.c2HeightOffset);
+			}
+		}
+
 		this.markDirty();
 	}
 
