@@ -202,7 +202,7 @@ public abstract class BuilderIterator extends BuilderBase implements IIterableTr
 					if (direction == TrackDirection.RIGHT)  {
 						offsetAngle = -offsetAngle;
 					}
-					switchPos = new VecYPR(cur.add(offset), cur.getLength() + (float)offsetAngle, cur.getPitch());
+					switchPos = new VecYPR(cur.add(offset), cur.getYaw() + (float)offsetAngle, cur.getPitch());
 				}
 			}
 			
