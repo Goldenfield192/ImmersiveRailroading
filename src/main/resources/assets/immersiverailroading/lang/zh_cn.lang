@@ -117,7 +117,7 @@ gui.immersiverailroading:track.place_blueprint_false=直接放置轨道
 
 gui.immersiverailroading:loco.works=服务公司：%s
 gui.immersiverailroading:loco.power=功率：%s
-gui.immersiverailroading:loco.tractive_effort=牵引力：%s 牛
+gui.immersiverailroading:loco.tractive_effort=牵引力：%s
 gui.immersiverailroading:loco.max_speed=最高速度：%s
 gui.immersiverailroading:stock.gauge=轨距：%s
 gui.immersiverailroading:stock.texture=涂装：%s
