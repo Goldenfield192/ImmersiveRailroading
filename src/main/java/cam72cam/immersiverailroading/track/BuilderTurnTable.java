@@ -75,19 +75,19 @@ public class BuilderTurnTable extends BuilderBase {
 	}
 
 	@Override
-	public List<VecYawPitch> getRenderData() {
-		List<VecYawPitch> data = new ArrayList<>();
+	public List<VecYPR> getRenderData() {
+		List<VecYPR> data = new ArrayList<>();
 
 		if (info.itemHeld) {
 			for (float angle = 0; angle < 360; angle += (90f / PlacementInfo.segmentation())) {
 				Vec3d gagPos = VecUtil.rotateWrongYaw(new Vec3d(0, 0, info.settings.length), angle - 90);
-				data.add(new VecYawPitch(gagPos.x + offset.x, gagPos.y + offset.y, gagPos.z + offset.z, -angle));
+				data.add(new VecYPR(gagPos.x + offset.x, gagPos.y + offset.y, gagPos.z + offset.z, -angle));
 			}
 		}
 
 		float angle = (float)info.tablePos - info.placementInfo.facing().getAngle();
-		data.add(new VecYawPitch(offset.x, offset.y, offset.z, -angle, 0, info.settings.length * 2,
-								 TrackModelPart.RAIL_LEFT, TrackModelPart.RAIL_RIGHT, TrackModelPart.TABLE));
+		data.add(new VecYPR(offset.x, offset.y, offset.z, -angle, 0, 0, info.settings.length * 2,
+							TrackModelPart.RAIL_LEFT, TrackModelPart.RAIL_RIGHT, TrackModelPart.TABLE));
 
 		return data;
 	}

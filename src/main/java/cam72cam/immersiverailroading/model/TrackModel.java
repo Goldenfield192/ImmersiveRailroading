@@ -1,7 +1,7 @@
 package cam72cam.immersiverailroading.model;
 
 import cam72cam.immersiverailroading.library.TrackModelPart;
-import cam72cam.immersiverailroading.track.VecYawPitch;
+import cam72cam.immersiverailroading.track.VecYPR;
 import cam72cam.immersiverailroading.util.DataBlock;
 import cam72cam.immersiverailroading.util.MathUtil;
 import cam72cam.immersiverailroading.util.RailInfo;
@@ -156,7 +156,7 @@ public class TrackModel extends OBJModel{
         }
     }
 
-    public VBO getModel(RailInfo info, List<VecYawPitch> data) {
+    public VBO getModel(RailInfo info, List<VecYPR> data) {
         if(info.settings.type.isTable()){
             return renderTable(info, data);
         }
@@ -174,18 +174,18 @@ public class TrackModel extends OBJModel{
         return builder.build();
     }
 
-    private VBO renderTable(RailInfo info, List<VecYawPitch> data) {
+    private VBO renderTable(RailInfo info, List<VecYPR> data) {
         OBJRender.Builder builder = this.binder().builder();
         Map<TrackModelPart, List<String>> groupNames = this.groupNamesMapper.values().stream().findFirst().get();
 
-        for (VecYawPitch piece : data) {
+        for (VecYPR piece : data) {
             renderPiece(info, piece, builder, groupNames);
         }
 
         return builder.build();
     }
 
-    private void renderPiece(RailInfo info, VecYawPitch piece,
+    private void renderPiece(RailInfo info, VecYPR piece,
                              OBJRender.Builder builder, Map<TrackModelPart, List<String>> groupNames) {
         Matrix4 matrix = new Matrix4();
         matrix.translate(piece.x, piece.y, piece.z);
@@ -219,7 +219,7 @@ public class TrackModel extends OBJModel{
         }
         builder.draw(groups, matrix);
         if(!piece.getChildren().isEmpty()){
-            for(VecYawPitch vec : piece.getChildren()){
+            for(VecYPR vec : piece.getChildren()){
                 renderPiece(info, vec, builder, groupNames);
             }
         }

@@ -39,7 +39,7 @@ public abstract class BuilderBase {
 		parent_pos = pos;
 	}
 
-	public abstract List<VecYawPitch> getRenderData();
+	public abstract List<VecYPR> getRenderData();
 
 	public boolean canBuild() {
 		for(TrackBase track : tracks) {
