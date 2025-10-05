@@ -10,12 +10,16 @@ item.immersiverailroading:item_augment.FLUID_LOADER.name=液体搬入機
 item.immersiverailroading:item_augment.FLUID_UNLOADER.name=液体搬出機
 item.immersiverailroading:item_augment.DETECTOR.name=列車検出器
 item.immersiverailroading:item_augment.COUPLER.name=連結器
+item.immersiverailroading:item_augment.ACTUATOR.name=[Need translate]
 item.immersiverailroading:item_rail_part.name=レール
 item.immersiverailroading:item_cast_rail.name=レール鋳造機
 item.immersiverailroading:item_manual.name=IRマニュアル
 item.immersiverailroading:item_rail.name=線路設計図
 item.immersiverailroading:item_conductor_whistle.name=車掌の笛
 item.immersiverailroading:item_golden_spike.name=金のスパイク
+item.immersiverailroading:item_radio_control_card.name=[Need translate]
+item.immersiverailroading:item_switch_key.name=[Need translate]
+item.immersiverailroading:item_track_exchanger.name=[Need translate]
 
 tile.immersiverailroading:block_rail.name=レール
 tile.immersiverailroading:block_rail_gag.name=レール (ギャグ)
@@ -26,6 +30,7 @@ chat.immersiverailroading:stock.built=%s が完成しました!
 chat.immersiverailroading:stock.dissasembled=%s が破壊されました!
 chat.immersiverailroading:stock.missing=以下の部品が不足しています: %s
 chat.immersiverailroading:stock.invalid=エラー: 車両がサーバーに存在していません、設置できませんchat.immersiverailroading:stock.wrong_gauge=誤った線路規格です！
+chat.immersiverailroading:stock.wrong_gauge=[Need translate]
 chat.immersiverailroading:stock.placement=車両は直線線路上に設置しなければなりません
 chat.immersiverailroading:stock.deadmans_switch_enabled=デッドマンスイッチが有効になりました
 chat.immersiverailroading:stock.deadmans_switch_disabled=デッドマンスイッチが無効になりました
@@ -41,15 +46,38 @@ chat.immersiverailroading:augment.set=%s に対してのみ動作します
 chat.immersiverailroading:augment.reset=全ての車両に対して動作します
 chat.immersiverailroading:misc.wood_planks=木材
 chat.immersiverailroading:build.invalid_block=無効なブロックです x=%s y=%s z=%s
+chat.immersiverailroading:radio.link=[Need translate]
+chat.immersiverailroading:radio.relink=[Need translate]
+chat.immersiverailroading:radio.unlink=[Need translate]
+chat.immersiverailroading:radio.nolink=[Need translate]
+chat.immersiverailroading:radio.cant_link=[Need translate]
+chat.immersiverailroading:brush.no.variants=[Need translate]
+chat.immersiverailroading:brush.next_debug=[Need translate]
+chat.immersiverailroading:brush.mode.set=[Need translate]
+chat.immersiverailroading:brush.mode.gui=[Need translate]
+chat.immersiverailroading:brush.mode.random_single=[Need translate]
+chat.immersiverailroading:brush.mode.random_coupled=[Need translate]
+chat.immersiverailroading:switch_state.unlocked=[Need translate]
+chat.immersiverailroading:switch_state.locked=[Need translate]
+chat.immersiverailroading:switch_state.reset=[Need translate]
+chat.immersiverailroading:switch_state.cant_reset=[Need translate]
+chat.immersiverailroading:switch_state.already_reset=[Need translate]
+chat.immersiverailroading:multiblock.select=[Need translate]
 
 gui.immersiverailroading:label.brake=ブレーキ
 gui.immersiverailroading:label.throttle=スロットル
+gui.immersiverailroading:label.reverser=[Need translate]
+gui.immersiverailroading:slider.zoom=[Need translate]
+gui.immersiverailroading:selector.page=[Need translate]
 gui.immersiverailroading:selector.type=種類: %s
 gui.immersiverailroading:selector.gauge=線路規格: %s
+gui.immersiverailroading:selector.track=[Need translate]
 gui.immersiverailroading:selector.quarters=%s 度の曲線
+gui.immersiverailroading:selector.curvosity=[Need translate]
 gui.immersiverailroading:selector.rail_bed=路床: %s
 gui.immersiverailroading:selector.rail_bed_fill=線路下ブロック: %s
 gui.immersiverailroading:selector.position=位置: %s
+gui.immersiverailroading:selector.smoothing=[Need translate]
 gui.immersiverailroading:selector.direction=方向: %s
 gui.immersiverailroading:selector.transfer_table_entry_count=トラバーサー線路数：%s
 gui.immersiverailroading:selector.transfer_table_entry_spacing=隣接する線路との間隔：%s
@@ -59,13 +87,28 @@ gui.immersiverailroading:selector.plate_type=プレートの種類: %s
 gui.immersiverailroading:selector.plate_boiler=プレートボイラー: %s
 gui.immersiverailroading:selector.cast_single=１回だけ鋳造
 gui.immersiverailroading:selector.cast_repeat=繰り返し鋳造
+gui.immersiverailroading:selector.paintbrush_random=[Need translate]
+gui.immersiverailroading:selector.paintbrush_apply_to_stock=[Need translate]
+gui.immersiverailroading:selector.paintbrush_apply_to_train=[Need translate]
+
+gui.immersiverailroading:item.switch_key=[Need translate]
+gui.immersiverailroading:item.switch_key.data=[Need translate]
+
+gui.immersiverailroading:item.radio_card.linked_to=[Need translate]
+gui.immersiverailroading:item.radio_card.not_linked=[Need translate]
+
+gui.immersiverailroading:item.track_exchanger=[Need translate]
+gui.immersiverailroading:item.paint_brush.mode=[Need translate]
+gui.immersiverailroading:item.paint_brush.description=[Need translate]
 gui.immersiverailroading:none=なし
 
 gui.immersiverailroading:track.type=種類:      %s
 gui.immersiverailroading:track.length=長さ:    %s
 gui.immersiverailroading:track.gauge=線路規格:     %s
 gui.immersiverailroading:track.quarters=%s 度の曲線
+gui.immersiverailroading:track.curvosity=[Need translate]
 gui.immersiverailroading:track.position=位置:   %s
+gui.immersiverailroading:track.smoothing=[Need translate]
 gui.immersiverailroading:track.direction=方向:  %s
 gui.immersiverailroading:track.rail_bed=路床:        %s
 gui.immersiverailroading:track.rail_bed_fill=線路下ブロック:    %s
@@ -73,8 +116,8 @@ gui.immersiverailroading:track.place_blueprint_true=設置:      設計図
 gui.immersiverailroading:track.place_blueprint_false=設置:      線路
 
 gui.immersiverailroading:loco.works=鉄道会社名:          %s
-gui.immersiverailroading:loco.horse_power=馬力: %s
-gui.immersiverailroading:loco.tractive_effort=牽引力       %s ニュートン
+gui.immersiverailroading:loco.power=[Need translate]
+gui.immersiverailroading:loco.tractive_effort=[Need translate]
 gui.immersiverailroading:loco.max_speed=最高速度:    %s
 gui.immersiverailroading:stock.gauge=線路規格:          %s
 gui.immersiverailroading:stock.texture=Variant:        %s
@@ -82,6 +125,11 @@ gui.immersiverailroading:cast.raw=使用前にスチームハンマーによる�
 gui.immersiverailroading:stock.tank_capacity=最大積載量:       %s バケツ
 gui.immersiverailroading:stock.freight_capacity=最大積載量:       %s スタック
 gui.immersiverailroading:stock.weight=重量:          %s Kg
+gui.immersiverailroading:stock.modeler=[Need translate]
+gui.immersiverailroading:stock.pack=[Need translate]
+
+gui.immersiverailroading:overlay.on=[Need translate]
+gui.immersiverailroading:overlay.off=[Need translate]
 
 immersiverailroading:gauge.brunel=ブルネル
 immersiverailroading:gauge.standard=標準
@@ -102,11 +150,17 @@ track.immersiverailroading:class.turntable=転車台
 track.immersiverailroading:class.transfertable=トラバーサー
 track.immersiverailroading:class.switch=分岐器
 track.immersiverailroading:class.custom=任意の曲線
+
 track.immersiverailroading:position.fixed=固定
 track.immersiverailroading:position.pixels=ピクセル単位
 track.immersiverailroading:position.pixels_locked=ピクセル単位(固定)
 track.immersiverailroading:position.smooth=無段階
 track.immersiverailroading:position.smooth_locked=無段階(固定)
+
+track.immersiverailroading:smoothing.both=[Need translate]
+track.immersiverailroading:smoothing.near=[Need translate]
+track.immersiverailroading:smoothing.far=[Need translate]
+track.immersiverailroading:smoothing.neither=[Need translate]
 
 track.immersiverailroading:direction.none=両方向
 track.immersiverailroading:direction.left=右に固定
@@ -114,6 +168,7 @@ track.immersiverailroading:direction.right=左に固定
 
 part.immersiverailroading:component.frame=フレーム
 part.immersiverailroading:component.front_frame=フロントフレーム
+part.immersiverailroading:component.rear_frame=[Need translate]
 part.immersiverailroading:component.bogey_wheel=台車用車輪
 part.immersiverailroading:component.bogey=台車
 part.immersiverailroading:component.bogey_front_wheel=台車用前輪
@@ -129,16 +184,22 @@ part.immersiverailroading:component.horn=警笛
 part.immersiverailroading:component.fuel_tank=燃料タンク
 part.immersiverailroading:component.alternator=発電機
 part.immersiverailroading:component.engine_block=エンジンブロック
+part.immersiverailroading:component.crankshaft=[Need translate]
 part.immersiverailroading:component.piston=ピストン
+part.immersiverailroading:component.fan=[Need translate]
+part.immersiverailroading:component.drive_shaft=[Need translate]
+part.immersiverailroading:component.gearbox=ギアボックス
+part.immersiverailroading:component.fluid_coupling=[Need translate]
+part.immersiverailroading:component.final_drive=[Need translate]
+part.immersiverailroading:component.torque_converter=[Need translate]
 part.immersiverailroading:component.firebox=火室
+part.immersiverailroading:component.smokebox=煙室
 part.immersiverailroading:component.steam_chest=蒸気室
-part.immersiverailroading:component.steam_chest_front=蒸気室前
-part.immersiverailroading:component.steam_chest_rear=蒸気室後
+part.immersiverailroading:component.steam_chest_pos=[Need translate]
 part.immersiverailroading:component.boiler_segment=ボイラー部品
 part.immersiverailroading:component.piping=導管
 part.immersiverailroading:component.wheel_driver=車軸
-part.immersiverailroading:component.wheel_driver_front=Wheel Driver Front
-part.immersiverailroading:component.wheel_driver_rear=Wheel Driver Rear
+part.immersiverailroading:component.wheel_driver_pos=[Need translate]
 part.immersiverailroading:component.cylinder=シリンダー
 part.immersiverailroading:component.side_rod=サイドロッド
 part.immersiverailroading:component.main_rod=メインロッド
@@ -154,9 +215,24 @@ part.immersiverailroading:component.reversing_arm=逆転アーム
 part.immersiverailroading:component.lifting_link=釣り上げリンク
 part.immersiverailroading:component.reach_rod=逆転棒
 part.immersiverailroading:component.walcherts_linkage=ヴァルスハールツリンケージ
-part.immersiverailroading:component.smokebox=煙室
-part.immersiverailroading:component.gearbox=ギアボックス
+part.immersiverailroading:component.valve_rod=[Need translate]
 
+part.immersiverailroading:controls.cylinder_drain=[Need translate]
+part.immersiverailroading:controls.bell=[Need translate]
+part.immersiverailroading:controls.whistle=[Need translate]
+part.immersiverailroading:controls.horn=[Need translate]
+part.immersiverailroading:controls.train_brake=[Need translate]
+part.immersiverailroading:controls.independent_brake=[Need translate]
+part.immersiverailroading:controls.throttle=[Need translate]
+part.immersiverailroading:controls.reverser=[Need translate]
+part.immersiverailroading:controls.throttle_brake=[Need translate]
+part.immersiverailroading:controls.engine_start=[Need translate]
+
+multiblock.immersiverailroading:boiler_machine=[Need translate]
+multiblock.immersiverailroading:casting=[Need translate]
+multiblock.immersiverailroading:plate_machine=[Need translate]
+multiblock.immersiverailroading:rail_machine=[Need translate]
+multiblock.immersiverailroading:steam_hammer=[Need translate]
 
 immersiverailroading:crafting_type.casting=鋳造機
 immersiverailroading:crafting_type.casting_hammer=鋳造機,パワーハンマー
@@ -172,28 +248,105 @@ itemGroup.immersiverailroading.passenger=IR 客車
 itemGroup.immersiverailroading.components=IR 部品
 
 death.attack.immersiverailroading:casting=%s は溶けた鉄鋼が水泳プールに適していないことを学んだdeath.attack.immersiverailroading:hitByTrain=%s は「事故は起こるさ」を獲得した
+death.attack.immersiverailroading:hitByTrain=[Need translate]
+death.attack.immersiverailroading:hitByTrainInDarkness=[Need translate]
 
 immersiverailroading:detector_mode.simple=列車を検出
 immersiverailroading:detector_mode.speed=速度を検出
-immersiverailroading:detector_mode.passengers乗客数を検出
+immersiverailroading:detector_mode.passengers=[Need translate]
 immersiverailroading:detector_mode.cargo=荷物が一杯であることを検出
 immersiverailroading:detector_mode.liquid=液体が一杯であることを検出immersiverailroading:detector_mode.computer=コンピューター
-immersiverailroading:loco_control_mode.throttle_forward=スロットルを前にする
-immersiverailroading:loco_control_mode.throttle_reverse=スロットルを後にする
+immersiverailroading:detector_mode.computer=[Need translate]
+immersiverailroading:loco_control_mode.throttle=[Need translate]
+immersiverailroading:loco_control_mode.reverser=[Need translate]
 immersiverailroading:loco_control_mode.brake=ブレーキをかける
 immersiverailroading:loco_control_mode.horn=警笛を鳴らす
 immersiverailroading:loco_control_mode.computer=コンピューター
+immersiverailroading:loco_control_mode.bell=[Need translate]
 immersiverailroading:coupler_augment_mode.engaged=連結する
 immersiverailroading:coupler_augment_mode.disengaged=解結する
+immersiverailroading:redstone_mode.enabled=[Need translate]
+immersiverailroading:redstone_mode.required=[Need translate]
+immersiverailroading:redstone_mode.inverted=[Need translate]
+immersiverailroading:redstone_mode.disabled=[Need translate]
+
+immersiverailroading:switch_state.none=[Need translate]
+immersiverailroading:switch_state.straight=[Need translate]
+immersiverailroading:switch_state.turn=[Need translate]
 
 key.categories.immersiverailroading=Immersive Railroading
 ir_keys.increase_throttle=スロットルをあげる
 ir_keys.zero_throttle=スロットルをゼロにする
 ir_keys.decrease_throttle=スロットルをさげる
+ir_keys.increase_reverser=[Need translate]
+ir_keys.zero_reverser=[Need translate]
+ir_keys.decrease_reverser=[Need translate]
 ir_keys.increase_brake=ブレーキをあげる
 ir_keys.zero_brake=ブレーキをゼロにする
 ir_keys.decrease_brake=ブレーキを下げる
+ir_keys.increase_independent_brake=[Need translate]
+ir_keys.zero_independent_brake=[Need translate]
+ir_keys.decrease_independent_brake=[Need translate]
 ir_keys.horn=警笛を鳴らす
+ir_keys.bell=[Need translate]
 ir_keys.dead_mans_switch=デッドマンスイッチ
 ir_keys.start_stop_engine=エンジンを始動/停止する
 ir_keys.config=Config
+
+# Default pack's train name
+immersiverailroading:entity.locomotives.a1_peppercorn=A1 Peppercorn
+immersiverailroading:entity.locomotives.a5_switcher=A5 Switcher
+immersiverailroading:entity.locomotives.alco_rs1=RS-1
+immersiverailroading:entity.locomotives.big_boy=Big Boy (4000 class)
+immersiverailroading:entity.locomotives.br01=br01
+immersiverailroading:entity.locomotives.class_38=Class 38
+immersiverailroading:entity.locomotives.cooke_mogul=DSP&P Mogul
+immersiverailroading:entity.locomotives.e6_atlantic=E6 Atlantic
+immersiverailroading:entity.locomotives.emd_sd40-2=EMD SD40-2
+immersiverailroading:entity.locomotives.emd_sw1500=SW1500
+immersiverailroading:entity.locomotives.firefly=Firefly
+immersiverailroading:entity.locomotives.ge_40_ton_boxcab=Class B-B-70/70-4HM829 Boxcab
+immersiverailroading:entity.locomotives.ge_b40_8=GE B40-8
+immersiverailroading:entity.locomotives.ge_b40_8w=GE B40-8w
+immersiverailroading:entity.locomotives.ge_c44_9cw=GE C44-9CW
+immersiverailroading:entity.locomotives.iron_duke=Iron Duke
+immersiverailroading:entity.locomotives.k36=D&RGW K36
+immersiverailroading:entity.locomotives.k4_pacific=K4 Pacific
+immersiverailroading:entity.locomotives.rodgers_460=Rodgers Ten Wheeler
+immersiverailroading:entity.locomotives.skookum=Skookum 2-4-4-2
+immersiverailroading:entity.tender.a1_peppercorn_tender=A1 Peppercorn Tender
+immersiverailroading:entity.tender.a5_tender=A5 Slope Tender
+immersiverailroading:entity.tender.big_boy_tender=Big Boy (4000 class) Tender
+immersiverailroading:entity.tender.br01_tender=drg class 01 tender
+immersiverailroading:entity.tender.class_38_tender=Class 38 Tender
+immersiverailroading:entity.tender.cooke_tender=Cooke Tender
+immersiverailroading:entity.tender.e6_tender=E6 Atlantic Tender
+immersiverailroading:entity.tender.k4_tender=K4 Pacific Tender
+immersiverailroading:entity.tender.k36_tender=K36 Tender
+immersiverailroading:entity.tender.rodgers_460_tender=Rodgers Ten Wheeler Tender
+immersiverailroading:entity.tender.skookum_tender=Skookum Tender
+
+immersiverailroading:entity.hand_car.hand_car_1=Hand Car
+
+immersiverailroading:entity.passenger.b70baggage=PRR B70 Baggage
+immersiverailroading:entity.passenger.br_coach_mk1=BR Coach MK1
+immersiverailroading:entity.passenger.p70coach1=PRR P70 Coach 1
+
+immersiverailroading:entity.freight.70t_hopper_slsf=70T Hopper SLSF
+immersiverailroading:entity.freight.attx_flatcar_1=ATTX Flatcar 1
+immersiverailroading:entity.freight.boxcar_x26=Box Car X26
+immersiverailroading:entity.freight.drgw_1000class_gondola=1000 Series Gondola
+immersiverailroading:entity.freight.drgw_3000class_boxcar=3000 Series Boxcar
+immersiverailroading:entity.freight.drgw_5500class_stockcar=5500 Series Stockcar
+immersiverailroading:entity.freight.drgw_rail_and_tie_outfit=Rail & Tie Car
+immersiverailroading:entity.freight.dw_gondola=DW Gondola
+immersiverailroading:entity.freight.n5c_cabin_car=N5c Caboose
+immersiverailroading:entity.freight.prr_flatcar_1=PRR Flatcar 1
+immersiverailroading:entity.freight.russell_snow_plow=Russell Snow Plow
+immersiverailroading:entity.freight.usra_boxcar_classrr40=USRA Boxcar Class RR-40
+immersiverailroading:entity.freight.usra_hopper_55t=USRA Hopper 55T
+immersiverailroading:entity.freight.waycar=Waycar
+
+immersiverailroading:entity.tank.kamx_t=Kamx T
+immersiverailroading:entity.tank.slag_car_1=Slag Car 1
+immersiverailroading:entity.tank.tank_us2=Tank US 2

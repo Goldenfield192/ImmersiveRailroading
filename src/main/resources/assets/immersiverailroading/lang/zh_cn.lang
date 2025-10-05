@@ -52,8 +52,7 @@ chat.immersiverailroading:radio.unlink=遥控卡已与机车断开连接
 chat.immersiverailroading:radio.nolink=遥控卡未连接到任何机车
 chat.immersiverailroading:radio.cant_link=%s 机车没有无线控制系统，无法连接
 chat.immersiverailroading:brush.no.variants=这辆车没有涂装变体
-#Used for debug, don't translate
-chat.immersiverailroading:brush.next=This stock's livery has been set to %s using %s
+chat.immersiverailroading:brush.next_debug=This stock's livery has been set to %s using %s
 chat.immersiverailroading:brush.mode.set=油漆刷模式已切换为: %s
 chat.immersiverailroading:brush.mode.gui=涂装选择菜单
 chat.immersiverailroading:brush.mode.random_single=随机（仅此车厢）
@@ -109,15 +108,15 @@ gui.immersiverailroading:track.gauge=轨距：%s
 gui.immersiverailroading:track.quarters=%s 度转弯
 gui.immersiverailroading:track.curvosity=%s 曲率
 gui.immersiverailroading:track.position=位置锁定方式：%s
-gui.immersiverailroading:track.direction=方向：%s
 gui.immersiverailroading:track.smoothing=垂直平滑: %s
+gui.immersiverailroading:track.direction=方向：%s
 gui.immersiverailroading:track.rail_bed=道床：%s
 gui.immersiverailroading:track.rail_bed_fill=道床填方：%s
 gui.immersiverailroading:track.place_blueprint_true=放置轨道蓝图
 gui.immersiverailroading:track.place_blueprint_false=直接放置轨道
 
 gui.immersiverailroading:loco.works=服务公司：%s
-gui.immersiverailroading:loco.horse_power=马力：%s
+gui.immersiverailroading:loco.power=功率：%s
 gui.immersiverailroading:loco.tractive_effort=牵引力：%s 牛
 gui.immersiverailroading:loco.max_speed=最高速度：%s
 gui.immersiverailroading:stock.gauge=轨距：%s
@@ -129,14 +128,14 @@ gui.immersiverailroading:stock.weight=重量：%s Kg
 gui.immersiverailroading:stock.modeler=模型作者：%s
 gui.immersiverailroading:stock.pack=所属资源包：%s
 
+gui.immersiverailroading:overlay.on=开
+gui.immersiverailroading:overlay.off=关
+
 immersiverailroading:gauge.brunel=布鲁内尔轨
 immersiverailroading:gauge.standard=标准轨
 immersiverailroading:gauge.narrow=窄轨
 immersiverailroading:gauge.minecraft=Minecraft轨
 immersiverailroading:gauge.model=模型轨
-
-gui.immersiverailroading:overlay.on=开
-gui.immersiverailroading:overlay.off=关
 
 immersiverailroading:plate.small=小型板材
 immersiverailroading:plate.medium=中型板材
@@ -189,12 +188,12 @@ part.immersiverailroading:component.crankshaft=发动机曲轴
 part.immersiverailroading:component.piston=活塞
 part.immersiverailroading:component.fan=风机
 part.immersiverailroading:component.drive_shaft=传动轴
-part.immersiverailroading:component.smokebox=烟箱
 part.immersiverailroading:component.gearbox=传动齿轮箱
 part.immersiverailroading:component.fluid_coupling=液力耦合器
 part.immersiverailroading:component.final_drive=最终传动
 part.immersiverailroading:component.torque_converter=液力变矩器
 part.immersiverailroading:component.firebox=燃烧室
+part.immersiverailroading:component.smokebox=烟箱
 part.immersiverailroading:component.steam_chest=汽室
 part.immersiverailroading:component.steam_chest_pos=车架汽室
 part.immersiverailroading:component.boiler_segment=锅炉段
