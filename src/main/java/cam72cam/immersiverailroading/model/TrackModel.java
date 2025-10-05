@@ -1,7 +1,7 @@
 package cam72cam.immersiverailroading.model;
 
 import cam72cam.immersiverailroading.library.TrackModelPart;
-import cam72cam.immersiverailroading.render.VecYawPitch;
+import cam72cam.immersiverailroading.track.VecYawPitch;
 import cam72cam.immersiverailroading.util.DataBlock;
 import cam72cam.immersiverailroading.util.MathUtil;
 import cam72cam.immersiverailroading.util.RailInfo;

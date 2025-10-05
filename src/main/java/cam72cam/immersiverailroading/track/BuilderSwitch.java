@@ -2,7 +2,6 @@ package cam72cam.immersiverailroading.track;
 
 import cam72cam.immersiverailroading.library.TrackItems;
 import cam72cam.immersiverailroading.util.RailInfo;
-import cam72cam.immersiverailroading.render.VecYawPitch;
 import cam72cam.mod.item.ItemStack;
 import cam72cam.mod.math.Vec3d;
 import cam72cam.mod.math.Vec3i;
@@ -143,7 +142,7 @@ public class BuilderSwitch extends BuilderBase implements IIterableTrack {
 	}
 
 	@Override
-	public List<PosStep> getPath(double stepSize) {
+	public List<VecYawPitch> getPath(double stepSize) {
 		return realStraightBuilder.getPath(stepSize);
 	}
 }

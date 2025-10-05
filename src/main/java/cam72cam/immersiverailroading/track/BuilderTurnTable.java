@@ -6,7 +6,6 @@ import java.util.List;
 
 import cam72cam.immersiverailroading.library.Gauge;
 import cam72cam.immersiverailroading.library.TrackModelPart;
-import cam72cam.immersiverailroading.render.VecYawPitch;
 import cam72cam.immersiverailroading.util.*;
 import cam72cam.mod.math.Rotation;
 import cam72cam.mod.math.Vec3d;

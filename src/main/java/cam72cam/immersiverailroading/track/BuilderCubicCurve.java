@@ -5,7 +5,6 @@ import cam72cam.immersiverailroading.library.TrackItems;
 import cam72cam.immersiverailroading.util.PlacementInfo;
 import cam72cam.immersiverailroading.util.RailInfo;
 import cam72cam.immersiverailroading.util.VecUtil;
-import cam72cam.immersiverailroading.render.VecYawPitch;
 import cam72cam.mod.item.ItemStack;
 import cam72cam.mod.math.Vec3d;
 import cam72cam.mod.math.Vec3i;
@@ -63,7 +62,7 @@ public class BuilderCubicCurve extends BuilderIterator {
 		}
 	}
 
-	private HashMap<Double, Pair<Double, List<PosStep>>> cache;
+	private HashMap<Double, Pair<Double, List<VecYawPitch>>> cache;
 
 	public CubicCurve getCurve() {
 		Vec3d nextPos = new Vec3d(new Vec3i(VecUtil.fromYaw(info.settings.length, info.placementInfo.yaw + 45)));
@@ -100,12 +99,12 @@ public class BuilderCubicCurve extends BuilderIterator {
 	}
 
 	@Override
-    public List<PosStep> getPath(double stepSize) {
+    public List<VecYawPitch> getPath(double stepSize) {
 		return getPathForRender(stepSize).getRight();
 	}
 
 	@Override
-	public Pair<Double, List<PosStep>> getPathForRender(double targetStepSize) {
+	public Pair<Double, List<VecYawPitch>> getPathForRender(double targetStepSize) {
 		if (cache == null) {
 			cache = new HashMap<>();
 		}
@@ -114,7 +113,7 @@ public class BuilderCubicCurve extends BuilderIterator {
 			return cache.get(targetStepSize);
 		}
 
-		List<PosStep> res = new ArrayList<>();
+		List<VecYawPitch> res = new ArrayList<>();
 		CubicCurve curve = getCurve();
 
 		// HACK for super long curves
@@ -157,7 +156,7 @@ public class BuilderCubicCurve extends BuilderIterator {
 				pitch = (float) -Math.toDegrees(Math.atan2(next.y - prev.y, next.distanceTo(prev)));
 				yaw = VecUtil.toYaw(points.get(i+1).subtract(points.get(i-1)));
 			}
-			res.add(new PosStep(p, yaw, pitch));
+			res.add(new VecYawPitch(p, yaw, pitch));
 		}
 		cache.put(targetStepSize, Pair.of(stepSize, res));
 		return cache.get(targetStepSize);
