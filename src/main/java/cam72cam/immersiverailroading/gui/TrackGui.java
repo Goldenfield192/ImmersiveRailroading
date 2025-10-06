@@ -24,6 +24,7 @@ import cam72cam.mod.math.Vec3d;
 import cam72cam.mod.math.Vec3i;
 import cam72cam.mod.render.StandardModel;
 import cam72cam.mod.render.opengl.RenderState;
+import it.unimi.dsi.fastutil.ints.Int2ObjectArrayMap;
 import util.Matrix4;
 
 import java.util.*;
@@ -36,16 +37,16 @@ public class TrackGui implements IScreen {
 	public static final int MAX_TRACK_LENGTH = 1000;
 	long frame;
 	private Button pagination;
-
-	//Page 0
 	private TileRailPreview te;
-	private Button typeButton;
+
+	private final Map<Integer, List<Button>> controls;
+	//Page 0
 	private TextField lengthInput;
+	private Button typeButton;
 	private Slider degreesSlider;
 	private Slider curvositySlider;
 	private Slider transfertableEntryCountSlider;
 	private Slider transfertableEntrySpacingSlider;
-	private Slider zoomSlider;
 	private CheckBox isPreviewCB;
 	private CheckBox isGradeCrossingCB;
 	private Button gaugeButton;
@@ -55,11 +56,11 @@ public class TrackGui implements IScreen {
 	private Button directionButton;
 	private Button bedTypeButton;
 	private Button bedFillButton;
-
+	private Slider zoomSlider;
 
 	private final List<ItemStack> oreDict;
 
-	private RailSettings.Mutable settings;
+	private final RailSettings.Mutable settings;
 
 	private ListSelector<Gauge> gaugeSelector;
 	private ListSelector<TrackItems> typeSelector;
@@ -87,6 +88,7 @@ public class TrackGui implements IScreen {
 		oreDict = new ArrayList<>();
 		oreDict.add(ItemStack.EMPTY);
 		oreDict.addAll(IRFuzzy.IR_RAIL_BED.enumerate());
+		this.controls = new Int2ObjectArrayMap<>();
 	}
 
 	public static String getStackName(ItemStack stack) {
@@ -352,6 +354,11 @@ public class TrackGui implements IScreen {
 				zoom = this.getValue();
 			}
 		};
+
+		controls.put(0, Arrays.asList(typeButton, degreesSlider, curvositySlider, transfertableEntryCountSlider,
+								      transfertableEntrySpacingSlider, zoomSlider, isPreviewCB, isGradeCrossingCB,
+								      gaugeButton, trackButton, posTypeButton, smoothingButton, directionButton,
+								      bedTypeButton, bedFillButton));
 	}
 
 	private void showSelector(ListSelector<?> selector) {
@@ -397,16 +404,7 @@ public class TrackGui implements IScreen {
 			case 0:
 				//Re-enable
 				lengthInput.setVisible(true);
-				typeButton.setVisible(true);
-				lengthInput.setVisible(true);
-				zoomSlider.setVisible(true);
-				isPreviewCB.setVisible(true);
-				isGradeCrossingCB.setVisible(true);
-				gaugeButton.setVisible(true);
-				trackButton.setVisible(true);
-				posTypeButton.setVisible(true);
-				bedTypeButton.setVisible(true);
-				bedFillButton.setVisible(true);
+				controls.get(0).forEach(b -> b.setVisible(true));
 				directionButton.setVisible(settings.type.hasDirection());
 				degreesSlider.setVisible(settings.type.hasQuarters());
 				curvositySlider.setVisible(settings.type.hasCurvosity());
@@ -418,22 +416,7 @@ public class TrackGui implements IScreen {
 				//Hide all elements in main page
 				showSelector(null);
 				lengthInput.setVisible(false);
-				typeButton.setVisible(false);
-				lengthInput.setVisible(false);
-				zoomSlider.setVisible(false);
-				isPreviewCB.setVisible(false);
-				isGradeCrossingCB.setVisible(false);
-				gaugeButton.setVisible(false);
-				trackButton.setVisible(false);
-				posTypeButton.setVisible(false);
-				bedTypeButton.setVisible(false);
-				bedFillButton.setVisible(false);
-				directionButton.setVisible(false);
-				degreesSlider.setVisible(false);
-				curvositySlider.setVisible(false);
-				smoothingButton.setVisible(false);
-				transfertableEntryCountSlider.setVisible(false);
-				transfertableEntrySpacingSlider.setVisible(false);
+				controls.get(0).forEach(b -> b.setVisible(false));
 		}
 	}
 
@@ -579,15 +562,7 @@ public class TrackGui implements IScreen {
 		state.scale(-scale, scale, scale);
 		state.translate(0, 0, 1);
 		if (settings.type.hasDirection()) {
-			switch (settings.direction) {
-				case LEFT:
-					state.translate(length / 2.0, 0, 0);
-					break;
-				case NONE:
-				case RIGHT:
-					state.translate(-length / 2.0, 0, 0);
-					break;
-			}
+			state.translate(settings.direction == TrackDirection.LEFT ? length / 2.0 : -length / 2.0, 0, 0);
 		}
 		if (settings.type == TrackItems.CUSTOM) {
 			state.translate(-length / 2.0, 0, 0);
