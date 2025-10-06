@@ -293,7 +293,7 @@ ir_keys.dead_mans_switch=Sicherheitsfahrschalter
 ir_keys.start_stop_engine=Antrieb an-/ausschalten
 ir_keys.config=Config
 
-# Default pack's train name
+# Default pack's train name. Translation is optional.
 immersiverailroading:entity.locomotives.a1_peppercorn=A1 Peppercorn
 immersiverailroading:entity.locomotives.a5_switcher=A5 Switcher
 immersiverailroading:entity.locomotives.alco_rs1=RS-1

@@ -293,7 +293,7 @@ ir_keys.dead_mans_switch=Veille automatique
 ir_keys.start_stop_engine=Démarrer/Arrêter le moteur
 ir_keys.config=Configuration
 
-# Default pack's train name
+# Default pack's train name. Translation is optional.
 immersiverailroading:entity.locomotives.a1_peppercorn=A1 Peppercorn
 immersiverailroading:entity.locomotives.a5_switcher=A5 Switcher
 immersiverailroading:entity.locomotives.alco_rs1=RS-1

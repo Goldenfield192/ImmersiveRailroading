@@ -293,7 +293,7 @@ ir_keys.dead_mans_switch=Переключатель питания ТСКБМ
 ir_keys.start_stop_engine=Запуск/остановка двигателя (для диз- или эл-поездов)
 ir_keys.config=Конфигурация
 
-# Default pack's train name
+# Default pack's train name. Translation is optional.
 immersiverailroading:entity.locomotives.a1_peppercorn=A1 Peppercorn
 immersiverailroading:entity.locomotives.a5_switcher=A5 Switcher
 immersiverailroading:entity.locomotives.alco_rs1=RS-1
