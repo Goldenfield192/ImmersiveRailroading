@@ -135,6 +135,7 @@ public class TrackGui implements IScreen {
 			@Override
 			public void onClick(Player.Hand hand) {
 				nextPage();
+				this.setText(GuiText.SELECTOR_PAGE.toString(page + 1, Math.max(1, PAGES)));
 			}
 		};
 		ytop += height;
