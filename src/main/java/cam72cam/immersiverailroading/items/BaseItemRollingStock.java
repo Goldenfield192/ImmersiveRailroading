@@ -4,9 +4,7 @@ import cam72cam.immersiverailroading.library.ChatText;
 import cam72cam.immersiverailroading.library.Gauge;
 import cam72cam.immersiverailroading.library.ItemComponentType;
 import cam72cam.immersiverailroading.library.Permissions;
-import cam72cam.immersiverailroading.registry.DefinitionManager;
 import cam72cam.immersiverailroading.registry.EntityRollingStockDefinition;
-import cam72cam.immersiverailroading.registry.UnitDefinition;
 import cam72cam.immersiverailroading.util.SpawnUtil;
 import cam72cam.mod.entity.Player;
 import cam72cam.mod.item.ClickResult;
@@ -36,18 +34,11 @@ public abstract class BaseItemRollingStock extends CustomItem {
 		}
 
 		ItemStack stack = player.getHeldItem(hand);
-
-		Data data = new Data(stack);
 		
-		EntityRollingStockDefinition def = data.def;
+		EntityRollingStockDefinition def = new Data(stack).def;
 		if (def == null) {
 			player.sendMessage(ChatText.STOCK_INVALID.getMessage());
 			return ClickResult.REJECTED;
-		}
-
-		if (data.multipleUnit) {
-			UnitDefinition unit = DefinitionManager.getUnit(new ItemMultipleUnit.Data(stack).name);
-			return SpawnUtil.placeUnit(player, hand, worldIn, pos, unit);
 		}
 
 		if (parts == null) {
@@ -66,9 +57,6 @@ public abstract class BaseItemRollingStock extends CustomItem {
 
 		@TagField(value = "texture_variant")
 		public String texture;
-
-		@TagField(value = "multiple_unit")
-		public boolean multipleUnit;
 
 		protected Data(ItemStack stack) {
 			super(stack);
