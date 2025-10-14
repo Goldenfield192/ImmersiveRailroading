@@ -1,5 +1,6 @@
 package cam72cam.immersiverailroading.items;
 
+import cam72cam.immersiverailroading.ImmersiveRailroading;
 import cam72cam.immersiverailroading.library.GuiTypes;
 import cam72cam.mod.entity.Player;
 import cam72cam.mod.item.ClickResult;
@@ -11,11 +12,12 @@ import cam72cam.mod.util.Facing;
 import cam72cam.mod.world.World;
 
 import java.util.*;
+import java.util.List;
 
 public class ItemMultipleUnit extends CustomItem {
 
-    public ItemMultipleUnit(String modID, String name) {
-        super(modID, name);
+    public ItemMultipleUnit() {
+        super(ImmersiveRailroading.MODID, "item_multi_unit");
     }
 
 //    @Override

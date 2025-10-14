@@ -2,6 +2,7 @@ package cam72cam.immersiverailroading.registry;
 
 import cam72cam.immersiverailroading.Config.ConfigPerformance;
 import cam72cam.immersiverailroading.ImmersiveRailroading;
+import cam72cam.immersiverailroading.gui.MultiUnitGui;
 import cam72cam.immersiverailroading.util.CAML;
 import cam72cam.immersiverailroading.util.DataBlock;
 import cam72cam.immersiverailroading.library.Gauge;
@@ -9,7 +10,6 @@ import cam72cam.immersiverailroading.model.TrackModel;
 import cam72cam.immersiverailroading.util.JSON;
 import cam72cam.mod.gui.Progress;
 import cam72cam.mod.resource.Identifier;
-import cam72cam.mod.util.MinecraftFiles;
 import com.sun.management.OperatingSystemMXBean;
 import org.apache.commons.lang3.tuple.Pair;
 
@@ -26,7 +26,6 @@ public class DefinitionManager {
     private static Map<String, EntityRollingStockDefinition> definitions;
     private static Map<String, TrackDefinition> tracks;
     private static final Map<String, StockLoader> stockLoaders;
-    private static Map<String, UnitDefinition> units;
 
     static {
         stockLoaders = new LinkedHashMap<>();
@@ -159,10 +158,6 @@ public class DefinitionManager {
         } catch (Exception e) {
             throw new RuntimeException("Unable to load tracks, do you have a broken pack?", e);
         }
-
-        // Initialize unit definitions after all other stock is loaded
-        initMultiUnit();
-
     }
 
     private static void initModels() throws IOException {
@@ -358,56 +353,6 @@ public class DefinitionManager {
         }
     }
 
-    private static void initMultiUnit() {
-        units = new LinkedHashMap<>();
-        try {
-            File file = new File(MinecraftFiles.getConfigDir(), "immersiverailroading_multi_unit.cfg");
-            if (!file.exists()) {
-                file.mkdir();
-            }
-            // Start with # -> skip
-            // Structure: def [name] [description] [number]
-            try (Scanner reader = new Scanner(file)) {
-                String line;
-                while ((line = reader.nextLine()) != null) {
-                    if(line.isEmpty()||line.startsWith("#")) {
-                        continue;
-                    }
-                    if(line.startsWith("def")) {
-                        String[] prop = line.split(" ");
-                        String name = prop[1];
-                        String description = prop[2];
-                        UnitDefinition.UnitDefBuilder builder = UnitDefinition.UnitDefBuilder.of(name, description);
-                        int count = Integer.parseInt(prop[3]);
-                        for (int i = 0; i < count; i++) {
-                            line = reader.nextLine();
-                            String[] stock = line.split(" ");
-                            String defID = stock[0];
-                            UnitDefinition.Direction direction = UnitDefinition.Direction.valueOf(stock[1]);
-                            if (stock.length == 2) {
-                                builder.appendStock(defID, direction, null, Collections.emptyMap());
-                            } else if (stock.length == 3) {
-                                String tex = stock[2];
-                                builder.appendStock(defID, direction, tex, Collections.emptyMap());
-                            } else {
-                                String tex = stock[2];
-                                Map<String, Float> defaultCGs = new LinkedHashMap<>();
-                                for (int j = 3; j < stock.length; j++) {
-                                    String[] strings = stock[j].split(":");
-                                    defaultCGs.put(strings[0], Float.valueOf(strings[1]));
-                                }
-                                builder.appendStock(defID, direction, tex, defaultCGs);
-                            }
-                        }
-                        units.put(name, builder.build());
-                    }
-                }
-            }
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-    }
-
     /**
      * Get a stream for a collection that is used to load stocks in a singlethreaded or a multithreaded way.
      *
@@ -424,14 +369,6 @@ public class DefinitionManager {
 
     public static EntityRollingStockDefinition getDefinition(String defID) {
         return definitions.get(defID);
-    }
-
-    public static Collection<UnitDefinition> getUnits() {
-        return units.values();
-    }
-
-    public static UnitDefinition getUnit(String name) {
-        return units.get(name);
     }
 
     public static Collection<EntityRollingStockDefinition> getDefinitions() {
