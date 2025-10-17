@@ -1,42 +1,36 @@
 package cam72cam.immersiverailroading.registry;
 
-import cam72cam.immersiverailroading.util.DataBlock;
-
 import javax.annotation.Nullable;
 import java.util.*;
 
 public class UnitDefinition {
+    public String getName() {
+        return name;
+    }
+
     private final String name;
-    private final List<String> description;
     private final List<Stock> stocks;
 
-    public UnitDefinition(String name, List<String> description, List<Stock> stocks) {
+    public UnitDefinition(String name, List<Stock> stocks) {
         this.name = name;
-        this.description = description;
         this.stocks = stocks;
     }
 
-    public List<String> getTooltip() {
-        return description;
+    public List<Stock> getStocks() {
+        return stocks;
     }
 
     public static class UnitDefBuilder {
         private String name;
-        private List<String> description;
         private List<Stock> stocks;
 
         private boolean isBuilt = false;
 
         private UnitDefBuilder(){}
 
-        public static UnitDefBuilder of(String name, String description) {
-            return of(name, Collections.singletonList(description));
-        }
-
-        public static UnitDefBuilder of(String name, List<String> description) {
+        public static UnitDefBuilder of(String name) {
             UnitDefBuilder builder = new UnitDefBuilder();
             builder.name = name;
-            builder.description = description;
             builder.stocks = new ArrayList<>();
             return builder;
         }
@@ -45,7 +39,29 @@ public class UnitDefinition {
             if(isBuilt){
                 throw new UnsupportedOperationException();
             }
-            stocks.add(new Stock(DefinitionManager.getDefinition(defID), direction, tex, defaultCGs));
+            this.appendStock(new Stock(DefinitionManager.getDefinition(defID), direction, tex, defaultCGs));
+        }
+
+        public void appendStock(Stock stock){
+            if(isBuilt){
+                throw new UnsupportedOperationException();
+            }
+
+            if (stock.texture == null) {
+                if(!stock.definition.textureNames.keySet().isEmpty()){
+                    stock.texture = stock.definition.textureNames.keySet().stream().findFirst().get();
+                }
+            } else if (!stock.definition.textureNames.containsKey(stock.texture)) {
+                stock.texture = stock.definition.textureNames.keySet().stream().findFirst().get();
+            }
+            if(stock.controlGroup == null) {
+                stock.controlGroup = new LinkedHashMap<>();
+            }
+            if(stock.direction == null){
+                stock.direction = Direction.FORWARD;
+            }
+
+            stocks.add(stock);
         }
 
         public UnitDefinition build() {
@@ -53,9 +69,8 @@ public class UnitDefinition {
                 throw new UnsupportedOperationException();
             }
             isBuilt = true;
-            return new UnitDefinition(name, description, stocks);
+            return new UnitDefinition(name, stocks);
         }
-
     }
 
     public static class Stock {
@@ -63,6 +78,9 @@ public class UnitDefinition {
         public Direction direction;
         public String texture;
         public Map<String, Float> controlGroup;
+
+        public Stock() {
+        }
 
         public Stock(EntityRollingStockDefinition stock, Direction direction, @Nullable String texture, Map<String, Float> controlGroup) {
             this.definition = stock;
@@ -73,35 +91,19 @@ public class UnitDefinition {
     }
 
     public enum Direction{
-        DEFAULT,
-        FLIPPED,
+        FORWARD,
+        REVERSE,
         RANDOM;
 
-        public static Direction parse(@Nullable DataBlock.Value val) {
-            if (val == null) {
-                return DEFAULT;
-            }
+        private static final Random random = new Random();
 
-            String str = val.asString("default").toUpperCase();
-
-            Direction dir;
-            try {
-                dir = Direction.valueOf(str);
-            } catch (IllegalArgumentException e) {
-                return DEFAULT;
-            }
-
-            return dir;
-        }
-
-        public boolean getDirection() {
+        public boolean shouldFlip() {
             switch (this) {
-                case FLIPPED:
+                case REVERSE:
                     return true;
                 case RANDOM:
-                    Random random = new Random();
                     return random.nextBoolean();
-                case DEFAULT:
+                case FORWARD:
                 default:
                     return false;
             }
