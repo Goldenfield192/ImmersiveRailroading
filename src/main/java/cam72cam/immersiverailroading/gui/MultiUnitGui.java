@@ -22,7 +22,6 @@ import cam72cam.mod.serialization.TagField;
 import java.util.*;
 import java.util.stream.Collectors;
 
-
 public class MultiUnitGui implements IScreen {
     public static Context context;
     private UnitDefinition current;
@@ -82,7 +81,7 @@ public class MultiUnitGui implements IScreen {
         };
 
         definitionsSelector = new ListSelector<UnitDefinition>(screen, 150, 200, 20, current,
-                                                               MultiUnitDefinitionManager.getUnits()) {
+                                                               MultiUnitDefinitionManager.getValidUnits()) {
             @Override
             public void onClick(UnitDefinition option) {
                 current = option;
@@ -122,7 +121,8 @@ public class MultiUnitGui implements IScreen {
     @Override
     public void draw(IScreenBuilder builder, RenderState state) {
         IScreen.super.draw(builder, state);
-        GUIHelpers.drawRect(0, 0, GUIHelpers.getScreenWidth(), GUIHelpers.getScreenHeight(), 0xCC000000);
+        GUIHelpers.drawRect(0, 0, 150, GUIHelpers.getScreenHeight(), 0xEE000000);
+        GUIHelpers.drawRect(150, 0, GUIHelpers.getScreenWidth() - 150, GUIHelpers.getScreenHeight(), 0xCC000000);
     }
 
     public static class Context {
@@ -153,7 +153,7 @@ public class MultiUnitGui implements IScreen {
         }
 
         public int index(int i) {
-            return currentPage * 8 + i;
+            return currentPage * 7 + i;
         }
 
         public Context() {
@@ -184,10 +184,10 @@ public class MultiUnitGui implements IScreen {
             swapNext = new ArrayList<>();
 
             int xtop = -138;
-            int ytop = GUIHelpers.getScreenHeight() / 4 - 94;
+            int ytop = GUIHelpers.getScreenHeight() / 4 - 70;
             int currX = xtop;
             int spacing = 4;
-            for (int i = 0; i < 8; i++) {
+            for (int i = 0; i < 7; i++) {
                 Button button = new Button(screen, currX, ytop, 25, 20, "No." + i) {
                     @Override
                     public void onClick(Player.Hand hand) {}
@@ -199,7 +199,7 @@ public class MultiUnitGui implements IScreen {
                 stockDef.add(new Button(screen, currX, ytop, 200, 20, "") {
                     @Override
                     public void onClick(Player.Hand hand) {
-                        openAdditionPanel(screen, context.currentPage*8 + finalI);
+                        openAdditionPanel(context.index(finalI));
                     }
                 });
                 currX += 200 + spacing;
@@ -234,14 +234,14 @@ public class MultiUnitGui implements IScreen {
             addStock = new Button(screen, currX + 88, ytop, 100, 20, "Add Stock") {
                 @Override
                 public void onClick(Player.Hand hand) {
-                    openAdditionPanel(screen);
+                    openAdditionPanel();
                 }
             };
 
             nextPage = new Button(screen, currX + 217, ytop, 60, 20, "Next Page") {
                 @Override
                 public void onClick(Player.Hand hand) {
-                    if(context.currentPage < context.stockListBuilder.size() / 8) {
+                    if(context.currentPage < context.stockListBuilder.size() / 7) {
                         context.currentPage += 1;
                         updatePage();
                     }
@@ -259,7 +259,7 @@ public class MultiUnitGui implements IScreen {
                 return true;
             });
             ytop += 24;
-            saveMU = new Button(screen, xtop, ytop, 100, 20, "Save") {
+            saveMU = new Button(screen, xtop, ytop, 200, 20, "Save") {
                 @Override
                 public void onClick(Player.Hand hand) {
                     if(name.getText().isEmpty()) {
@@ -279,11 +279,16 @@ public class MultiUnitGui implements IScreen {
             if(context.panel == Panel.MAIN){
                 if (context.current == null) {
                     context.stockListBuilder = new ArrayList<>();
-                    name.setText("");
                 } else {
                     context.stockListBuilder = new ArrayList<>(context.current.getStocks());
                     name.setText(context.currentName);
                 }
+            }
+            if(context.panel == Panel.ADDITION) {
+                name.setText(context.currentName);
+            }
+            if(name.getText().isEmpty()) {
+                saveMU.setText("Set a name before save");
             }
 
             updatePage();
@@ -292,14 +297,14 @@ public class MultiUnitGui implements IScreen {
 
         private void updatePage() {
             if (context.stockListBuilder.isEmpty()) {
-                for (int i = 0; i < 8; i++) {
+                for (int i = 0; i < 7; i++) {
                     this.num.get(i).setVisible(false);
                     this.stockDef.get(i).setVisible(false);
                     this.swapPrev.get(i).setVisible(false);
                     this.swapNext.get(i).setVisible(false);
                 }
             } else {
-                for (int i = 0; i < 8; i++) {
+                for (int i = 0; i < 7; i++) {
                     if (context.index(i) < context.stockListBuilder.size()) {
                         this.num.get(i).setVisible(true);
                         this.stockDef.get(i).setVisible(true);
@@ -324,16 +329,16 @@ public class MultiUnitGui implements IScreen {
             }
 
             prevPage.setEnabled(context.currentPage != 0);
-            nextPage.setEnabled(context.currentPage != (context.stockListBuilder.size() / 8));
+            nextPage.setEnabled(context.currentPage != (context.stockListBuilder.size() / 7));
         }
 
-        private void openAdditionPanel(IScreenBuilder builder) {
+        private void openAdditionPanel() {
             context.currentEditing = -1;
             context.target = Panel.ADDITION;
             GuiTypes.MU_ADDITION.open(context.player);
         }
 
-        private void openAdditionPanel(IScreenBuilder builder, int num) {
+        private void openAdditionPanel(int num) {
             context.currentEditing = num;
             context.target = Panel.ADDITION;
             GuiTypes.MU_ADDITION.open(context.player);
@@ -483,7 +488,7 @@ public class MultiUnitGui implements IScreen {
                             context.currentEditing = -1;
                         }
                         context.building = null;
-                        screen.close();
+                        GuiTypes.MU_EDIT.open(context.player);
                     }
                 }
             };
@@ -507,7 +512,8 @@ public class MultiUnitGui implements IScreen {
         @Override
         public void draw(IScreenBuilder builder, RenderState state) {
             IScreen.super.draw(builder, state);
-            GUIHelpers.drawRect(0, 0, GUIHelpers.getScreenWidth(), GUIHelpers.getScreenHeight(), 0xCC000000);
+            GUIHelpers.drawRect(0, 0, 200, GUIHelpers.getScreenHeight(), 0xEE000000);
+            GUIHelpers.drawRect(200, 0, GUIHelpers.getScreenWidth() - 150, GUIHelpers.getScreenHeight(), 0xCC000000);
         }
     }
 

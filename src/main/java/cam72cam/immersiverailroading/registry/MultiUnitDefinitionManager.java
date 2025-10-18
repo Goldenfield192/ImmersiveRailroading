@@ -8,7 +8,8 @@ import java.util.*;
 
 //Client-sided
 public class MultiUnitDefinitionManager {
-    private static final Map<String, UnitDefinition> units;
+    private static final Map<String, UnitDefinition> allUnits;
+    private static final Map<String, UnitDefinition> validUnits;
     private static final File save;
 
     static {
@@ -20,7 +21,8 @@ public class MultiUnitDefinitionManager {
                 throw new RuntimeException(e);
             }
         }
-        units = new TreeMap<>(String::compareToIgnoreCase);
+        allUnits = new TreeMap<>(String::compareToIgnoreCase);
+        validUnits = new TreeMap<>(String::compareToIgnoreCase);
     }
 
     public static void load() {
@@ -29,7 +31,8 @@ public class MultiUnitDefinitionManager {
             // multi_unit [name]
             // stock [stockName] [direction] [text variant] TODO optional: [cg:value]
             List<String> lines = Files.readAllLines(save.toPath());
-            units.clear();
+            allUnits.clear();
+            validUnits.clear();
             UnitDefinition.UnitDefBuilder builder = null;
             boolean shouldSkipThis = false; //TODO
             for (String line : lines) {
@@ -37,7 +40,10 @@ public class MultiUnitDefinitionManager {
                     String[] split = line.split(" ");
                     if(builder != null) {
                         UnitDefinition built = builder.build();
-                        units.put(built.getName(), built);
+                        allUnits.put(built.getName(), built);
+                        if (built.valid()) {
+                            validUnits.put(built.getName(), built);
+                        }
                     }
                     builder = UnitDefinition.UnitDefBuilder.of(split[1].replace("^", " "));
                 } else if (line.startsWith("stock")) {
@@ -49,7 +55,10 @@ public class MultiUnitDefinitionManager {
             }
             if(builder != null) {
                 UnitDefinition built = builder.build();
-                units.put(built.getName(), built);
+                allUnits.put(built.getName(), built);
+                if (built.valid()) {
+                    validUnits.put(built.getName(), built);
+                }
             }
         } catch (IOException e) {
             throw new RuntimeException(e);
@@ -63,11 +72,11 @@ public class MultiUnitDefinitionManager {
             // stock [stockName] [direction] [text variant] TODO optional: [cg:value]
             List<String> list = new LinkedList<>();
             list.add("//DO NOT TOUCH UNLESS YOU KNOW WHAT ARE YOU DOING");
-            for (Map.Entry<String, UnitDefinition> entry : units.entrySet()) {
+            for (Map.Entry<String, UnitDefinition> entry : allUnits.entrySet()) {
                 list.add("multi_unit "+entry.getKey().replace(" ", "^"));
                 for (UnitDefinition.Stock stock : entry.getValue().getStocks()) {
                     String texture = (stock.texture == null||stock.texture.isEmpty()) ? "default" : stock.texture;
-                    list.add("stock "+stock.definition.defID+" "+stock.direction+" "+texture);
+                    list.add("stock "+stock.defID+" "+stock.direction+" "+texture);
                 }
             }
             Files.write(save.toPath(), list);
@@ -77,16 +86,16 @@ public class MultiUnitDefinitionManager {
     }
 
     public static void addUnit(UnitDefinition build) {
-        units.put(build.getName(), build);
+        allUnits.put(build.getName(), build);
         save();
         load();
     }
 
-    public static Map<String, UnitDefinition> getUnits() {
-        return units;
+    public static Map<String, UnitDefinition> getValidUnits() {
+        return validUnits;
     }
 
     public static UnitDefinition getUnitDef(String name) {
-        return units.get(name);
+        return allUnits.get(name);
     }
 }
