@@ -8,9 +8,8 @@ import java.util.*;
 
 //Client-sided
 public class MultiUnitDefinitionManager {
-    public static final int HEADER = 0x4D55;
-    private static Map<String, UnitDefinition> units;
-    private static File save;
+    private static final Map<String, UnitDefinition> units;
+    private static final File save;
 
     static {
         save = new File(MinecraftFiles.getConfigDir(), "immersiverailroading.multi_unit.cfg");
@@ -32,7 +31,7 @@ public class MultiUnitDefinitionManager {
             List<String> lines = Files.readAllLines(save.toPath());
             units.clear();
             UnitDefinition.UnitDefBuilder builder = null;
-            boolean shouldSkipThis = false;
+            boolean shouldSkipThis = false; //TODO
             for (String line : lines) {
                 if (line.startsWith("multi_unit")) {
                     String[] split = line.split(" ");
@@ -40,7 +39,7 @@ public class MultiUnitDefinitionManager {
                         UnitDefinition built = builder.build();
                         units.put(built.getName(), built);
                     }
-                    builder = UnitDefinition.UnitDefBuilder.of(split[1]);
+                    builder = UnitDefinition.UnitDefBuilder.of(split[1].replace("^", " "));
                 } else if (line.startsWith("stock")) {
                     String[] split = line.split(" ");
                     if (builder != null) {
@@ -65,7 +64,7 @@ public class MultiUnitDefinitionManager {
             List<String> list = new LinkedList<>();
             list.add("//DO NOT TOUCH UNLESS YOU KNOW WHAT ARE YOU DOING");
             for (Map.Entry<String, UnitDefinition> entry : units.entrySet()) {
-                list.add("multi_unit "+entry.getKey());
+                list.add("multi_unit "+entry.getKey().replace(" ", "^"));
                 for (UnitDefinition.Stock stock : entry.getValue().getStocks()) {
                     String texture = (stock.texture == null||stock.texture.isEmpty()) ? "default" : stock.texture;
                     list.add("stock "+stock.definition.defID+" "+stock.direction+" "+texture);

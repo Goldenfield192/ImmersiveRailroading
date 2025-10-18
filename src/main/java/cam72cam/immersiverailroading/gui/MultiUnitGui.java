@@ -2,6 +2,7 @@ package cam72cam.immersiverailroading.gui;
 
 import cam72cam.immersiverailroading.IRItems;
 import cam72cam.immersiverailroading.gui.components.ListSelector;
+import cam72cam.immersiverailroading.library.GuiTypes;
 import cam72cam.immersiverailroading.registry.DefinitionManager;
 import cam72cam.immersiverailroading.registry.EntityRollingStockDefinition;
 import cam72cam.immersiverailroading.registry.MultiUnitDefinitionManager;
@@ -23,38 +24,15 @@ import java.util.stream.Collectors;
 
 
 public class MultiUnitGui implements IScreen {
+    public static Context context;
     private UnitDefinition current;
 
     //Main Panel
     private Button selection;
     private Button newMU;
+    private Button editCurrent;
     private ListSelector<UnitDefinition> definitionsSelector;
 
-    //Edit Panel
-    private List<Button> num;
-    private List<Button> stockDef;
-    private List<Button> swapPrev;
-    private List<Button> swapNext;
-
-    private Button prevPage;
-    private Button nextPage;
-    private Button addStock;
-    private Button saveMU;
-    private TextField name;
-
-    //Stock Addition Panel
-    private Button stock;
-    private ListSelector<EntityRollingStockDefinition> stockSelector;
-    private Button texture;
-    private ListSelector<String> textureSelector;
-    private Button direction;
-    private Button finish;
-
-    private int currentPage = 0;
-
-    private List<UnitDefinition.Stock> stockListBuilder;
-    private int currentEditing = 0;
-    UnitDefinition.Stock building;
     public MultiUnitGui() {
         this(MinecraftClient.getPlayer().getHeldItem(Player.Hand.PRIMARY));
     }
@@ -62,444 +40,68 @@ public class MultiUnitGui implements IScreen {
     private MultiUnitGui(ItemStack stack) {
         stack = stack.copy();
         current = MultiUnitDefinitionManager.getUnitDef(stack.getTagCompound().getString("multi_unit"));
+        if (context == null) {
+            context = new Context();
+        }
+        context.currentEditing = -1;
+        context.player = MinecraftClient.getPlayer();
     }
 
     @Override
     public void init(IScreenBuilder screen) {
-        stockListBuilder = new ArrayList<>();
+        context.target = Panel.MAIN;
         int xtop = -GUIHelpers.getScreenWidth() / 2;
         int ytop = -GUIHelpers.getScreenHeight() / 4;
-        //Main Panel
+        if(context.panel == Panel.EDIT) {
+            current = context.current;
+            context.current = null;
+            context.currentName = null;
+        }
 
-        selection = new Button(screen, xtop, ytop, 100, 20, "Select Unit Def") {
+        selection = new Button(screen, xtop, ytop, 150, 20, "Select Unit Def") {
             @Override
             public void onClick(Player.Hand hand) {
                 definitionsSelector.setVisible(!definitionsSelector.isVisible());
             }
         };
-        ytop += 30;
-        newMU = new Button(screen, xtop, ytop, 100, 20, "New stock") {
+        ytop += 25;
+        newMU = new Button(screen, xtop, ytop, 150, 20, "New MultiUnit") {
             @Override
             public void onClick(Player.Hand hand) {
                 openEditPanel();
             }
         };
+        ytop += 25;
+        editCurrent = new Button(screen, xtop, ytop, 150, 20, "Edit Current") {
+            @Override
+            public void onClick(Player.Hand hand) {
+                context.current = current;
+                context.currentName = current.getName();
+                openEditPanel();
+            }
+        };
 
-        definitionsSelector = new ListSelector<UnitDefinition>(screen, 100, 200, 20, current,
+        definitionsSelector = new ListSelector<UnitDefinition>(screen, 150, 200, 20, current,
                                                                MultiUnitDefinitionManager.getUnits()) {
             @Override
             public void onClick(UnitDefinition option) {
                 current = option;
-            }
-        };
-
-        //Edit Panel
-        num = new ArrayList<>();
-        stockDef = new ArrayList<>();
-        swapPrev = new ArrayList<>();
-        swapNext = new ArrayList<>();
-
-        xtop = -138;
-        ytop = GUIHelpers.getScreenHeight() / 4 - 94;
-        int currX = xtop;
-        int spacing = 4;
-        for (int i = 0; i < 8; i++) {
-            Button button = new Button(screen, currX, ytop, 25, 20, "No." + i) {
-                @Override
-                public void onClick(Player.Hand hand) {}
-            };
-            button.setEnabled(false);
-            num.add(button);
-            currX += 25 + spacing;
-            int finalI = i;
-            stockDef.add(new Button(screen, currX, ytop, 200, 20, "") {
-                @Override
-                public void onClick(Player.Hand hand) {
-                    openAdditionPanel(screen, currentPage*8 + finalI);
-                }
-            });
-            currX += 200 + spacing;
-            swapPrev.add(new Button(screen, currX, ytop, 20, 20, "↑") {
-                @Override
-                public void onClick(Player.Hand hand) {
-
-                }
-            });
-            currX += 20 + spacing;
-            swapNext.add(new Button(screen, currX, ytop, 20, 20, "↓") {
-                @Override
-                public void onClick(Player.Hand hand) {
-
-                }
-            });
-            ytop += 20 + spacing;
-            currX = xtop;
-        }
-        prevPage = new Button(screen, currX, ytop, 60, 20, "Prev Page") {
-            @Override
-            public void onClick(Player.Hand hand) {
-                if(currentPage > 0) {
-                    currentPage -= 1;
-                    updatePage();
-                }
-            }
-        };
-        addStock = new Button(screen, currX + 88, ytop, 100, 20, "Add Stock") {
-            @Override
-            public void onClick(Player.Hand hand) {
-                openAdditionPanel(screen);
-            }
-        };
-        nextPage = new Button(screen, currX + 217, ytop, 50, 20, "Next Page") {
-            @Override
-            public void onClick(Player.Hand hand) {
-                if(currentPage < stockListBuilder.size() / 8) {
-                    currentPage += 1;
-                    updatePage();
-                }
-            }
-        };
-        xtop = -GUIHelpers.getScreenWidth() / 2;
-        ytop = -GUIHelpers.getScreenHeight() / 4;
-        name = new TextField(screen, xtop, ytop, 199, 20);
-        name.setText("Type your multiunit name here");
-        ytop += 24;
-        saveMU = new Button(screen, xtop, ytop, 100, 20, "Save") {
-            @Override
-            public void onClick(Player.Hand hand) {
-                if(name.getText().isEmpty()) {
-                    //Reject
-                    return;
-                }
-                UnitDefinition.UnitDefBuilder builder1 = UnitDefinition.UnitDefBuilder.of(name.getText());
-                for (UnitDefinition.Stock stock1 : stockListBuilder) {
-                    builder1.appendStock(stock1);
-                }
-                UnitDefinition build = builder1.build();
-                System.out.println(build);
-                MultiUnitDefinitionManager.addUnit(build);
-                closeEditPanel(screen);
-            }
-        };
-
-        xtop = -GUIHelpers.getScreenWidth() / 2;
-        ytop = -GUIHelpers.getScreenHeight() / 4;
-        stock = new Button(screen, xtop, ytop, 200, 20, "Select Stock") {
-            @Override
-            public void onClick(Player.Hand hand) {
-                if(textureSelector.isVisible()){
-                    stockSelector.setVisible(true);
-                    textureSelector.setVisible(false);
-                }else{
-                    stockSelector.setVisible(!stockSelector.isVisible());
-                }
-            }
-        };
-        Map<String, EntityRollingStockDefinition> definitionMap = DefinitionManager.getDefinitions().stream().collect(
-                Collectors.toMap(EntityRollingStockDefinition::name, def -> def));
-        stockSelector = new ListSelector<EntityRollingStockDefinition>(screen, 200, 200, 20, null, definitionMap) {
-            @Override
-            public void onClick(EntityRollingStockDefinition option) {
-                if (building != null) {
-                    building.definition = option;
-                    stock.setText(option.name());
-                    textureSelector = new ListSelector<String>(screen, 200, 200, 20, building.texture,
-                                                               building.definition.textureNames.entrySet().stream()
-                                                                                               .collect(Collectors.toMap(
-                                                                                                       Map.Entry::getValue, Map.Entry::getKey,
-                                                                                                       (u, v) -> u, LinkedHashMap::new))
-                    ) {
-                        @Override
-                        public void onClick(String option) {
-                            building.texture = option;
-                            if(option.isEmpty()) {
-                                texture.setText("Tex Variant:" + "default");
-                            } else {
-                                texture.setText("Tex Variant:" + option);
-                            }
-                        }
-                    };
-                    if(building.definition.textureNames.keySet().stream().findFirst().isPresent()){
-                        building.texture = building.definition.textureNames.keySet().stream().findFirst().get();
-                    } else {
-                        building.texture = null;
-                    }
-                }
-            }
-        };
-        ytop += 25;
-        texture = new Button(screen, xtop, ytop, 200, 20, "Tex Variant:default") {
-            @Override
-            public void onClick(Player.Hand hand) {
-                if(stockSelector.isVisible()) {
-                    stockSelector.setVisible(false);
-                    textureSelector.setVisible(true);
-                } else {
-                    textureSelector.setVisible(!textureSelector.isVisible());
-                }
-            }
-        };
-        ytop += 25;
-        direction = new Button(screen, xtop, ytop, 200, 20, "") {
-            @Override
-            public void onClick(Player.Hand hand) {
-                building.direction = ClickListHelper.next(building.direction, hand);
-                this.setText("Direction:"+ building.direction);
-            }
-        };
-        ytop += 25;
-        finish = new Button(screen, xtop, ytop, 200, 20, "Save") {
-            @Override
-            public void onClick(Player.Hand hand) {
-                if(building != null && building.definition != null){
-                    closeAdditionPanel();
+                if(current != null) {
+                    editCurrent.setVisible(true);
                 }
             }
         };
 
-        closeEditPanel(screen);
-        updatePage();
-
-        finish.setVisible(false);
-        direction.setVisible(false);
-        stock.setVisible(false);
-        texture.setVisible(false);
-        stockSelector.setVisible(false);
         definitionsSelector.setVisible(false);
-    }
-
-    private void updatePage() {
-        for (int i = 1; i <= 8; i++) {
-            if(currentPage*8 + i <= stockListBuilder.size()){
-                this.num.get(i-1).setVisible(true);
-                this.stockDef.get(i-1).setVisible(true);
-                this.stockDef.get(i-1).setText(stockListBuilder.get(currentPage*8 + i - 1).definition.name());
-                this.num.get(i-1).setText("No."+(currentPage*8 + i));
-                this.swapPrev.get(i-1).setVisible(true);
-                this.swapNext.get(i-1).setVisible(true);
-            } else {
-                this.num.get(i-1).setVisible(false);
-                this.stockDef.get(i-1).setVisible(false);
-                this.swapPrev.get(i-1).setVisible(false);
-                this.swapNext.get(i-1).setVisible(false);
-            }
-            if(currentPage*8 + i == 1) {
-                this.swapPrev.get(i-1).setVisible(false);
-            }
-            if(currentPage*8 + i == stockListBuilder.size()) {
-                this.swapNext.get(i-1).setVisible(false);
-            }
+        if(current == null){
+            editCurrent.setVisible(false);
         }
+        context.panel = Panel.MAIN;
     }
 
     private void openEditPanel() {
-        this.selection.setVisible(false);
-        this.newMU.setVisible(false);
-        this.definitionsSelector.setVisible(false);
-
-        this.num.forEach(b -> b.setVisible(true));
-        this.stockDef.forEach(b -> b.setVisible(true));
-        this.swapPrev.forEach(b -> b.setVisible(true));
-        this.swapNext.forEach(b -> b.setVisible(true));
-        this.prevPage.setVisible(true);
-        this.nextPage.setVisible(true);
-        this.addStock.setVisible(true);
-        this.name.setVisible(true);
-        this.saveMU.setVisible(true);
-
-        stockListBuilder.clear();
-        updatePage();
-    }
-
-    private void closeEditPanel(IScreenBuilder screen) {
-        this.selection.setVisible(true);
-        this.newMU.setVisible(true);
-
-        this.num.forEach(b -> b.setVisible(false));
-        this.stockDef.forEach(b -> b.setVisible(false));
-        this.swapPrev.forEach(b -> b.setVisible(false));
-        this.swapNext.forEach(b -> b.setVisible(false));
-        this.prevPage.setVisible(false);
-        this.nextPage.setVisible(false);
-        this.addStock.setVisible(false);
-        this.name.setVisible(false);
-        this.name.setText("");
-        this.saveMU.setVisible(false);
-
-        definitionsSelector = new ListSelector<UnitDefinition>(screen, 100, 200, 20, current,
-                                                               MultiUnitDefinitionManager.getUnits()) {
-            @Override
-            public void onClick(UnitDefinition option) {
-                current = option;
-            }
-        };
-    }
-
-    private void openAdditionPanel(IScreenBuilder builder) {
-        this.num.forEach(b -> b.setVisible(false));
-        this.stockDef.forEach(b -> b.setVisible(false));
-        this.swapPrev.forEach(b -> b.setVisible(false));
-        this.swapNext.forEach(b -> b.setVisible(false));
-        this.prevPage.setVisible(false);
-        this.nextPage.setVisible(false);
-        this.addStock.setVisible(false);
-        this.name.setVisible(false);
-        this.saveMU.setVisible(false);
-
-        finish.setVisible(true);
-        direction.setVisible(true);
-        stock.setVisible(true);
-        texture.setVisible(true);
-        building = new UnitDefinition.Stock();
-        building.direction = UnitDefinition.Direction.FORWARD;
-        building.definition = DefinitionManager.getDefinitions().stream().findFirst().get();
-        stock.setText(building.definition.name());
-        this.currentEditing = -1;
-
-        Map<String, EntityRollingStockDefinition> definitionMap = DefinitionManager.getDefinitions().stream().collect(
-                Collectors.toMap(EntityRollingStockDefinition::name, def -> def));
-        stockSelector = new ListSelector<EntityRollingStockDefinition>(builder, 200, 200, 20, null, definitionMap) {
-            @Override
-            public void onClick(EntityRollingStockDefinition option) {
-                if (building != null) {
-                    building.definition = option;
-                    stock.setText(option.name());
-                    textureSelector = new ListSelector<String>(builder, 200, 200, 20, building.texture,
-                                                               building.definition.textureNames.entrySet().stream()
-                                                                                               .collect(Collectors.toMap(
-                                                                                                       Map.Entry::getKey, Map.Entry::getKey,
-                                                                                                       (u, v) -> u, LinkedHashMap::new))
-                    ) {
-                        @Override
-                        public void onClick(String option) {
-                            building.texture = option;
-                            if(option.isEmpty()) {
-                                texture.setText("Tex Variant:" + "default");
-                            } else {
-                                texture.setText("Tex Variant:" + option);
-                            }
-                        }
-                    };
-                    if(building.definition.textureNames.keySet().stream().findFirst().isPresent()){
-                        building.texture = building.definition.textureNames.keySet().stream().findFirst().get();
-                    } else {
-                        building.texture = null;
-                    }
-                }
-            }
-        };
-        textureSelector = new ListSelector<String>(builder, 200, 200, 20, building.texture,
-                                                   building.definition.textureNames.entrySet().stream()
-                                                                                   .collect(Collectors.toMap(
-                                                                                           Map.Entry::getValue, Map.Entry::getKey,
-                                                                                           (u, v) -> u, LinkedHashMap::new))
-        ) {
-            @Override
-            public void onClick(String option) {
-                building.texture = option;
-                if(option.isEmpty()) {
-                    texture.setText("Tex Variant:" + "default");
-                } else {
-                    texture.setText("Tex Variant:" + option);
-                }
-            }
-        };
-        direction.setText("Direction:"+ building.direction);
-        texture.setText("Tex Variant:" + (building.texture == null ? "default" : building.texture));
-    }
-
-    private void openAdditionPanel(IScreenBuilder builder, int num) {
-        building = stockListBuilder.get(num);
-        this.num.forEach(b -> b.setVisible(false));
-        this.stockDef.forEach(b -> b.setVisible(false));
-        this.swapPrev.forEach(b -> b.setVisible(false));
-        this.swapNext.forEach(b -> b.setVisible(false));
-        this.prevPage.setVisible(false);
-        this.nextPage.setVisible(false);
-        this.addStock.setVisible(false);
-        this.name.setVisible(false);
-        this.saveMU.setVisible(false);
-
-        finish.setVisible(true);
-        direction.setVisible(true);
-        stock.setVisible(true);
-        stock.setText(building.definition.name());
-        texture.setVisible(true);
-
-        this.currentEditing = num;
-
-        Map<String, EntityRollingStockDefinition> definitionMap = DefinitionManager.getDefinitions().stream().collect(
-                Collectors.toMap(EntityRollingStockDefinition::name, def -> def));
-        stockSelector = new ListSelector<EntityRollingStockDefinition>(builder, 200, 200, 20, building.definition, definitionMap) {
-            @Override
-            public void onClick(EntityRollingStockDefinition option) {
-                if (building != null) {
-                    building.definition = option;
-                    stock.setText(option.name());
-                    textureSelector = new ListSelector<String>(builder, 200, 200, 20, building.texture,
-                                                               building.definition.textureNames.entrySet().stream()
-                                                                                               .collect(Collectors.toMap(
-                                                                                                       Map.Entry::getValue, Map.Entry::getKey,
-                                                                                                       (u, v) -> u, LinkedHashMap::new))
-                    ) {
-                        @Override
-                        public void onClick(String option) {
-                            building.texture = option;
-                            if(option.isEmpty()) {
-                                texture.setText("Tex Variant:" + "default");
-                            } else {
-                                texture.setText("Tex Variant:" + option);
-                            }
-                        }
-                    };
-                    if(building.definition.textureNames.keySet().stream().findFirst().isPresent()){
-                        building.texture = building.definition.textureNames.keySet().stream().findFirst().get();
-                    } else {
-                        building.texture = null;
-                    }
-                }
-            }
-        };
-        textureSelector = new ListSelector<String>(builder, 200, 200, 20, building.texture,
-                                                   building.definition.textureNames.entrySet().stream()
-                                                                                   .collect(Collectors.toMap(
-                                                                                           Map.Entry::getValue, Map.Entry::getKey,
-                                                                                           (u, v) -> u, LinkedHashMap::new))
-        ) {
-            @Override
-            public void onClick(String option) {
-                building.texture = option;
-                if(option.isEmpty()) {
-                    texture.setText("Tex Variant:" + "default");
-                } else {
-                    texture.setText("Tex Variant:" + option);
-                }
-            }
-        };
-        direction.setText("Direction:"+ building.direction);
-        texture.setText("Tex Variant:" + building.texture);
-    }
-
-    private void closeAdditionPanel() {
-        finish.setVisible(false);
-        direction.setVisible(false);
-        stock.setVisible(false);
-        texture.setVisible(false);
-        stockSelector.setVisible(false);
-        textureSelector.setVisible(false);
-        this.addStock.setVisible(true);
-        this.name.setVisible(true);
-        this.saveMU.setVisible(true);
-
-        if (currentEditing == -1) {
-            stockListBuilder.add(building);
-        } else {
-            stockListBuilder.set(currentEditing, building);
-            currentEditing = -1;
-        }
-
-        building = null;
-        updatePage();
+        context.target = Panel.EDIT;
+        GuiTypes.MU_EDIT.open(context.player);
     }
 
     @Override
@@ -509,6 +111,9 @@ public class MultiUnitGui implements IScreen {
 
     @Override
     public void onClose() {
+        if (context.target != Panel.MAIN) {
+            return;
+        }
         if (current != null){
             new MultiUnitChangePacket(current.getName()).sendToServer();
         }
@@ -517,8 +122,397 @@ public class MultiUnitGui implements IScreen {
     @Override
     public void draw(IScreenBuilder builder, RenderState state) {
         IScreen.super.draw(builder, state);
-
         GUIHelpers.drawRect(0, 0, GUIHelpers.getScreenWidth(), GUIHelpers.getScreenHeight(), 0xCC000000);
+    }
+
+    public static class Context {
+        public int currentEditing;
+        public Panel panel;
+        public Panel target;
+        public Player player;
+        public List<UnitDefinition.Stock> stockListBuilder;
+        public int currentPage = 0;
+        public UnitDefinition.Stock building;
+        public UnitDefinition current;
+        public String currentName;
+
+        public void swapFront(int index) {
+            if(index - 1 > 0 && index < stockListBuilder.size()) {
+                UnitDefinition.Stock s = stockListBuilder.get(index);
+                stockListBuilder.set(index, stockListBuilder.get(index - 1));
+                stockListBuilder.set(index - 1, s);
+            }
+        }
+
+        public void swapBack(int index) {
+            if(index > 0 && index + 1 < stockListBuilder.size()) {
+                UnitDefinition.Stock s = stockListBuilder.get(index);
+                stockListBuilder.set(index, stockListBuilder.get(index + 1));
+                stockListBuilder.set(index + 1, s);
+            }
+        }
+
+        public int index(int i) {
+            return currentPage * 8 + i;
+        }
+
+        public Context() {
+            this.panel = Panel.MAIN;
+            this.stockListBuilder = new LinkedList<>();
+        }
+    }
+
+    public static class EditPanel implements IScreen {
+        private List<Button> num;
+        private List<Button> stockDef;
+        private List<Button> swapPrev;
+        private List<Button> swapNext;
+
+        private Button prevPage;
+        private Button nextPage;
+        private Button addStock;
+        private Button saveMU;
+        private TextField name;
+
+        @Override
+        public void init(IScreenBuilder screen) {
+            context.target = Panel.EDIT;
+
+            num = new ArrayList<>();
+            stockDef = new ArrayList<>();
+            swapPrev = new ArrayList<>();
+            swapNext = new ArrayList<>();
+
+            int xtop = -138;
+            int ytop = GUIHelpers.getScreenHeight() / 4 - 94;
+            int currX = xtop;
+            int spacing = 4;
+            for (int i = 0; i < 8; i++) {
+                Button button = new Button(screen, currX, ytop, 25, 20, "No." + i) {
+                    @Override
+                    public void onClick(Player.Hand hand) {}
+                };
+                button.setEnabled(false);
+                num.add(button);
+                currX += 25 + spacing;
+                int finalI = i;
+                stockDef.add(new Button(screen, currX, ytop, 200, 20, "") {
+                    @Override
+                    public void onClick(Player.Hand hand) {
+                        openAdditionPanel(screen, context.currentPage*8 + finalI);
+                    }
+                });
+                currX += 200 + spacing;
+                swapPrev.add(new Button(screen, currX, ytop, 20, 20, "↑") {
+                    @Override
+                    public void onClick(Player.Hand hand) {
+                        context.swapFront(context.index(finalI));
+                        updatePage();
+                    }
+                });
+                currX += 20 + spacing;
+                swapNext.add(new Button(screen, currX, ytop, 20, 20, "↓") {
+                    @Override
+                    public void onClick(Player.Hand hand) {
+                        context.swapBack(context.index(finalI));
+                        updatePage();
+                    }
+                });
+                ytop += 20 + spacing;
+                currX = xtop;
+            }
+            prevPage = new Button(screen, currX, ytop, 60, 20, "Prev Page") {
+                @Override
+                public void onClick(Player.Hand hand) {
+                    if(context.currentPage > 0) {
+                        context.currentPage -= 1;
+                        updatePage();
+                    }
+                }
+            };
+
+            addStock = new Button(screen, currX + 88, ytop, 100, 20, "Add Stock") {
+                @Override
+                public void onClick(Player.Hand hand) {
+                    openAdditionPanel(screen);
+                }
+            };
+
+            nextPage = new Button(screen, currX + 217, ytop, 60, 20, "Next Page") {
+                @Override
+                public void onClick(Player.Hand hand) {
+                    if(context.currentPage < context.stockListBuilder.size() / 8) {
+                        context.currentPage += 1;
+                        updatePage();
+                    }
+                }
+            };
+            xtop = -GUIHelpers.getScreenWidth() / 2;
+            ytop = -GUIHelpers.getScreenHeight() / 4;
+            name = new TextField(screen, xtop, ytop, 199, 20);
+            name.setValidator(s -> {
+                if(s == null || s.isEmpty()) {
+                    saveMU.setText("Set a name before save");
+                } else {
+                    saveMU.setText("Save");
+                }
+                return true;
+            });
+            ytop += 24;
+            saveMU = new Button(screen, xtop, ytop, 100, 20, "Save") {
+                @Override
+                public void onClick(Player.Hand hand) {
+                    if(name.getText().isEmpty()) {
+                        //Reject
+                        return;
+                    }
+                    UnitDefinition.UnitDefBuilder builder1 = UnitDefinition.UnitDefBuilder.of(name.getText());
+                    for (UnitDefinition.Stock stock1 : context.stockListBuilder) {
+                        builder1.appendStock(stock1);
+                    }
+                    UnitDefinition build = builder1.build();
+                    MultiUnitDefinitionManager.addUnit(build);
+                    GuiTypes.MULTI_UNIT.open(context.player);
+                }
+            };
+
+            if(context.panel == Panel.MAIN){
+                if (context.current == null) {
+                    context.stockListBuilder = new ArrayList<>();
+                    name.setText("");
+                } else {
+                    context.stockListBuilder = new ArrayList<>(context.current.getStocks());
+                    name.setText(context.currentName);
+                }
+            }
+
+            updatePage();
+            context.panel = Panel.EDIT;
+        }
+
+        private void updatePage() {
+            if (context.stockListBuilder.isEmpty()) {
+                for (int i = 0; i < 8; i++) {
+                    this.num.get(i).setVisible(false);
+                    this.stockDef.get(i).setVisible(false);
+                    this.swapPrev.get(i).setVisible(false);
+                    this.swapNext.get(i).setVisible(false);
+                }
+            } else {
+                for (int i = 0; i < 8; i++) {
+                    if (context.index(i) < context.stockListBuilder.size()) {
+                        this.num.get(i).setVisible(true);
+                        this.stockDef.get(i).setVisible(true);
+                        this.stockDef.get(i).setText(
+                                context.stockListBuilder.get(context.index(i)).definition.name());
+                        this.num.get(i).setText("#" + context.index(i));
+                        this.swapPrev.get(i).setVisible(true);
+                        this.swapNext.get(i).setVisible(true);
+                    } else {
+                        this.num.get(i).setVisible(false);
+                        this.stockDef.get(i).setVisible(false);
+                        this.swapPrev.get(i).setVisible(false);
+                        this.swapNext.get(i).setVisible(false);
+                    }
+                    if (context.index(i) == 0) {
+                        this.swapPrev.get(i).setVisible(false);
+                    }
+                    if (context.index(i) == context.stockListBuilder.size() - 1) {
+                        this.swapNext.get(i).setVisible(false);
+                    }
+                }
+            }
+
+            prevPage.setEnabled(context.currentPage != 0);
+            nextPage.setEnabled(context.currentPage != (context.stockListBuilder.size() / 8));
+        }
+
+        private void openAdditionPanel(IScreenBuilder builder) {
+            context.currentEditing = -1;
+            context.target = Panel.ADDITION;
+            GuiTypes.MU_ADDITION.open(context.player);
+        }
+
+        private void openAdditionPanel(IScreenBuilder builder, int num) {
+            context.currentEditing = num;
+            context.target = Panel.ADDITION;
+            GuiTypes.MU_ADDITION.open(context.player);
+        }
+
+        @Override
+        public void onEnterKey(IScreenBuilder builder) {
+            builder.close();
+        }
+
+        @Override
+        public void onClose() {
+            GuiTypes.MULTI_UNIT.open(context.player);
+        }
+
+        @Override
+        public void draw(IScreenBuilder builder, RenderState state) {
+            IScreen.super.draw(builder, state);
+            GUIHelpers.drawRect(0, 0, GUIHelpers.getScreenWidth(), GUIHelpers.getScreenHeight(), 0xCC000000);
+        }
+    }
+
+    public static class AdditionPanel implements IScreen {
+        //Stock Addition Panel
+        private Button stock;
+        private ListSelector<EntityRollingStockDefinition> stockSelector;
+        private Button texture;
+        private ListSelector<String> textureSelector;
+        private Button direction;
+        private Button finish;
+
+        @Override
+        public void init(IScreenBuilder screen) {
+            context.target = Panel.ADDITION;
+
+            String finishStr = "Select a Stock Before Save";
+            EntityRollingStockDefinition def1 = null;
+            if (context.currentEditing != -1) {
+                context.building = context.stockListBuilder.get(context.currentEditing);
+                finishStr = "Finish";
+                def1 = context.building.definition;
+            } else {
+                context.building = new UnitDefinition.Stock();
+                context.building.direction = UnitDefinition.Direction.FORWARD;
+            }
+
+            int xtop = -GUIHelpers.getScreenWidth() / 2;
+            int ytop = -GUIHelpers.getScreenHeight() / 4;
+            stock = new Button(screen, xtop, ytop, 200, 20, def1 == null ? "Select Stock" : def1.name()) {
+                @Override
+                public void onClick(Player.Hand hand) {
+                    if(textureSelector != null && textureSelector.isVisible()){
+                        stockSelector.setVisible(true);
+                        textureSelector.setVisible(false);
+                    }else{
+                        stockSelector.setVisible(!stockSelector.isVisible());
+                    }
+                }
+            };
+            Map<String, EntityRollingStockDefinition> definitionMap = DefinitionManager.getDefinitions().stream().collect(
+                    Collectors.toMap(EntityRollingStockDefinition::name, def -> def));
+            stockSelector = new ListSelector<EntityRollingStockDefinition>(screen, 200, 200, 20, def1, definitionMap) {
+                @Override
+                public void onClick(EntityRollingStockDefinition option) {
+                    finish.setText("Finish");
+                    if (context.building != null) {
+                        context.building.definition = option;
+                        stock.setText(option.name());
+                        textureSelector = new ListSelector<String>(screen, 200, 200, 20, context.building.texture,
+                                                                   context.building.definition.textureNames.entrySet().stream()
+                                                                                                           .collect(Collectors.toMap(
+                                                                                                           Map.Entry::getValue, Map.Entry::getKey,
+                                                                                                           (u, v) -> u, LinkedHashMap::new))
+                        ) {
+                            @Override
+                            public void onClick(String option) {
+                                context.building.texture = option;
+                                if(option.isEmpty()) {
+                                    texture.setText("Tex Variant:" + "default");
+                                } else {
+                                    texture.setText("Tex Variant:" + option);
+                                }
+                            }
+                        };
+                        if(context.building.definition.textureNames.keySet().stream().findFirst().isPresent()){
+                            context.building.texture = context.building.definition.textureNames.keySet().stream().findFirst().get();
+                        } else {
+                            context.building.texture = null;
+                        }
+                    }
+                }
+            };
+            ytop += 25;
+            texture = new Button(screen, xtop, ytop, 200, 20, "Tex Variant:default") {
+                @Override
+                public void onClick(Player.Hand hand) {
+                    if(textureSelector == null) {
+                        return;
+                    }
+
+                    if(stockSelector.isVisible()) {
+                        stockSelector.setVisible(false);
+                        textureSelector.setVisible(true);
+                    } else {
+                        textureSelector.setVisible(!textureSelector.isVisible());
+                    }
+                }
+            };
+            if(context.building.definition != null){
+                textureSelector = new ListSelector<String>(screen, 200, 200, 20, context.building.texture,
+                                                           context.building.definition.textureNames.entrySet().stream()
+                                                                                                   .collect(
+                                                                                                                        Collectors.toMap(
+                                                                                                                                Map.Entry::getValue,
+                                                                                                                                Map.Entry::getKey,
+                                                                                                                                (u, v) -> u,
+                                                                                                                                LinkedHashMap::new))
+                ) {
+                    @Override
+                    public void onClick(String option) {
+                        context.building.texture = option;
+                        if (option.isEmpty()) {
+                            texture.setText("Tex Variant:" + "default");
+                        } else {
+                            texture.setText("Tex Variant:" + option);
+                        }
+                    }
+                };
+            }
+            ytop += 25;
+            direction = new Button(screen, xtop, ytop, 200, 20, "") {
+                @Override
+                public void onClick(Player.Hand hand) {
+                    context.building.direction = ClickListHelper.next(context.building.direction, hand);
+                    this.setText("Direction:"+ context.building.direction);
+                }
+            };
+            ytop += 25;
+            finish = new Button(screen, xtop, ytop, 200, 20, finishStr) {
+                @Override
+                public void onClick(Player.Hand hand) {
+                    if (context.building != null && context.building.definition != null) {
+                        if (context.currentEditing == -1) {
+                            context.stockListBuilder.add(context.building);
+                        } else {
+                            context.stockListBuilder.set(context.currentEditing, context.building);
+                            context.currentEditing = -1;
+                        }
+                        context.building = null;
+                        screen.close();
+                    }
+                }
+            };
+            direction.setText("Direction:"+ context.building.direction);
+            if(context.building.texture != null && !context.building.texture.isEmpty()){
+                texture.setText("Tex Variant:" + context.building.texture);
+            }
+            context.panel = Panel.ADDITION;
+        }
+
+        @Override
+        public void onEnterKey(IScreenBuilder builder) {
+            builder.close();
+        }
+
+        @Override
+        public void onClose() {
+            GuiTypes.MU_EDIT.open(context.player);
+        }
+
+        @Override
+        public void draw(IScreenBuilder builder, RenderState state) {
+            IScreen.super.draw(builder, state);
+            GUIHelpers.drawRect(0, 0, GUIHelpers.getScreenWidth(), GUIHelpers.getScreenHeight(), 0xCC000000);
+        }
+    }
+
+    public enum Panel {
+        MAIN, EDIT, ADDITION
     }
 
     public static class MultiUnitChangePacket extends Packet {
