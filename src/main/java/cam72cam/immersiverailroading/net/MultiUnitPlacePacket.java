@@ -3,6 +3,7 @@ package cam72cam.immersiverailroading.net;
 import cam72cam.immersiverailroading.library.ChatText;
 import cam72cam.immersiverailroading.registry.DefinitionManager;
 import cam72cam.immersiverailroading.registry.UnitDefinition;
+import cam72cam.immersiverailroading.util.SpawnUtil;
 import cam72cam.mod.math.Vec3i;
 import cam72cam.mod.net.Packet;
 import cam72cam.mod.serialization.SerializationException;
@@ -34,7 +35,7 @@ public class MultiUnitPlacePacket extends Packet {
                                     (stock.definition = DefinitionManager.getDefinition(stock.defID)) == null)) {
             getPlayer().sendMessage(PlayerMessage.translate(ChatText.STOCK_INVALID.toString()));
         } else {
-//            SpawnUtil.placeUnit(getPlayer(), getWorld(), clicking, stocks);
+            SpawnUtil.placeUnit(getPlayer(), getWorld(), clicking, stocks);
         }
     }
 
