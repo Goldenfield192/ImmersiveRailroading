@@ -20,6 +20,7 @@ item.immersiverailroading:item_golden_spike.name=[Need translate]
 item.immersiverailroading:item_radio_control_card.name=[Need translate]
 item.immersiverailroading:item_switch_key.name=[Need translate]
 item.immersiverailroading:item_track_exchanger.name=[Need translate]
+item.immersiverailroading:item_consist_placer=[Need translate]
 
 tile.immersiverailroading:block_rail.name=Schiene
 tile.immersiverailroading:block_rail_gag.name=Schiene (Gag)

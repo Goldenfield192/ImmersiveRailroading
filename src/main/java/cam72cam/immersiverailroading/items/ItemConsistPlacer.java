@@ -22,7 +22,7 @@ import java.util.List;
 
 public class ItemConsistPlacer extends CustomItem {
     public ItemConsistPlacer() {
-        super(ImmersiveRailroading.MODID, "item_multi_unit");
+        super(ImmersiveRailroading.MODID, "item_consist_placer");
     }
 
     @Override
