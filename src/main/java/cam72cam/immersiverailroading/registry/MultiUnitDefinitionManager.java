@@ -25,6 +25,26 @@ public class MultiUnitDefinitionManager {
         validUnits = new TreeMap<>(String::compareToIgnoreCase);
     }
 
+    public static void save() {
+        try {
+            // Structure:
+            // multi_unit [name]
+            // stock [stockName] [direction] [text variant] TODO optional: [cg:value]
+            List<String> list = new LinkedList<>();
+            list.add("//DO NOT TOUCH UNLESS YOU KNOW WHAT ARE YOU DOING");
+            for (Map.Entry<String, UnitDefinition> entry : allUnits.entrySet()) {
+                list.add("multi_unit "+entry.getKey().replace(" ", "^"));
+                for (UnitDefinition.Stock stock : entry.getValue().getStocks()) {
+                    String texture = (stock.texture == null||stock.texture.isEmpty()) ? "default" : stock.texture;
+                    list.add("stock "+stock.defID+" "+stock.direction+" "+texture);
+                }
+            }
+            Files.write(save.toPath(), list);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
     public static void load() {
         try {
             // Structure:
@@ -34,7 +54,6 @@ public class MultiUnitDefinitionManager {
             allUnits.clear();
             validUnits.clear();
             UnitDefinition.UnitDefBuilder builder = null;
-            boolean shouldSkipThis = false; //TODO
             for (String line : lines) {
                 if (line.startsWith("multi_unit")) {
                     String[] split = line.split(" ");
@@ -60,26 +79,6 @@ public class MultiUnitDefinitionManager {
                     validUnits.put(built.getName(), built);
                 }
             }
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-    }
-
-    public static void save() {
-        try {
-            // Structure:
-            // multi_unit [name]
-            // stock [stockName] [direction] [text variant] TODO optional: [cg:value]
-            List<String> list = new LinkedList<>();
-            list.add("//DO NOT TOUCH UNLESS YOU KNOW WHAT ARE YOU DOING");
-            for (Map.Entry<String, UnitDefinition> entry : allUnits.entrySet()) {
-                list.add("multi_unit "+entry.getKey().replace(" ", "^"));
-                for (UnitDefinition.Stock stock : entry.getValue().getStocks()) {
-                    String texture = (stock.texture == null||stock.texture.isEmpty()) ? "default" : stock.texture;
-                    list.add("stock "+stock.defID+" "+stock.direction+" "+texture);
-                }
-            }
-            Files.write(save.toPath(), list);
         } catch (IOException e) {
             throw new RuntimeException(e);
         }

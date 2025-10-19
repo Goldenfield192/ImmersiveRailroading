@@ -2,12 +2,18 @@ package cam72cam.immersiverailroading.items;
 
 import cam72cam.immersiverailroading.ImmersiveRailroading;
 import cam72cam.immersiverailroading.library.GuiTypes;
+import cam72cam.immersiverailroading.library.Permissions;
+import cam72cam.immersiverailroading.net.MultiUnitPlacePacket;
+import cam72cam.immersiverailroading.registry.MultiUnitDefinitionManager;
+import cam72cam.immersiverailroading.registry.UnitDefinition;
 import cam72cam.mod.entity.Player;
 import cam72cam.mod.item.ClickResult;
 import cam72cam.mod.item.CreativeTab;
 import cam72cam.mod.item.CustomItem;
+import cam72cam.mod.item.ItemStack;
 import cam72cam.mod.math.Vec3d;
 import cam72cam.mod.math.Vec3i;
+import cam72cam.mod.text.PlayerMessage;
 import cam72cam.mod.util.Facing;
 import cam72cam.mod.world.World;
 
@@ -15,17 +21,9 @@ import java.util.*;
 import java.util.List;
 
 public class ItemMultipleUnit extends CustomItem {
-
     public ItemMultipleUnit() {
         super(ImmersiveRailroading.MODID, "item_multi_unit");
     }
-
-//    @Override
-//    public List<String> getTooltip(ItemStack stack) {
-//        //todo
-//
-//        return tooltip;
-//    }
 
     @Override
     public List<CreativeTab> getCreativeTabs() {
@@ -34,7 +32,25 @@ public class ItemMultipleUnit extends CustomItem {
 
     @Override
     public ClickResult onClickBlock(Player player, World world, Vec3i pos, Player.Hand hand, Facing facing, Vec3d hit) {
-//        return tryPlaceStock(player, world, pos, hand, null);
+        //We handle it at client
+        if (world.isServer) {
+            return ClickResult.ACCEPTED;
+        }
+
+        if (!player.hasPermission(Permissions.STOCK_ASSEMBLY)) {
+            return ClickResult.REJECTED;
+        }
+
+        ItemStack stack = player.getHeldItem(hand);
+
+        UnitDefinition def = MultiUnitDefinitionManager.getUnitDef(stack.getTagCompound().getString("multi_unit"));
+        if (def == null) {
+            player.sendMessage(PlayerMessage.direct("Invalid MU"));
+            return ClickResult.REJECTED;
+        }
+
+        new MultiUnitPlacePacket(def.getStocks(), pos).sendToServer();
+
         return ClickResult.ACCEPTED;
     }
 

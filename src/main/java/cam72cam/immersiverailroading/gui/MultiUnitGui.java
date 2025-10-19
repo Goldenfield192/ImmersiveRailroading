@@ -137,7 +137,7 @@ public class MultiUnitGui implements IScreen {
         public String currentName;
 
         public void swapFront(int index) {
-            if(index - 1 > 0 && index < stockListBuilder.size()) {
+            if(index - 1 >= 0 && index < stockListBuilder.size()) {
                 UnitDefinition.Stock s = stockListBuilder.get(index);
                 stockListBuilder.set(index, stockListBuilder.get(index - 1));
                 stockListBuilder.set(index - 1, s);
@@ -145,7 +145,7 @@ public class MultiUnitGui implements IScreen {
         }
 
         public void swapBack(int index) {
-            if(index > 0 && index + 1 < stockListBuilder.size()) {
+            if(index >= 0 && index + 1 < stockListBuilder.size()) {
                 UnitDefinition.Stock s = stockListBuilder.get(index);
                 stockListBuilder.set(index, stockListBuilder.get(index + 1));
                 stockListBuilder.set(index + 1, s);
@@ -256,6 +256,7 @@ public class MultiUnitGui implements IScreen {
                 } else {
                     saveMU.setText("Save");
                 }
+                context.currentName = name.getText();
                 return true;
             });
             ytop += 24;
@@ -272,6 +273,8 @@ public class MultiUnitGui implements IScreen {
                     }
                     UnitDefinition build = builder1.build();
                     MultiUnitDefinitionManager.addUnit(build);
+                    context.stockListBuilder.clear();
+                    context.current = MultiUnitDefinitionManager.getUnitDef(build.getName());
                     GuiTypes.MULTI_UNIT.open(context.player);
                 }
             };
@@ -335,6 +338,7 @@ public class MultiUnitGui implements IScreen {
         private void openAdditionPanel() {
             context.currentEditing = -1;
             context.target = Panel.ADDITION;
+            context.currentName = name.getText();
             GuiTypes.MU_ADDITION.open(context.player);
         }
 

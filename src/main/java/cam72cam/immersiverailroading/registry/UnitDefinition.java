@@ -3,6 +3,7 @@ package cam72cam.immersiverailroading.registry;
 import javax.annotation.Nullable;
 import java.util.*;
 
+//Client only
 public class UnitDefinition {
     private final String name;
     private final List<Stock> stocks;
@@ -75,6 +76,11 @@ public class UnitDefinition {
                 throw new UnsupportedOperationException();
             }
             isBuilt = true;
+            stocks.forEach(stock -> {
+                if (stock.defID == null && stock.definition != null) {
+                    stock.defID = stock.definition.defID;
+                }
+            });
             return new UnitDefinition(name, stocks);
         }
     }
