@@ -4,11 +4,11 @@ import javax.annotation.Nullable;
 import java.util.*;
 
 //Client only
-public class UnitDefinition {
+public class ConsistDefinition {
     private final String name;
     private final List<Stock> stocks;
 
-    public UnitDefinition(String name, List<Stock> stocks) {
+    public ConsistDefinition(String name, List<Stock> stocks) {
         this.name = name;
         this.stocks = stocks;
     }
@@ -25,16 +25,16 @@ public class UnitDefinition {
         return stocks.stream().noneMatch(stock -> stock.error);
     }
 
-    public static class UnitDefBuilder {
+    public static class ConsistDefBuilder {
         private String name;
         private List<Stock> stocks;
 
         private boolean isBuilt = false;
 
-        private UnitDefBuilder(){}
+        private ConsistDefBuilder(){}
 
-        public static UnitDefBuilder of(String name) {
-            UnitDefBuilder builder = new UnitDefBuilder();
+        public static ConsistDefBuilder of(String name) {
+            ConsistDefBuilder builder = new ConsistDefBuilder();
             builder.name = name;
             builder.stocks = new ArrayList<>();
             return builder;
@@ -71,7 +71,7 @@ public class UnitDefinition {
             stocks.add(stock);
         }
 
-        public UnitDefinition build() {
+        public ConsistDefinition build() {
             if(isBuilt){
                 throw new UnsupportedOperationException();
             }
@@ -81,7 +81,7 @@ public class UnitDefinition {
                     stock.defID = stock.definition.defID;
                 }
             });
-            return new UnitDefinition(name, stocks);
+            return new ConsistDefinition(name, stocks);
         }
     }
 

@@ -11,8 +11,8 @@ import cam72cam.immersiverailroading.library.ItemComponentType;
 import cam72cam.immersiverailroading.Config.ConfigDebug;
 import cam72cam.immersiverailroading.entity.EntityBuildableRollingStock;
 import cam72cam.immersiverailroading.entity.EntityCoupleableRollingStock.CouplerType;
+import cam72cam.immersiverailroading.registry.ConsistDefinition;
 import cam72cam.immersiverailroading.registry.EntityRollingStockDefinition;
-import cam72cam.immersiverailroading.registry.UnitDefinition;
 import cam72cam.mod.entity.Entity;
 import cam72cam.mod.entity.Player;
 import cam72cam.immersiverailroading.thirdparty.trackapi.ITrack;
@@ -102,7 +102,7 @@ public class SpawnUtil {
 		return ClickResult.ACCEPTED;
 	}
 
-	public static ClickResult placeUnit(Player player, World worldIn, Vec3i pos, List<UnitDefinition.Stock> stocks) {
+	public static ClickResult placeUnit(Player player, World worldIn, Vec3i pos, List<ConsistDefinition.Stock> stocks) {
 		if(worldIn.isClient) {
 			return ClickResult.REJECTED;
 		}
@@ -120,7 +120,7 @@ public class SpawnUtil {
 		List<EntityRollingStock> shutdown = new LinkedList<>();
 
 		for (int i = stocks.size() - 1; i >= 0; i--){
-			UnitDefinition.Stock s = stocks.get(i);
+			ConsistDefinition.Stock s = stocks.get(i);
 			EntityRollingStockDefinition def = s.definition;
 			initTE = ITrack.get(worldIn, spawnPos.add(0, 0.7, 0), true);
 

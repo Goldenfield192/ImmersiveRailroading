@@ -3,9 +3,9 @@ package cam72cam.immersiverailroading.items;
 import cam72cam.immersiverailroading.ImmersiveRailroading;
 import cam72cam.immersiverailroading.library.GuiTypes;
 import cam72cam.immersiverailroading.library.Permissions;
-import cam72cam.immersiverailroading.net.MultiUnitPlacePacket;
-import cam72cam.immersiverailroading.registry.MultiUnitDefinitionManager;
-import cam72cam.immersiverailroading.registry.UnitDefinition;
+import cam72cam.immersiverailroading.net.ConsistPlacePacket;
+import cam72cam.immersiverailroading.registry.ConsistDefinition;
+import cam72cam.immersiverailroading.registry.ConsistDefinitionManager;
 import cam72cam.mod.entity.Player;
 import cam72cam.mod.item.ClickResult;
 import cam72cam.mod.item.CreativeTab;
@@ -20,8 +20,8 @@ import cam72cam.mod.world.World;
 import java.util.*;
 import java.util.List;
 
-public class ItemMultiunitPlacer extends CustomItem {
-    public ItemMultiunitPlacer() {
+public class ItemConsistPlacer extends CustomItem {
+    public ItemConsistPlacer() {
         super(ImmersiveRailroading.MODID, "item_multi_unit");
     }
 
@@ -43,13 +43,13 @@ public class ItemMultiunitPlacer extends CustomItem {
 
         ItemStack stack = player.getHeldItem(hand);
 
-        UnitDefinition def = MultiUnitDefinitionManager.getUnitDef(stack.getTagCompound().getString("multi_unit"));
+        ConsistDefinition def = ConsistDefinitionManager.getConsistDefinition(stack.getTagCompound().getString("multi_unit"));
         if (def == null) {
             player.sendMessage(PlayerMessage.direct("Invalid MU"));
             return ClickResult.REJECTED;
         }
 
-        new MultiUnitPlacePacket(def.getStocks(), pos).sendToServer();
+        new ConsistPlacePacket(def.getStocks(), pos).sendToServer();
 
         return ClickResult.ACCEPTED;
     }
@@ -58,7 +58,7 @@ public class ItemMultiunitPlacer extends CustomItem {
     public void onClickAir(Player player, World world, Player.Hand hand) {
         super.onClickAir(player, world, hand);
         if (world.isClient) {
-            GuiTypes.MULTI_UNIT.open(player);
+            GuiTypes.CONSIST_PLACER_MAIN.open(player);
         }
     }
 }

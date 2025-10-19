@@ -2,7 +2,7 @@ package cam72cam.immersiverailroading;
 
 import cam72cam.immersiverailroading.entity.*;
 import cam72cam.immersiverailroading.entity.physics.chrono.ServerChronoState;
-import cam72cam.immersiverailroading.gui.MultiUnitGui;
+import cam72cam.immersiverailroading.gui.ConsistPlacerGui;
 import cam72cam.immersiverailroading.gui.overlay.GuiBuilder;
 import cam72cam.immersiverailroading.items.ItemPaintBrush;
 import cam72cam.immersiverailroading.library.GuiTypes;
@@ -14,7 +14,7 @@ import cam72cam.immersiverailroading.multiblock.*;
 import cam72cam.immersiverailroading.net.*;
 import cam72cam.immersiverailroading.registry.DefinitionManager;
 import cam72cam.immersiverailroading.registry.EntityRollingStockDefinition;
-import cam72cam.immersiverailroading.registry.MultiUnitDefinitionManager;
+import cam72cam.immersiverailroading.registry.ConsistDefinitionManager;
 import cam72cam.immersiverailroading.render.SmokeParticle;
 import cam72cam.immersiverailroading.render.block.RailBaseModel;
 import cam72cam.immersiverailroading.render.item.*;
@@ -87,8 +87,8 @@ public class ImmersiveRailroading extends ModCore.Mod {
 				Packet.register(ClientPartDragging.DragPacket::new, PacketDirection.ClientToServer);
 				Packet.register(ClientPartDragging.SeatPacket::new, PacketDirection.ClientToServer);
 				Packet.register(GuiBuilder.ControlChangePacket::new, PacketDirection.ClientToServer);
-				Packet.register(MultiUnitGui.MultiUnitChangePacket::new, PacketDirection.ClientToServer);
-				Packet.register(MultiUnitPlacePacket::new, PacketDirection.ClientToServer);
+				Packet.register(ConsistPlacerGui.ConsistItemChangePacket::new, PacketDirection.ClientToServer);
+				Packet.register(ConsistPlacePacket::new, PacketDirection.ClientToServer);
 				Packet.register(ItemPaintBrush.PaintBrushPacket::new, PacketDirection.ClientToServer);
 
 				ServerChronoState.register();
@@ -139,7 +139,7 @@ public class ImmersiveRailroading extends ModCore.Mod {
 				ItemRender.register(IRItems.ITEM_TRACK_BLUEPRINT, new TrackBlueprintItemModel());
 				ItemRender.register(IRItems.ITEM_ROLLING_STOCK_COMPONENT, new StockItemComponentModel());
 				ItemRender.register(IRItems.ITEM_ROLLING_STOCK, new StockItemModel());
-				ItemRender.register(IRItems.ITEM_MULTIUNIT_PLACER, new Identifier(MODID, "items/multiunit"));
+				ItemRender.register(IRItems.ITEM_CONSIST_PLACER, new Identifier(MODID, "items/consist"));
 				ItemRender.register(IRItems.ITEM_LARGE_WRENCH, ObjItemRender.getModelFor(new Identifier(MODID, "models/item/wrench/wrench.obj"), new Vec3d(0.5, 0, 0.5), 2));
 				ItemRender.register(IRItems.ITEM_CONDUCTOR_WHISTLE, ObjItemRender.getModelFor(new Identifier(MODID, "models/item/whistle.obj"), new Vec3d(0.5, 0.75, 0.5), 0.1f));
 				ItemRender.register(IRItems.ITEM_GOLDEN_SPIKE, ObjItemRender.getModelFor(new Identifier(MODID, "models/item/goldenspike/goldenspike.obj"), new Vec3d(0.5, 0.5, 0.5), 0.1f));
@@ -233,7 +233,7 @@ public class ImmersiveRailroading extends ModCore.Mod {
 				Particles.SMOKE = Particle.register(SmokeParticle::new, SmokeParticle::renderAll);
 
 				ClientPartDragging.register();
-				MultiUnitDefinitionManager.load();
+				ConsistDefinitionManager.load();
 				break;
 			case RELOAD:
 				DefinitionManager.initDefinitions();

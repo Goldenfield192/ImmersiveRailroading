@@ -3,10 +3,10 @@ package cam72cam.immersiverailroading.gui;
 import cam72cam.immersiverailroading.IRItems;
 import cam72cam.immersiverailroading.gui.components.ListSelector;
 import cam72cam.immersiverailroading.library.GuiTypes;
+import cam72cam.immersiverailroading.registry.ConsistDefinition;
+import cam72cam.immersiverailroading.registry.ConsistDefinitionManager;
 import cam72cam.immersiverailroading.registry.DefinitionManager;
 import cam72cam.immersiverailroading.registry.EntityRollingStockDefinition;
-import cam72cam.immersiverailroading.registry.MultiUnitDefinitionManager;
-import cam72cam.immersiverailroading.registry.UnitDefinition;
 import cam72cam.mod.MinecraftClient;
 import cam72cam.mod.entity.Player;
 import cam72cam.mod.gui.helpers.GUIHelpers;
@@ -22,23 +22,23 @@ import cam72cam.mod.serialization.TagField;
 import java.util.*;
 import java.util.stream.Collectors;
 
-public class MultiUnitGui implements IScreen {
+public class ConsistPlacerGui implements IScreen {
     public static Context context;
-    private UnitDefinition current;
+    private ConsistDefinition current;
 
     //Main Panel
     private Button selection;
-    private Button newMU;
+    private Button newConsist;
     private Button editCurrent;
-    private ListSelector<UnitDefinition> definitionsSelector;
+    private ListSelector<ConsistDefinition> definitionsSelector;
 
-    public MultiUnitGui() {
+    public ConsistPlacerGui() {
         this(MinecraftClient.getPlayer().getHeldItem(Player.Hand.PRIMARY));
     }
 
-    private MultiUnitGui(ItemStack stack) {
+    private ConsistPlacerGui(ItemStack stack) {
         stack = stack.copy();
-        current = MultiUnitDefinitionManager.getUnitDef(stack.getTagCompound().getString("multi_unit"));
+        current = ConsistDefinitionManager.getConsistDefinition(stack.getTagCompound().getString("multi_unit"));
         if (context == null) {
             context = new Context();
         }
@@ -64,7 +64,7 @@ public class MultiUnitGui implements IScreen {
             }
         };
         ytop += 25;
-        newMU = new Button(screen, xtop, ytop, 150, 20, "New MultiUnit") {
+        newConsist = new Button(screen, xtop, ytop, 150, 20, "New MultiUnit") {
             @Override
             public void onClick(Player.Hand hand) {
                 openEditPanel();
@@ -80,10 +80,10 @@ public class MultiUnitGui implements IScreen {
             }
         };
 
-        definitionsSelector = new ListSelector<UnitDefinition>(screen, 150, 200, 20, current,
-                                                               MultiUnitDefinitionManager.getValidUnits()) {
+        definitionsSelector = new ListSelector<ConsistDefinition>(screen, 150, 200, 20, current,
+                                                                  ConsistDefinitionManager.getValidConsists()) {
             @Override
-            public void onClick(UnitDefinition option) {
+            public void onClick(ConsistDefinition option) {
                 current = option;
                 if(current != null) {
                     editCurrent.setVisible(true);
@@ -100,7 +100,7 @@ public class MultiUnitGui implements IScreen {
 
     private void openEditPanel() {
         context.target = Panel.EDIT;
-        GuiTypes.MU_EDIT.open(context.player);
+        GuiTypes.CONSIST_EDIT.open(context.player);
     }
 
     @Override
@@ -114,7 +114,7 @@ public class MultiUnitGui implements IScreen {
             return;
         }
         if (current != null){
-            new MultiUnitChangePacket(current.getName()).sendToServer();
+            new ConsistItemChangePacket(current.getName()).sendToServer();
         }
     }
 
@@ -130,15 +130,15 @@ public class MultiUnitGui implements IScreen {
         public Panel panel;
         public Panel target;
         public Player player;
-        public List<UnitDefinition.Stock> stockListBuilder;
+        public List<ConsistDefinition.Stock> stockListBuilder;
         public int currentPage = 0;
-        public UnitDefinition.Stock building;
-        public UnitDefinition current;
+        public ConsistDefinition.Stock building;
+        public ConsistDefinition current;
         public String currentName;
 
         public void swapFront(int index) {
             if(index - 1 >= 0 && index < stockListBuilder.size()) {
-                UnitDefinition.Stock s = stockListBuilder.get(index);
+                ConsistDefinition.Stock s = stockListBuilder.get(index);
                 stockListBuilder.set(index, stockListBuilder.get(index - 1));
                 stockListBuilder.set(index - 1, s);
             }
@@ -146,7 +146,7 @@ public class MultiUnitGui implements IScreen {
 
         public void swapBack(int index) {
             if(index >= 0 && index + 1 < stockListBuilder.size()) {
-                UnitDefinition.Stock s = stockListBuilder.get(index);
+                ConsistDefinition.Stock s = stockListBuilder.get(index);
                 stockListBuilder.set(index, stockListBuilder.get(index + 1));
                 stockListBuilder.set(index + 1, s);
             }
@@ -172,7 +172,7 @@ public class MultiUnitGui implements IScreen {
         private Button prevPage;
         private Button nextPage;
         private Button addStock;
-        private Button saveMU;
+        private Button saveConsist;
         private TextField name;
 
         @Override
@@ -262,30 +262,30 @@ public class MultiUnitGui implements IScreen {
             name = new TextField(screen, xtop, ytop, 199, 20);
             name.setValidator(s -> {
                 if(s == null || s.isEmpty()) {
-                    saveMU.setText("Set a name before save");
+                    saveConsist.setText("Set a name before save");
                 } else {
-                    saveMU.setText("Save");
+                    saveConsist.setText("Save");
                 }
                 context.currentName = name.getText();
                 return true;
             });
             ytop += 24;
-            saveMU = new Button(screen, xtop, ytop, 200, 20, "Save") {
+            saveConsist = new Button(screen, xtop, ytop, 200, 20, "Save") {
                 @Override
                 public void onClick(Player.Hand hand) {
                     if(name.getText().isEmpty()) {
                         //Reject
                         return;
                     }
-                    UnitDefinition.UnitDefBuilder builder1 = UnitDefinition.UnitDefBuilder.of(name.getText());
-                    for (UnitDefinition.Stock stock1 : context.stockListBuilder) {
+                    ConsistDefinition.ConsistDefBuilder builder1 = ConsistDefinition.ConsistDefBuilder.of(name.getText());
+                    for (ConsistDefinition.Stock stock1 : context.stockListBuilder) {
                         builder1.appendStock(stock1);
                     }
-                    UnitDefinition build = builder1.build();
-                    MultiUnitDefinitionManager.addUnit(build);
+                    ConsistDefinition build = builder1.build();
+                    ConsistDefinitionManager.addConsist(build);
                     context.stockListBuilder.clear();
-                    context.current = MultiUnitDefinitionManager.getUnitDef(build.getName());
-                    GuiTypes.MULTI_UNIT.open(context.player);
+                    context.current = ConsistDefinitionManager.getConsistDefinition(build.getName());
+                    GuiTypes.CONSIST_PLACER_MAIN.open(context.player);
                 }
             };
 
@@ -301,7 +301,7 @@ public class MultiUnitGui implements IScreen {
                 name.setText(context.currentName);
             }
             if(name.getText().isEmpty()) {
-                saveMU.setText("Set a name before save");
+                saveConsist.setText("Set a name before save");
             }
 
             updatePage();
@@ -352,13 +352,13 @@ public class MultiUnitGui implements IScreen {
             context.currentEditing = -1;
             context.target = Panel.ADDITION;
             context.currentName = name.getText();
-            GuiTypes.MU_ADDITION.open(context.player);
+            GuiTypes.CONSIST_ADD_STOCK.open(context.player);
         }
 
         private void openAdditionPanel(int num) {
             context.currentEditing = num;
             context.target = Panel.ADDITION;
-            GuiTypes.MU_ADDITION.open(context.player);
+            GuiTypes.CONSIST_ADD_STOCK.open(context.player);
         }
 
         @Override
@@ -379,7 +379,7 @@ public class MultiUnitGui implements IScreen {
                 context.stockListBuilder.clear();
                 context.current = ConsistDefinitionManager.getConsistDefinition(build.getName());
             }
-            GuiTypes.MULTI_UNIT.open(context.player);
+            GuiTypes.CONSIST_PLACER_MAIN.open(context.player);
         }
 
         @Override
@@ -409,8 +409,8 @@ public class MultiUnitGui implements IScreen {
                 finishStr = "Finish";
                 def1 = context.building.definition;
             } else {
-                context.building = new UnitDefinition.Stock();
-                context.building.direction = UnitDefinition.Direction.FORWARD;
+                context.building = new ConsistDefinition.Stock();
+                context.building.direction = ConsistDefinition.Direction.FORWARD;
             }
 
             int xtop = -GUIHelpers.getScreenWidth() / 2;
@@ -516,7 +516,7 @@ public class MultiUnitGui implements IScreen {
                             context.currentEditing = -1;
                         }
                         context.building = null;
-                        GuiTypes.MU_EDIT.open(context.player);
+                        GuiTypes.CONSIST_EDIT.open(context.player);
                     }
                 }
             };
@@ -534,7 +534,7 @@ public class MultiUnitGui implements IScreen {
 
         @Override
         public void onClose() {
-            GuiTypes.MU_EDIT.open(context.player);
+            GuiTypes.CONSIST_EDIT.open(context.player);
         }
 
         @Override
@@ -549,14 +549,14 @@ public class MultiUnitGui implements IScreen {
         MAIN, EDIT, ADDITION
     }
 
-    public static class MultiUnitChangePacket extends Packet {
+    public static class ConsistItemChangePacket extends Packet {
         @TagField
         private String def;
 
-        public MultiUnitChangePacket() {
+        public ConsistItemChangePacket() {
         }
 
-        public MultiUnitChangePacket(String def) {
+        public ConsistItemChangePacket(String def) {
             this.def = def;
         }
 
@@ -564,7 +564,7 @@ public class MultiUnitGui implements IScreen {
         protected void handle() {
             Player player = this.getPlayer();
             ItemStack stack = player.getHeldItem(Player.Hand.PRIMARY);
-            if(stack.is(IRItems.ITEM_MULTIUNIT_PLACER)) {
+            if(stack.is(IRItems.ITEM_CONSIST_PLACER)) {
                 stack.setTagCompound(stack.getTagCompound().setString("multi_unit", def));
             }
             player.setHeldItem(Player.Hand.PRIMARY, stack);
