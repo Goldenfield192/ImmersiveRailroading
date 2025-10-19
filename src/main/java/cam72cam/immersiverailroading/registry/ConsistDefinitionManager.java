@@ -95,6 +95,9 @@ public class ConsistDefinitionManager {
     }
 
     public static ConsistDefinition getConsistDefinition(String name) {
+        if (name == null) {
+            return null;
+        }
         return allConsist.get(name);
     }
 }
