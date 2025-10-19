@@ -20,8 +20,8 @@ import cam72cam.mod.world.World;
 import java.util.*;
 import java.util.List;
 
-public class ItemMultipleUnit extends CustomItem {
-    public ItemMultipleUnit() {
+public class ItemMultiunitPlacer extends CustomItem {
+    public ItemMultiunitPlacer() {
         super(ImmersiveRailroading.MODID, "item_multi_unit");
     }
 

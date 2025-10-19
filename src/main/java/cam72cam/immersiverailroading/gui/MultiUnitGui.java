@@ -540,7 +540,7 @@ public class MultiUnitGui implements IScreen {
         protected void handle() {
             Player player = this.getPlayer();
             ItemStack stack = player.getHeldItem(Player.Hand.PRIMARY);
-            if(stack.is(IRItems.ITEM_MULTIPLE_UNIT)) {
+            if(stack.is(IRItems.ITEM_MULTIUNIT_PLACER)) {
                 stack.setTagCompound(stack.getTagCompound().setString("multi_unit", def));
             }
             player.setHeldItem(Player.Hand.PRIMARY, stack);
