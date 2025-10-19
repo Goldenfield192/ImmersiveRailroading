@@ -167,6 +167,7 @@ public class MultiUnitGui implements IScreen {
         private List<Button> stockDef;
         private List<Button> swapPrev;
         private List<Button> swapNext;
+        private List<Button> delete;
 
         private Button prevPage;
         private Button nextPage;
@@ -178,10 +179,11 @@ public class MultiUnitGui implements IScreen {
         public void init(IScreenBuilder screen) {
             context.target = Panel.EDIT;
 
-            num = new ArrayList<>();
-            stockDef = new ArrayList<>();
-            swapPrev = new ArrayList<>();
-            swapNext = new ArrayList<>();
+            num = new ArrayList<>(7);
+            stockDef = new ArrayList<>(7);
+            swapPrev = new ArrayList<>(7);
+            swapNext = new ArrayList<>(7);
+            delete = new ArrayList<>(7);
 
             int xtop = -138;
             int ytop = GUIHelpers.getScreenHeight() / 4 - 70;
@@ -215,6 +217,14 @@ public class MultiUnitGui implements IScreen {
                     @Override
                     public void onClick(Player.Hand hand) {
                         context.swapBack(context.index(finalI));
+                        updatePage();
+                    }
+                });
+                currX += 20 + spacing;
+                delete.add(new Button(screen, currX, ytop, 40, 20, "Delete") {
+                    @Override
+                    public void onClick(Player.Hand hand) {
+                        context.stockListBuilder.remove(context.index(finalI));
                         updatePage();
                     }
                 });
@@ -305,6 +315,7 @@ public class MultiUnitGui implements IScreen {
                     this.stockDef.get(i).setVisible(false);
                     this.swapPrev.get(i).setVisible(false);
                     this.swapNext.get(i).setVisible(false);
+                    this.delete.get(i).setVisible(false);
                 }
             } else {
                 for (int i = 0; i < 7; i++) {
@@ -316,11 +327,13 @@ public class MultiUnitGui implements IScreen {
                         this.num.get(i).setText("#" + context.index(i));
                         this.swapPrev.get(i).setVisible(true);
                         this.swapNext.get(i).setVisible(true);
+                        this.delete.get(i).setVisible(true);
                     } else {
                         this.num.get(i).setVisible(false);
                         this.stockDef.get(i).setVisible(false);
                         this.swapPrev.get(i).setVisible(false);
                         this.swapNext.get(i).setVisible(false);
+                        this.delete.get(i).setVisible(false);
                     }
                     if (context.index(i) == 0) {
                         this.swapPrev.get(i).setVisible(false);
@@ -355,6 +368,17 @@ public class MultiUnitGui implements IScreen {
 
         @Override
         public void onClose() {
+            //Auto-save
+            if(!name.getText().isEmpty()) {
+                ConsistDefinition.ConsistDefBuilder builder1 = ConsistDefinition.ConsistDefBuilder.of(name.getText());
+                for (ConsistDefinition.Stock stock1 : context.stockListBuilder) {
+                    builder1.appendStock(stock1);
+                }
+                ConsistDefinition build = builder1.build();
+                ConsistDefinitionManager.addConsist(build);
+                context.stockListBuilder.clear();
+                context.current = ConsistDefinitionManager.getConsistDefinition(build.getName());
+            }
             GuiTypes.MULTI_UNIT.open(context.player);
         }
 
