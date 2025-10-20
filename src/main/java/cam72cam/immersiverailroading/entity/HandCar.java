@@ -27,7 +27,8 @@ public class HandCar extends Locomotive {
 			}
 		}
 		// Same as diesel for now
-		double maxPower_W = this.getDefinition().getScriptedHorsePower(gauge, this) * 745.7d * passengers;
+        // TODO add script support!
+		double maxPower_W = this.getDefinition().getWatt(gauge) * passengers;
 		double efficiency = 0.82; // Similar to a *lot* of imperial references
 		double speed_M_S = (Math.abs(speed.metric())/3.6);
 		double maxPowerAtSpeed = maxPower_W * efficiency / Math.max(0.001, speed_M_S);

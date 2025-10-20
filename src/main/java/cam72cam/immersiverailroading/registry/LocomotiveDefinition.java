@@ -1,7 +1,10 @@
 package cam72cam.immersiverailroading.registry;
 
+import cam72cam.immersiverailroading.ConfigGraphics;
 import cam72cam.immersiverailroading.ImmersiveRailroading;
 import cam72cam.immersiverailroading.entity.EntityRollingStock;
+import cam72cam.immersiverailroading.library.unit.ForceDisplayType;
+import cam72cam.immersiverailroading.library.unit.PowerDisplayType;
 import cam72cam.immersiverailroading.entity.Locomotive;
 import cam72cam.immersiverailroading.util.DataBlock;
 import cam72cam.immersiverailroading.library.Gauge;
@@ -17,8 +20,8 @@ public abstract class LocomotiveDefinition extends FreightDefinition {
     public boolean toggleBell;
     public SoundDefinition bell;
     public String works;
-    private double power;
-    private double traction;
+    private double power_kW;
+    private double traction_N;
     private Speed maxSpeed;
     private boolean hasRadioEquipment;
     public boolean muliUnitCapable;
@@ -48,14 +51,32 @@ public abstract class LocomotiveDefinition extends FreightDefinition {
 
         isCabCar = readCabCarFlag(data);
         if (isCabCar) {
-            power = 0;
-            traction = 0;
+            power_kW = 0;
+            traction_N = 0;
             maxSpeed = Speed.ZERO;
             muliUnitCapable = true;
             factorOfAdhesion = 0;
         } else {
-            power = properties.getValue("horsepower").asInteger() * internal_inv_scale;
-            traction = properties.getValue("tractive_effort_lbf").asInteger() * internal_inv_scale;
+            if (properties.getValue("horsepower").asFloat() != null) {
+                power_kW = properties.getValue("horsepower").asFloat() * PowerDisplayType.hpToKW * internal_inv_scale;
+            } else if (properties.getValue("power_hp").asFloat() != null) {
+                power_kW = properties.getValue("power_hp").asFloat() * PowerDisplayType.hpToKW * internal_inv_scale;
+            } else if (properties.getValue("power_ps").asFloat() != null) {
+                power_kW = properties.getValue("power_ps").asFloat() * PowerDisplayType.PSToKW * internal_inv_scale;
+            } else if (properties.getValue("power_kw").asFloat() != null) {
+                power_kW = properties.getValue("power_kw").asFloat() * internal_inv_scale;
+            } else {
+                power_kW = properties.getValue("power_w").asFloat() / 1000 * internal_inv_scale;
+            }
+
+            if (properties.getValue("tractive_effort_lbf").asFloat() != null) {
+                traction_N = properties.getValue("tractive_effort_lbf").asFloat() * ForceDisplayType.lbfToNewton * internal_inv_scale;
+            } else if (properties.getValue("tractive_effort_kn").asFloat() != null) {
+                traction_N = properties.getValue("tractive_effort_kn").asFloat() * 1000 * internal_inv_scale;
+            } else {
+                traction_N = properties.getValue("tractive_effort_n").asFloat() * internal_inv_scale;
+            }
+
             factorOfAdhesion = properties.getValue("factor_of_adhesion").asDouble(4);
             maxSpeed = Speed.fromMetric(properties.getValue("max_speed_kmh").asDouble() * internal_inv_scale);
             muliUnitCapable = properties.getValue("multi_unit_capable").asBoolean();
@@ -79,34 +100,44 @@ public abstract class LocomotiveDefinition extends FreightDefinition {
         List<String> tips = super.getTooltip(gauge);
         tips.add(GuiText.LOCO_WORKS.toString(this.works));
         if (!isCabCar) {
-            tips.add(GuiText.LOCO_HORSE_POWER.toString(getHorsePower(gauge)));
-            tips.add(GuiText.LOCO_TRACTION.toString(getStartingTractionNewtons(gauge)));
-            tips.add(GuiText.LOCO_MAX_SPEED.toString(getMaxSpeed(gauge).metric()));
+            float power = ConfigGraphics.powerUnit.convertFromWatt(this.getWatt(gauge));
+            String p = String.format("%.0f", power);
+            tips.add(GuiText.LOCO_POWER.toString(p) + " " + ConfigGraphics.powerUnit.toUnitString());
+            float force = ConfigGraphics.forceUnit.convertFromNewton(this.getStartingTractionNewtons(gauge));
+            String f = String.format("%.0f", force);
+            tips.add(GuiText.LOCO_TRACTION.toString(f) + " " + ConfigGraphics.forceUnit.toUnitString());
+            float speed = (float) ConfigGraphics.speedUnit.convertFromKmh(this.getMaxSpeed(gauge).metric());
+            String v = String.format("%.0f", speed);
+            tips.add(GuiText.LOCO_MAX_SPEED.toString(v) + " " + ConfigGraphics.speedUnit.toUnitString());
         }
         return tips;
     }
 
-    public int getHorsePower(Gauge gauge){
-        return (int) Math.ceil(gauge.scale() * this.power);
+    public float getHorsePower(Gauge gauge) {
+        return (float) (gauge.scale() * this.power_kW * PowerDisplayType.kWToHp);
+    }
+
+    public float getWatt(Gauge gauge) {
+        return (float) (gauge.scale() * this.power_kW * 1000);
     }
 
     public int getScriptedHorsePower(Gauge gauge, Locomotive stock) {
         return stock.localHorsepower != -1
                 ? (int) Math.ceil(gauge.scale() * stock.localHorsepower)
-                : (int) Math.ceil(gauge.scale() * this.power);
+                : (int) Math.ceil(gauge.scale() * this.power_kW);
     }
 
     /**
      * @return tractive effort in newtons
      */
-    public int getStartingTractionNewtons(Gauge gauge){
-        return (int) Math.ceil(gauge.scale() * this.traction * 4.44822);
+    public float getStartingTractionNewtons(Gauge gauge) {
+        return (float) (gauge.scale() * this.traction_N);
     }
 
     public int getScriptedStartingTractionNewtons(Gauge gauge, Locomotive stock) {
         return stock.localTraction != -1
                 ? (int) Math.ceil(gauge.scale() * stock.localTraction * 4.44822)
-                : (int) Math.ceil(gauge.scale() * this.traction * 4.44822);
+                : (int) Math.ceil(gauge.scale() * this.traction_N * 4.44822);
     }
 
     public Speed getMaxSpeed(Gauge gauge){
@@ -145,12 +176,12 @@ public abstract class LocomotiveDefinition extends FreightDefinition {
 
     @Override
     public void setTraction(double val) {
-        this.traction = val;
+        this.traction_N = val;
     }
 
     @Override
     public void setHorsepower(double val) {
-        this.power = val;
+        this.power_kW = val;
     }
 
     @Override
@@ -165,11 +196,11 @@ public abstract class LocomotiveDefinition extends FreightDefinition {
 
     @Override
     public double getTraction() {
-        return traction;
+        return traction_N;
     }
 
     @Override
     public double getHorsepower() {
-        return this.power;
+        return this.power_kW;
     }
 }
