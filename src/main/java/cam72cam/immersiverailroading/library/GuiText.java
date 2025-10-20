@@ -6,6 +6,8 @@ public enum GuiText {
 	LABEL_BRAKE("label.brake"),
 	LABEL_THROTTLE("label.throttle"),
 	LABEL_REVERSER("label.reverser"),
+	SLIDER_ZOOM("slider.zoom"), //Need colon
+	SELECTOR_PAGE("selector.page"),
 	SELECTOR_TYPE("selector.type"),
 	SELECTOR_QUARTERS("selector.quarters"),
 	SELECTOR_CURVOSITY("selector.curvosity"),
@@ -32,6 +34,9 @@ public enum GuiText {
 	SLIDER_LINE_SPACING("slider.line_spacing"),
 
 	CHECKBOX_GLOBAL("checkbox.global"),
+	SELECTOR_PAINTBRUSH_RANDOM("selector.paintbrush_random"),
+	SELECTOR_PAINTBRUSH_TO_STOCK("selector.paintbrush_apply_to_stock"),
+	SELECTOR_PAINTBRUSH_TO_TRAIN("selector.paintbrush_apply_to_train"),
 
 	TRACK_TYPE("track.type"),
 	TRACK_LENGTH("track.length"),
@@ -60,11 +65,16 @@ public enum GuiText {
 	TEXTURE_TOOLTIP("stock.texture"),
 	SWITCH_KEY_TOOLTIP("item.switch_key"),
 	SWITCH_KEY_DATA_TOOLTIP("item.switch_key.data"),
+	RADIO_CARD_LINKED_TO("item.radio_card.linked_to"),
+	RADIO_CARD_NOT_LINKED("item.radio_card.not_linked"),
 	MODELER_TOOLTIP("stock.modeler"),
 	PACK_TOOLTIP("stock.pack"),
 	TRACK_SWITCHER_TOOLTIP("item.track_exchanger"),
 	PAINT_BRUSH_MODE_TOOLTIP("item.paint_brush.mode"),
 	PAINT_BRUSH_DESCRIPTION_TOOLTIP("item.paint_brush.description"),
+
+	ON("overlay.on"),
+	OFF("overlay.off"),
 	NONE("none"),
 	;
 
