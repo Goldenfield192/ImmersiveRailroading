@@ -426,8 +426,22 @@ public class ConsistPlacerGui implements IScreen {
                     }
                 }
             };
+            //We should have a better way to do this...
+            HashSet<String> deduplicate = new HashSet<>();
+            HashSet<String> d = new HashSet<>();
+            for(EntityRollingStockDefinition definition : DefinitionManager.getDefinitions()){
+                if(deduplicate.contains(definition.name())) {
+                    d.add(definition.name());
+                }
+                deduplicate.add(definition.name());
+            }
             Map<String, EntityRollingStockDefinition> definitionMap = DefinitionManager.getDefinitions().stream().collect(
-                    Collectors.toMap(EntityRollingStockDefinition::name, def -> def));
+                    Collectors.toMap(definition -> {
+                        if(d.contains(definition.name())) {
+                            return String.format("%s(%s)", definition.name(), definition.defID.split("/")[2].replace(".json", ""));
+                        }
+                        return definition.name();
+                    }, def -> def));
             stockSelector = new ListSelector<EntityRollingStockDefinition>(screen, 200, 200, 20, def1, definitionMap) {
                 @Override
                 public void onClick(EntityRollingStockDefinition option) {
