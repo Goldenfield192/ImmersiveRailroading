@@ -227,16 +227,16 @@ public class IRModule implements LuaModule {
     @LuaFunction(module = "IR")
     public LuaValue initTextField(LuaValue group, LuaValue resX, LuaValue resY) {
         String groupName = String.format("TEXTFIELD_%s", group.tojstring());
-        List<Mesh.Group> groupList = stock.getDefinition().getMesh().getGroupContains(groupName);
-
-        if (groupList.isEmpty()) {
-            ModCore.error("[Lua] Found no TextField named %s in: %s", groupName, stock.getDefinitionID());
-            return new LuaTable();
-        }
-
-        if (groupList.size() > 1) {
-            ModCore.info("[Lua] Found more than one TextField defined as %s, using first!", groupName);
-        }
+//        List<Mesh.Group> groupList = stock.getDefinition().getMesh().getGroupContains(groupName);
+//
+//        if (groupList.isEmpty()) {
+//            ModCore.error("[Lua] Found no TextField named %s in: %s", groupName, stock.getDefinitionID());
+//            return new LuaTable();
+//        }
+//
+//        if (groupList.size() > 1) {
+//            ModCore.info("[Lua] Found more than one TextField defined as %s, using first!", groupName);
+//        }
 
         TextFieldConfig textField = stock.textFields.computeIfAbsent(groupName, t -> new TextFieldConfig(groupName, resX.toint(), resY.toint(), f -> f.setSelectable(false).setStock(stock)));
         LuaLibrary lib = LuaLibrary.create();

@@ -8,6 +8,8 @@ import cam72cam.immersiverailroading.font.FontLoader;
 import cam72cam.immersiverailroading.textfield.library.GroupInfo;
 import cam72cam.immersiverailroading.textfield.library.RGBA;
 import cam72cam.mod.math.Vec3d;
+import cam72cam.mod.model.obj.FaceAccessor;
+import cam72cam.mod.model.obj.OBJFace;
 import cam72cam.mod.model.obj.Vec2f;
 import cam72cam.mod.model.obj.VertexBuffer;
 import cam72cam.mod.render.opengl.RenderContext;
@@ -20,6 +22,7 @@ import org.lwjgl.opengl.GL11;
 
 import java.util.*;
 import java.util.function.BiConsumer;
+import java.util.stream.Collectors;
 
 public class TextFieldCache {
     private final Map<String, VBO> buffers = new HashMap<>();
@@ -73,10 +76,17 @@ public class TextFieldCache {
     });
 
     public TextFieldCache create(TextFieldConfig config, EntityRollingStock stock) {
+        // TODO add checks. Could produce null pointer
         GroupInfo groupInfo = groupInfos.computeIfAbsent(config.getObject(), conf -> {
-            // TODO replace runtime exception
-            Optional<Mesh.Group> group = stock.getDefinition().getMesh().getGroupContains(config.getObject()).stream().findFirst();
-            return group.map(value -> GroupInfo.initGroup(value, config.getResolutionX(), config.getResolutionY())).orElseThrow(RuntimeException::new);
+            List<OBJFace> group = new ArrayList<>();
+            FaceAccessor accessor = stock.getDefinition().getModel().getFaceAccessor();
+
+            String fullName = stock.getDefinition().getModel().groups().stream().filter(g -> g.contains(conf)).collect(Collectors.toList()).get(0);
+
+            FaceAccessor sub = accessor.getSubByGroup(fullName);
+            sub.forEach(g -> group.add(g.asOBJFace()));
+
+            return GroupInfo.initGroup(group, config.getResolutionX(), config.getResolutionY());
         });
 
         Font font = FontLoader.getOrCreateFont(config.getFont());
