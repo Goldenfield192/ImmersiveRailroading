@@ -147,6 +147,14 @@ public abstract class ListSelector<T> {
         }
     }
 
+    public int getPage() {
+        return page;
+    }
+
+    public void setPage(int page) {
+        this.page = page;
+    }
+
     @FunctionalInterface
     public interface ButtonRenderer<T> {
         void render(Button button, int x, int y, T value);

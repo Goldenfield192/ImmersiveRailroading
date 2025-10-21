@@ -125,7 +125,7 @@ public class SpawnUtil {
 			initTE = ITrack.get(worldIn, spawnPos.add(0, 0.7, 0), true);
 
 			if(initTE == null) {
-				player.sendMessage(PlayerMessage.direct("Invalid position for multiunit detected, this mu is stopped!"));
+				player.sendMessage(PlayerMessage.direct("Invalid position for consist detected, this consist creation is stopped!"));
 				shutdown.forEach(Entity::kill);
 				return ClickResult.REJECTED;
 			}

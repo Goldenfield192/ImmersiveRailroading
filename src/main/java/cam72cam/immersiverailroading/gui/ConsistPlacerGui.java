@@ -55,6 +55,7 @@ public class ConsistPlacerGui implements IScreen {
             current = context.current;
             context.current = null;
             context.currentName = null;
+            definitionsSelector.setPage(context.currentMainPage);
         }
 
         selection = new Button(screen, xtop, ytop, 150, 20, "Select Unit Def") {
@@ -100,6 +101,7 @@ public class ConsistPlacerGui implements IScreen {
 
     private void openEditPanel() {
         context.target = Panel.EDIT;
+        context.currentMainPage = definitionsSelector.getPage();
         GuiTypes.CONSIST_EDIT.open(context.player);
     }
 
@@ -135,6 +137,8 @@ public class ConsistPlacerGui implements IScreen {
         public ConsistDefinition.Stock building;
         public ConsistDefinition current;
         public String currentName;
+        public int currentMainPage;
+        public int currentAdditionPage;
 
         public void swapFront(int index) {
             if(index - 1 >= 0 && index < stockListBuilder.size()) {
@@ -413,6 +417,8 @@ public class ConsistPlacerGui implements IScreen {
                 context.building.direction = ConsistDefinition.Direction.FORWARD;
             }
 
+            stockSelector.setPage(context.currentAdditionPage);
+
             int xtop = -GUIHelpers.getScreenWidth() / 2;
             int ytop = -GUIHelpers.getScreenHeight() / 4;
             stock = new Button(screen, xtop, ytop, 200, 20, def1 == null ? "Select Stock" : def1.name()) {
@@ -441,7 +447,7 @@ public class ConsistPlacerGui implements IScreen {
                             return String.format("%s(%s)", definition.name(), definition.defID.split("/")[2].replace(".json", ""));
                         }
                         return definition.name();
-                    }, def -> def));
+                    }, def -> def, (old, new1) -> old, TreeMap::new));
             stockSelector = new ListSelector<EntityRollingStockDefinition>(screen, 200, 200, 20, def1, definitionMap) {
                 @Override
                 public void onClick(EntityRollingStockDefinition option) {
@@ -530,6 +536,7 @@ public class ConsistPlacerGui implements IScreen {
                             context.currentEditing = -1;
                         }
                         context.building = null;
+                        context.currentAdditionPage = stockSelector.getPage();
                         GuiTypes.CONSIST_EDIT.open(context.player);
                     }
                 }
@@ -548,6 +555,7 @@ public class ConsistPlacerGui implements IScreen {
 
         @Override
         public void onClose() {
+            context.currentAdditionPage = stockSelector.getPage();
             GuiTypes.CONSIST_EDIT.open(context.player);
         }
 
