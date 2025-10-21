@@ -20,15 +20,51 @@ import org.apache.commons.lang3.tuple.Pair;
 import org.lwjgl.opengl.GL11;
 
 import java.util.*;
-import java.util.function.BiConsumer;
 import java.util.stream.Collectors;
 
-public class TextFieldCache {
+public class TextFieldRenderer {
     private final Map<String, VBO> buffers = new HashMap<>();
     private final Map<String, GroupInfo> groupInfos = new HashMap<>();
     private final Map<Font, Texture> textureCache = new HashMap<>();
 
-    public final BiConsumer<TextFieldConfig, RenderState> renderFunction = ((config, state) -> {
+    public TextFieldRenderer(TextFieldConfig config, EntityRollingStock stock) {
+        this.refresh(config, stock);
+    }
+
+    public void refresh(TextFieldConfig config, EntityRollingStock stock) {
+        // TODO add checks. Could produce null pointer
+        GroupInfo groupInfo = groupInfos.computeIfAbsent(config.getObject(), conf -> {
+            List<OBJFace> group = new ArrayList<>();
+            FaceAccessor accessor = stock.getDefinition().getModel().getFaceAccessor();
+
+            String fullName = stock.getDefinition().getModel().groups().stream().filter(g -> g.contains(conf)).collect(Collectors.toList()).get(0);
+
+            FaceAccessor sub = accessor.getSubByGroup(fullName);
+            sub.forEach(g -> group.add(g.asOBJFace()));
+
+            return GroupInfo.initGroup(group, config.getResolutionX(), config.getResolutionY());
+        });
+
+        Font font = FontLoader.getOrCreateFont(config.getFont());
+
+        VertexBuffer buffer = createVBO(config, groupInfo, font);
+
+        Texture texture = textureCache.computeIfAbsent(font, f -> Texture.wrap(f.texture));
+
+        if (buffers.containsKey(config.getObject())) {
+            buffers.get(config.getObject()).free();
+        }
+
+        VBO vbo = new VBO(() -> buffer, s -> {
+            s.texture(texture).lightmap(config.isFullbright() ? 1 : 0, 1);
+        });
+
+        buffers.put(config.getObject(), vbo);
+
+        config.markDirty(false);
+    }
+
+    public final void render(final TextFieldConfig config, final RenderState state) {
         VBO vbo = buffers.get(config.getObject());
 
         if (vbo == null) {
@@ -72,40 +108,6 @@ public class TextFieldCache {
         try (VBO.Binding binding = vbo.bind(state)) {
             binding.draw();
         }
-    });
-
-    public TextFieldCache create(TextFieldConfig config, EntityRollingStock stock) {
-        // TODO add checks. Could produce null pointer
-        GroupInfo groupInfo = groupInfos.computeIfAbsent(config.getObject(), conf -> {
-            List<OBJFace> group = new ArrayList<>();
-            FaceAccessor accessor = stock.getDefinition().getModel().getFaceAccessor();
-
-            String fullName = stock.getDefinition().getModel().groups().stream().filter(g -> g.contains(conf)).collect(Collectors.toList()).get(0);
-
-            FaceAccessor sub = accessor.getSubByGroup(fullName);
-            sub.forEach(g -> group.add(g.asOBJFace()));
-
-            return GroupInfo.initGroup(group, config.getResolutionX(), config.getResolutionY());
-        });
-
-        Font font = FontLoader.getOrCreateFont(config.getFont());
-
-        VertexBuffer buffer = createVBO(config, groupInfo, font);
-
-        Texture texture = textureCache.computeIfAbsent(font, f -> Texture.wrap(f.texture));
-
-        if (buffers.containsKey(config.getObject())) {
-            buffers.get(config.getObject()).free();
-        }
-
-        VBO vbo = new VBO(() -> buffer, s -> {
-            s.texture(texture).lightmap(config.isFullbright() ? 1 : 0, 1);
-        });
-
-        buffers.put(config.getObject(), vbo);
-
-        config.markDirty(false);
-        return this;
     }
 
     private VertexBuffer createVBO(TextFieldConfig config, GroupInfo group, Font font) {

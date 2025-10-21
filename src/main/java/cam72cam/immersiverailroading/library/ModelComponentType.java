@@ -119,6 +119,8 @@ public enum ModelComponentType {
 	BRAKE_PRESSURE_X("BRAKE_PRESSURE_#ID#"),
 	COUPLED_X("COUPLED_#ID#"),
 
+	TEXTFIELD_X("TEXTFIELD"),
+
 	// Floor
 	FLOOR("FLOOR"),
 	COLLISION("COLLISION"),
