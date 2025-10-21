@@ -2,7 +2,6 @@ package cam72cam.immersiverailroading.textfield;
 
 import cam72cam.immersiverailroading.Config;
 import cam72cam.immersiverailroading.entity.EntityRollingStock;
-import cam72cam.immersiverailroading.floor.Mesh;
 import cam72cam.immersiverailroading.font.Font;
 import cam72cam.immersiverailroading.font.FontLoader;
 import cam72cam.immersiverailroading.textfield.library.GroupInfo;

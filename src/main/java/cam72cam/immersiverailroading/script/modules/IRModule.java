@@ -3,7 +3,6 @@ package cam72cam.immersiverailroading.script.modules;
 import cam72cam.immersiverailroading.ConfigSound;
 import cam72cam.immersiverailroading.ImmersiveRailroading;
 import cam72cam.immersiverailroading.entity.*;
-import cam72cam.immersiverailroading.floor.Mesh;
 import cam72cam.immersiverailroading.gui.overlay.Readouts;
 import cam72cam.immersiverailroading.net.SoundPacket;
 import cam72cam.immersiverailroading.script.LuaFunction;

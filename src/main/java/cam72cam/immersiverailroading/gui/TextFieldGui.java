@@ -1,7 +1,6 @@
 package cam72cam.immersiverailroading.gui;
 
 import cam72cam.immersiverailroading.entity.EntityScriptableRollingStock;
-import cam72cam.immersiverailroading.floor.Mesh;
 import cam72cam.immersiverailroading.gui.components.ArrowSelector;
 import cam72cam.immersiverailroading.gui.components.DynamicListSelector;
 import cam72cam.immersiverailroading.model.StockModel;

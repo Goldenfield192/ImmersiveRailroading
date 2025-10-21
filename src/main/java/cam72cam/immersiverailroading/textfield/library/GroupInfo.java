@@ -1,7 +1,6 @@
 package cam72cam.immersiverailroading.textfield.library;
 
 import cam72cam.immersiverailroading.ImmersiveRailroading;
-import cam72cam.immersiverailroading.floor.Mesh;
 import cam72cam.immersiverailroading.util.VecUtil;
 import cam72cam.mod.math.Vec3d;
 import cam72cam.mod.model.obj.OBJFace;
