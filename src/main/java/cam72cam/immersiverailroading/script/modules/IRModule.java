@@ -22,6 +22,7 @@ import org.luaj.vm2.LuaTable;
 import org.luaj.vm2.LuaValue;
 
 import java.util.*;
+import java.util.stream.Stream;
 
 public class IRModule implements LuaModule {
     private final EntityScriptableRollingStock stock;
@@ -226,16 +227,17 @@ public class IRModule implements LuaModule {
     @LuaFunction(module = "IR")
     public LuaValue initTextField(LuaValue group, LuaValue resX, LuaValue resY) {
         String groupName = String.format("TEXTFIELD_%s", group.tojstring());
-//        List<Mesh.Group> groupList = stock.getDefinition().getMesh().getGroupContains(groupName);
-//
-//        if (groupList.isEmpty()) {
-//            ModCore.error("[Lua] Found no TextField named %s in: %s", groupName, stock.getDefinitionID());
-//            return new LuaTable();
-//        }
-//
-//        if (groupList.size() > 1) {
-//            ModCore.info("[Lua] Found more than one TextField defined as %s, using first!", groupName);
-//        }
+
+        long objectCount = stock.getDefinition().getModel().groups().stream().filter(s -> s.contains(groupName)).count();
+
+        if (objectCount == 0L) {
+            ModCore.error("[Lua] Found no TextField named %s in: %s", groupName, stock.getDefinitionID());
+            return LuaValue.tableOf();
+        }
+
+        if (objectCount > 1L) {
+            ModCore.info("[Lua] Found more than one TextField defined as %s, using first!", groupName);
+        }
 
         TextFieldConfig textField = stock.textFields.computeIfAbsent(groupName, t -> new TextFieldConfig(groupName, resX.toint(), resY.toint(), f -> f.setSelectable(false).setStock(stock)));
         LuaLibrary lib = LuaLibrary.create();
