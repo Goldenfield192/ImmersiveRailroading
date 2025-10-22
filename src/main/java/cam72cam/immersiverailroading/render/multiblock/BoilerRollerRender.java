@@ -58,11 +58,14 @@ public class BoilerRollerRender implements IMultiblockRender {
 			index = Math.min(16, Math.max(0, index));
 			if (tmb.hasOutput()) {
 				vbo.draw(product);
-			} else if (tmb.hasInput() && (index == 0 || tmb.getCraftProgress() == 0)) {
-				//Have input and not started crafting/just started crafting
-				vbo.draw(base);
-			} else if (tmb.hasInput() && tmb.getCraftProgress() != 0) {
-				vbo.draw(segments.get(index));
+			} else {
+				boolean hasInput = tmb.hasInput();
+				if (hasInput && (index == 0 || tmb.getCraftProgress() == 0)) {
+					//Have input and not started crafting/just started crafting
+					vbo.draw(raw);
+				} else if (hasInput) {
+					vbo.draw(segments.get(index));
+				}
 			}
 		}
 	}
