@@ -88,6 +88,7 @@ public class BoilerRollerMultiblock extends Multiblock {
 
 						craftTe.getContainer().set(1, ItemStack.EMPTY);
 					}
+					craftTe.markDirty();
 				} else if (held.is(IRItems.ITEM_PLATE) && new ItemPlate.Data(held).type == PlateType.BOILER) {
 					TileMultiblock craftTe = getTile(crafting);
 					if (craftTe == null) {
@@ -101,6 +102,7 @@ public class BoilerRollerMultiblock extends Multiblock {
 						craftTe.getContainer().set(0, inputStack);
 						held.shrink(1);
 						player.setHeldItem(hand, held);
+						craftTe.markDirty();
 					}
 				}
 			}
