@@ -117,14 +117,20 @@ public abstract class LocomotiveDefinition extends FreightDefinition {
         return (float) (gauge.scale() * this.power_kW * PowerDisplayType.kWToHp);
     }
 
+    public float getScriptedHorsePower(Gauge gauge, Locomotive stock) {
+        return stock.localHorsepower != -1
+                ? (float) (gauge.scale() * stock.localHorsepower * PowerDisplayType.kWToHp)
+                : getHorsePower(gauge);
+    }
+
     public float getWatt(Gauge gauge) {
         return (float) (gauge.scale() * this.power_kW * 1000);
     }
 
-    public int getScriptedHorsePower(Gauge gauge, Locomotive stock) {
-        return stock.localHorsepower != -1
-                ? (int) Math.ceil(gauge.scale() * stock.localHorsepower)
-                : (int) Math.ceil(gauge.scale() * this.power_kW);
+    public float getScriptedWatt(Gauge gauge, Locomotive stock) {
+        return stock.localWatt != -1
+                ? (float) (gauge.scale() * stock.localWatt * 100)
+                : getWatt(gauge);
     }
 
     /**
@@ -134,10 +140,10 @@ public abstract class LocomotiveDefinition extends FreightDefinition {
         return (float) (gauge.scale() * this.traction_N);
     }
 
-    public int getScriptedStartingTractionNewtons(Gauge gauge, Locomotive stock) {
+    public float getScriptedStartingTractionNewtons(Gauge gauge, Locomotive stock) {
         return stock.localTraction != -1
-                ? (int) Math.ceil(gauge.scale() * stock.localTraction * 4.44822)
-                : (int) Math.ceil(gauge.scale() * this.traction_N * 4.44822);
+                ? (float) (gauge.scale() * stock.localTraction)
+                : getStartingTractionNewtons(gauge);
     }
 
     public Speed getMaxSpeed(Gauge gauge){
@@ -172,35 +178,5 @@ public abstract class LocomotiveDefinition extends FreightDefinition {
 
     public double factorOfAdhesion() {
         return this.factorOfAdhesion;
-    }
-
-    @Override
-    public void setTraction(double val) {
-        this.traction_N = val;
-    }
-
-    @Override
-    public void setHorsepower(double val) {
-        this.power_kW = val;
-    }
-
-    @Override
-    public void setMaxSpeed(double val) {
-        this.maxSpeed = Speed.fromMetric(val);
-    }
-
-    @Override
-    public double getMaxSpeed() {
-        return this.maxSpeed.metric();
-    }
-
-    @Override
-    public double getTraction() {
-        return traction_N;
-    }
-
-    @Override
-    public double getHorsepower() {
-        return this.power_kW;
     }
 }

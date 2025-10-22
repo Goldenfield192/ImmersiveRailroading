@@ -81,6 +81,10 @@ public abstract class Locomotive extends FreightTank {
 	@TagField("localHorsepower")
 	public double localHorsepower = -1;
 
+	@TagSync
+	@TagField
+	public double localWatt = -1;
+
 	/*
 	 * 
 	 * Stock Definitions
@@ -660,11 +664,13 @@ public abstract class Locomotive extends FreightTank {
 		String strType = type.tojstring();
 		switch (strType) {
 			case "max_speed_kmh":
-				return LuaValue.valueOf(this.localMaxSpeed == -1 ? getDefinition().getMaxSpeed() : this.localMaxSpeed);
+				return LuaValue.valueOf(this.localMaxSpeed == -1 ? getDefinition().getMaxSpeed(gauge).metric() : this.localMaxSpeed);
 			case "horsepower":
-				return LuaValue.valueOf(this.localHorsepower == -1 ? getDefinition().getHorsepower() : this.localHorsepower);
+				return LuaValue.valueOf(this.localHorsepower == -1 ? getDefinition().getHorsePower(gauge) : this.localHorsepower);
+			case "watt":
+				return LuaValue.valueOf(this.localWatt == -1 ? getDefinition().getWatt(gauge) : this.localWatt);
 			case "traction":
-				return LuaValue.valueOf(this.localTraction == -1 ? getDefinition().getTraction() : this.localTraction);
+				return LuaValue.valueOf(this.localTraction == -1 ? getDefinition().getStartingTractionNewtons(gauge) : this.localTraction);
 			default:
 				return LuaValue.valueOf(0);
 		}
@@ -676,6 +682,9 @@ public abstract class Locomotive extends FreightTank {
 		switch (type) {
 			case "max_speed_kmh":
 				this.localMaxSpeed = newValue;
+				break;
+			case "watt":
+				this.localWatt = newValue;
 				break;
 			case "tractive_effort_lbf":
 				this.localTraction = newValue;
