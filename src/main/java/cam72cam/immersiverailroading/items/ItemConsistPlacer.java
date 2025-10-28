@@ -45,7 +45,7 @@ public class ItemConsistPlacer extends CustomItem {
 
         ConsistDefinition def = ConsistDefinitionManager.getConsistDefinition(stack.getTagCompound().getString("multi_unit"));
         if (def == null) {
-            player.sendMessage(PlayerMessage.direct("Invalid MU"));
+            player.sendMessage(PlayerMessage.direct("Invalid consist"));
             return ClickResult.REJECTED;
         }
 
