@@ -55,6 +55,7 @@ public class ConsistPlacerGui implements IScreen {
             current = context.current;
             context.current = null;
             context.currentName = null;
+            context.currentAdditionPage = 0;
         }
 
         selection = new Button(screen, xtop, ytop, 150, 20, "Select Unit Def") {
@@ -92,6 +93,13 @@ public class ConsistPlacerGui implements IScreen {
         };
 
         definitionsSelector.setVisible(false);
+
+        if(context.panel == Panel.EDIT) {
+            definitionsSelector.search(context.mainSearchingName);
+            definitionsSelector.setPage(context.currentMainPage);
+            definitionsSelector.setVisible(true);
+        }
+
         if(current == null){
             editCurrent.setVisible(false);
         }
@@ -100,6 +108,8 @@ public class ConsistPlacerGui implements IScreen {
 
     private void openEditPanel() {
         context.target = Panel.EDIT;
+        context.currentMainPage = definitionsSelector.getPage();
+        context.mainSearchingName = definitionsSelector.getSearching();
         GuiTypes.CONSIST_EDIT.open(context.player);
     }
 
@@ -116,6 +126,7 @@ public class ConsistPlacerGui implements IScreen {
         if (current != null){
             new ConsistItemChangePacket(current.getName()).sendToServer();
         }
+        context = null;
     }
 
     @Override
@@ -135,6 +146,10 @@ public class ConsistPlacerGui implements IScreen {
         public ConsistDefinition.Stock building;
         public ConsistDefinition current;
         public String currentName;
+        public int currentMainPage;
+        public int currentAdditionPage;
+        public String mainSearchingName;
+        public String additionSearchingName;
 
         public void swapFront(int index) {
             if(index - 1 >= 0 && index < stockListBuilder.size()) {
@@ -413,6 +428,7 @@ public class ConsistPlacerGui implements IScreen {
                 context.building.direction = ConsistDefinition.Direction.FORWARD;
             }
 
+
             int xtop = -GUIHelpers.getScreenWidth() / 2;
             int ytop = -GUIHelpers.getScreenHeight() / 4;
             stock = new Button(screen, xtop, ytop, 200, 20, def1 == null ? "Select Stock" : def1.name()) {
@@ -441,7 +457,7 @@ public class ConsistPlacerGui implements IScreen {
                             return String.format("%s(%s)", definition.name(), definition.defID.split("/")[2].replace(".json", ""));
                         }
                         return definition.name();
-                    }, def -> def));
+                    }, def -> def, (old, new1) -> old, TreeMap::new));
             stockSelector = new ListSelector<EntityRollingStockDefinition>(screen, 200, 200, 20, def1, definitionMap) {
                 @Override
                 public void onClick(EntityRollingStockDefinition option) {
@@ -473,6 +489,12 @@ public class ConsistPlacerGui implements IScreen {
                     }
                 }
             };
+            if(context.additionSearchingName != null) {
+                stockSelector.search(context.additionSearchingName);
+            }
+
+            stockSelector.setPage(context.currentAdditionPage);
+            stockSelector.setVisible(true);
             ytop += 25;
             texture = new Button(screen, xtop, ytop, 200, 20, "Tex Variant:default") {
                 @Override
@@ -530,6 +552,8 @@ public class ConsistPlacerGui implements IScreen {
                             context.currentEditing = -1;
                         }
                         context.building = null;
+                        context.currentAdditionPage = stockSelector.getPage();
+                        context.additionSearchingName = stockSelector.getSearching();
                         GuiTypes.CONSIST_EDIT.open(context.player);
                     }
                 }
@@ -548,6 +572,8 @@ public class ConsistPlacerGui implements IScreen {
 
         @Override
         public void onClose() {
+            context.currentAdditionPage = stockSelector.getPage();
+            context.additionSearchingName = stockSelector.getSearching();
             GuiTypes.CONSIST_EDIT.open(context.player);
         }
 

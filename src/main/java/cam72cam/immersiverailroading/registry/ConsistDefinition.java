@@ -7,10 +7,12 @@ import java.util.*;
 public class ConsistDefinition {
     private final String name;
     private final List<Stock> stocks;
+    private final boolean editable;
 
     public ConsistDefinition(String name, List<Stock> stocks) {
         this.name = name;
         this.stocks = stocks;
+        this.editable = true; //TODO Pack defined consist
     }
 
     public String getName() {
