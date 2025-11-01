@@ -20,7 +20,7 @@ item.immersiverailroading:item_golden_spike.name=Golden Spike
 item.immersiverailroading:item_radio_control_card.name=Train Radio-control Card
 item.immersiverailroading:item_switch_key.name=Switch Key
 item.immersiverailroading:item_track_exchanger.name=Track Exchanger
-item.immersiverailroading:item_consist_placer=Consist Placer
+item.immersiverailroading:item_consist_placer.name=Consist Placer
 
 tile.immersiverailroading:block_rail.name=Rail
 tile.immersiverailroading:block_rail_gag.name=Rail (Gag)
