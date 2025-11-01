@@ -49,7 +49,7 @@ public class ItemConsistPlacer extends CustomItem {
             return ClickResult.REJECTED;
         }
 
-        new ConsistPlacePacket(def.getStocks(), pos).sendToServer();
+        new ConsistPlacePacket(def, pos).sendToServer();
 
         return ClickResult.ACCEPTED;
     }

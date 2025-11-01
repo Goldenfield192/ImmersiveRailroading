@@ -9,9 +9,12 @@ import cam72cam.mod.net.Packet;
 import cam72cam.mod.serialization.SerializationException;
 import cam72cam.mod.serialization.TagCompound;
 import cam72cam.mod.serialization.TagField;
+import cam72cam.mod.serialization.TagMapper;
 import cam72cam.mod.text.PlayerMessage;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class ConsistPlacePacket extends Packet {
     @TagField(mapper = StockListMapper.class)
@@ -20,26 +23,31 @@ public class ConsistPlacePacket extends Packet {
     @TagField
     public Vec3i clicking;
 
+    @TagField(mapper = StringFloatMapMapper.class)
+    public Map<String, Float> defaultCGs;
+
     public ConsistPlacePacket() {
     }
 
-    public ConsistPlacePacket(List<ConsistDefinition.Stock> stocks, Vec3i clicking) {
-        this.stocks = stocks;
+    public ConsistPlacePacket(ConsistDefinition def, Vec3i clicking) {
+        this.stocks = def.getStocks();
         this.clicking = clicking;
+        this.defaultCGs = def.getDefaultCGs();
     }
 
     @Override
     protected void handle() {
         if (stocks.stream()
-                  .anyMatch(stock ->
-                                    (stock.definition = DefinitionManager.getDefinition(stock.defID)) == null)) {
+                  .anyMatch(stock -> (stock.definition = DefinitionManager.getDefinition(stock.defID)) == null)
+        ) {
+            //Some stock don't exist on server
             getPlayer().sendMessage(PlayerMessage.translate(ChatText.STOCK_INVALID.toString()));
         } else {
-            SpawnUtil.placeUnit(getPlayer(), getWorld(), clicking, stocks);
+            SpawnUtil.placeConsist(getPlayer(), getWorld(), clicking, stocks, defaultCGs == null ? new HashMap<>() : defaultCGs);
         }
     }
 
-    public static class StockListMapper implements cam72cam.mod.serialization.TagMapper<List<ConsistDefinition.Stock>> {
+    public static class StockListMapper implements TagMapper<List<ConsistDefinition.Stock>> {
         @Override
         public TagAccessor<List<ConsistDefinition.Stock>> apply(Class<List<ConsistDefinition.Stock>> type, String fieldName, TagField tag) throws SerializationException {
             return new TagAccessor<>(
@@ -54,6 +62,19 @@ public class ConsistPlacePacket extends Packet {
                         stock.texture = compound1.getString("tex");
                         return stock;
                     }));
+        }
+    }
+
+    public static class StringFloatMapMapper implements TagMapper<Map<String, Float>> {
+        @Override
+        public TagAccessor<Map<String, Float>> apply(Class<Map<String, Float>> aClass, String s, TagField tagField) throws SerializationException {
+            return new TagAccessor<>(
+                    (compound, data) -> compound.setMap("default_cg", data,
+                                                        k -> k,
+                                                        v -> new TagCompound().setFloat("val", v)),
+                    (compound) -> compound.getMap("default_cg",
+                                                  k -> k,
+                                                  v -> v.getFloat("val")));
         }
     }
 }

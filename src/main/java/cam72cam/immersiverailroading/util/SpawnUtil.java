@@ -102,7 +102,7 @@ public class SpawnUtil {
 		return ClickResult.ACCEPTED;
 	}
 
-	public static ClickResult placeUnit(Player player, World worldIn, Vec3i pos, List<ConsistDefinition.Stock> stocks) {
+	public static ClickResult placeConsist(Player player, World worldIn, Vec3i pos, List<ConsistDefinition.Stock> stocks, Map<String, Float> defaultCGs) {
 		if(worldIn.isClient) {
 			return ClickResult.REJECTED;
 		}
@@ -185,6 +185,7 @@ public class SpawnUtil {
 			}
 			worldIn.spawnEntity(stock);
 			shutdown.add(stock);
+			defaultCGs.forEach(stock::setControlPosition);
 
 			Vec3d length = VecUtil.fromWrongYaw(def.getCouplerPosition(s.direction.shouldFlip()
 																	   ? CouplerType.FRONT

@@ -1,5 +1,7 @@
 package cam72cam.immersiverailroading.registry;
 
+import it.unimi.dsi.fastutil.objects.Object2FloatArrayMap;
+
 import javax.annotation.Nullable;
 import java.util.*;
 
@@ -8,11 +10,14 @@ public class ConsistDefinition {
     private final String name;
     private final List<Stock> stocks;
     private final boolean editable;
+    private final Map<String, Float> defaultCGs;
+    //TODO Additional tooltip
 
-    public ConsistDefinition(String name, List<Stock> stocks) {
+    ConsistDefinition(String name, List<Stock> stocks, boolean editable, Map<String, Float> defaultCGs) {
         this.name = name;
         this.stocks = stocks;
-        this.editable = true; //TODO Pack defined consist
+        this.editable = editable;
+        this.defaultCGs = defaultCGs;
     }
 
     public String getName() {
@@ -23,6 +28,14 @@ public class ConsistDefinition {
         return stocks;
     }
 
+    public boolean isEditable() {
+        return editable;
+    }
+
+    public Map<String, Float> getDefaultCGs() {
+        return defaultCGs;
+    }
+
     public boolean valid() {
         return stocks.stream().noneMatch(stock -> stock.error);
     }
@@ -30,6 +43,8 @@ public class ConsistDefinition {
     public static class ConsistDefBuilder {
         private String name;
         private List<Stock> stocks;
+        private Map<String, Float> defaultCGs;
+        private boolean editable = true;
 
         private boolean isBuilt = false;
 
@@ -39,6 +54,7 @@ public class ConsistDefinition {
             ConsistDefBuilder builder = new ConsistDefBuilder();
             builder.name = name;
             builder.stocks = new ArrayList<>();
+            builder.defaultCGs = new Object2FloatArrayMap<>();
             return builder;
         }
 
@@ -73,6 +89,14 @@ public class ConsistDefinition {
             stocks.add(stock);
         }
 
+        public void addDefaultCG(String name, float val) {
+            defaultCGs.put(name, val);
+        }
+
+        public void setEditable(boolean editable) {
+            this.editable = editable;
+        }
+
         public ConsistDefinition build() {
             if(isBuilt){
                 throw new UnsupportedOperationException();
@@ -83,7 +107,7 @@ public class ConsistDefinition {
                     stock.defID = stock.definition.defID;
                 }
             });
-            return new ConsistDefinition(name, stocks);
+            return new ConsistDefinition(name, stocks, editable, defaultCGs);
         }
     }
 
@@ -119,6 +143,20 @@ public class ConsistDefinition {
         RANDOM;
 
         private static final Random random = new Random();
+
+        public static Direction of(String direction) {
+            switch (direction) {
+                case "FLIPPED":
+                case "REVERSE":
+                    return REVERSE;
+                case "RANDOM":
+                    return RANDOM;
+                case "DEFAULT":
+                case "FORWARD":
+                default:
+                    return FORWARD;
+            }
+        }
 
         public boolean shouldFlip() {
             switch (this) {

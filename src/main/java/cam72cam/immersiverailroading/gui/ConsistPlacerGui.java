@@ -64,14 +64,14 @@ public class ConsistPlacerGui implements IScreen {
                 definitionsSelector.setVisible(!definitionsSelector.isVisible());
             }
         };
-        ytop += 25;
+        ytop += 20;
         newConsist = new Button(screen, xtop, ytop, 150, 20, "New MultiUnit") {
             @Override
             public void onClick(Player.Hand hand) {
                 openEditPanel();
             }
         };
-        ytop += 25;
+        ytop += 20;
         editCurrent = new Button(screen, xtop, ytop, 150, 20, "Edit Current") {
             @Override
             public void onClick(Player.Hand hand) {
@@ -88,6 +88,7 @@ public class ConsistPlacerGui implements IScreen {
                 current = option;
                 if(current != null) {
                     editCurrent.setVisible(true);
+                    editCurrent.setEnabled(current.isEditable());
                 }
             }
         };

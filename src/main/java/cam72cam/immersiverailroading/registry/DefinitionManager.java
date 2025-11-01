@@ -228,6 +228,12 @@ public class DefinitionManager {
 
                 DataBlock block = DataBlock.load(resource);
 
+                //Compatibility with poizzy v0.12.0
+                if ("multiple_unit".equals(defType)) {
+                    ConsistDefinitionManager.loadUnmodifiable(block);
+                    return null;
+                }
+
                 if (definitionIDPacks.containsKey(defID) && block.getValue("pack").asString() == null) {
                     // This is kind of a nasty hack...
                     block.getValueMap().put("pack", definitionIDPacks.get(defID));

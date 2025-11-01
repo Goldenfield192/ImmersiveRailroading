@@ -1,15 +1,19 @@
 package cam72cam.immersiverailroading.registry;
 
+import cam72cam.immersiverailroading.util.DataBlock;
 import cam72cam.mod.util.MinecraftFiles;
 
 import java.io.*;
 import java.nio.file.Files;
 import java.util.*;
+import java.util.stream.Collectors;
 
 //Client-sided
 public class ConsistDefinitionManager {
-    private static final Map<String, ConsistDefinition> allConsist;
-    private static final Map<String, ConsistDefinition> validConsist;
+    private static final Map<String, ConsistDefinition> display;
+
+    private static final Map<String, ConsistDefinition> playerMadeConsist;
+    private static final Map<String, ConsistDefinition> unmodifiableConsist;
     private static final File save;
 
     static {
@@ -21,8 +25,9 @@ public class ConsistDefinitionManager {
                 throw new RuntimeException(e);
             }
         }
-        allConsist = new TreeMap<>(String::compareToIgnoreCase);
-        validConsist = new TreeMap<>(String::compareToIgnoreCase);
+        playerMadeConsist = new TreeMap<>(String::compareToIgnoreCase);
+        display = new TreeMap<>(String::compareToIgnoreCase);
+        unmodifiableConsist = new HashMap<>();
     }
 
     public static void save() {
@@ -32,7 +37,7 @@ public class ConsistDefinitionManager {
             // stock [stockName] [direction] [text variant] TODO optional: [cg:value]
             List<String> list = new LinkedList<>();
             list.add("//DO NOT TOUCH UNLESS YOU KNOW WHAT ARE YOU DOING");
-            for (Map.Entry<String, ConsistDefinition> entry : allConsist.entrySet()) {
+            for (Map.Entry<String, ConsistDefinition> entry : playerMadeConsist.entrySet()) {
                 list.add("consist "+entry.getKey().replace(" ", "^"));
                 for (ConsistDefinition.Stock stock : entry.getValue().getStocks()) {
                     String texture = (stock.texture == null||stock.texture.isEmpty()) ? "default" : stock.texture;
@@ -51,17 +56,17 @@ public class ConsistDefinitionManager {
             // multi_unit [name]
             // stock [stockName] [direction] [text variant] TODO optional: [cg:value]
             List<String> lines = Files.readAllLines(save.toPath());
-            allConsist.clear();
-            validConsist.clear();
+            playerMadeConsist.clear();
+            display.clear();
             ConsistDefinition.ConsistDefBuilder builder = null;
             for (String line : lines) {
                 if (line.startsWith("consist")) {
                     String[] split = line.split(" ");
                     if(builder != null) {
                         ConsistDefinition built = builder.build();
-                        allConsist.put(built.getName(), built);
+                        playerMadeConsist.put(built.getName(), built);
                         if (built.valid()) {
-                            validConsist.put(built.getName(), built);
+                            display.put(built.getName(), built);
                         }
                     }
                     builder = ConsistDefinition.ConsistDefBuilder.of(split[1].replace("^", " "));
@@ -74,30 +79,50 @@ public class ConsistDefinitionManager {
             }
             if(builder != null) {
                 ConsistDefinition built = builder.build();
-                allConsist.put(built.getName(), built);
+                playerMadeConsist.put(built.getName(), built);
                 if (built.valid()) {
-                    validConsist.put(built.getName(), built);
+                    display.put(built.getName(), built);
                 }
             }
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
+        display.putAll(unmodifiableConsist);
+    }
+
+    public static void loadUnmodifiable(DataBlock block) {
+        String name = block.getValue("name").asString();
+        ConsistDefinition.ConsistDefBuilder builder = ConsistDefinition.ConsistDefBuilder.of(name);
+        block.getBlock("default_CG").getValueMap().forEach((s, val) ->
+                                                                   builder.addDefaultCG(s, val.asFloat()));
+        block.getValues("add_tooltip").stream().map(DataBlock.Value::asString).collect(Collectors.toList()); //TODO
+        block.getBlocks("consist").stream()
+             .map(b -> {
+                 ConsistDefinition.Stock stock = new ConsistDefinition.Stock();
+                stock.defID = b.getValue("stock").asString();
+                stock.texture = b.getValue("stock").asString();
+                stock.direction = ConsistDefinition.Direction.of(b.getValue("direction").asString());
+                return stock;
+             })
+             .forEach(builder::appendStock);
+        builder.setEditable(false);
+        unmodifiableConsist.put(name, builder.build());
     }
 
     public static void addConsist(ConsistDefinition build) {
-        allConsist.put(build.getName(), build);
+        playerMadeConsist.put(build.getName(), build);
         save();
         load();
     }
 
     public static Map<String, ConsistDefinition> getValidConsists() {
-        return validConsist;
+        return display;
     }
 
     public static ConsistDefinition getConsistDefinition(String name) {
         if (name == null) {
             return null;
         }
-        return allConsist.get(name);
+        return playerMadeConsist.get(name);
     }
 }
