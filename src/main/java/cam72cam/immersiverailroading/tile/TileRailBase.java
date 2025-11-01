@@ -44,6 +44,8 @@ public class TileRailBase extends BlockEntityTrackTickable implements IRedstoneP
 	private float bedHeight = 0;
 	@TagField("railHeight")
 	private float railHeight = 0;
+	@TagField("scaleBedFill")
+	private boolean scaleModel = true;
 	@TagField("augment")
 	private Augment augment;
 	@TagField("augmentFilterID")
@@ -87,6 +89,7 @@ public class TileRailBase extends BlockEntityTrackTickable implements IRedstoneP
 		}
 		return this.bedHeight;
 	}
+
 	public double getRenderGauge() {
 		double gauge = 0;
 		TileRail parent = this.getParentTile();
@@ -101,11 +104,19 @@ public class TileRailBase extends BlockEntityTrackTickable implements IRedstoneP
 		}
 		return gauge;
 	}
+
 	public void setRailHeight(float height) {
 		this.railHeight = height;
 	}
 	public float getRailHeight() {
 		return this.railHeight;
+	}
+
+	public void setScaleModel(boolean scaleModel) {
+		this.scaleModel = scaleModel;
+	}
+	public boolean isScaleModel() {
+		return scaleModel;
 	}
 	
 	public void setAugment(Augment augment) {
