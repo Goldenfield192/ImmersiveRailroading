@@ -16,11 +16,10 @@ item.immersiverailroading:item_cast_rail.name=Schienenguss
 item.immersiverailroading:item_manual.name=Immersive Railroading Handbuch
 item.immersiverailroading:item_rail.name=Schienenplan
 item.immersiverailroading:item_conductor_whistle.name=Pfeife
-item.immersiverailroading:item_golden_spike.name=[Need translate]
-item.immersiverailroading:item_radio_control_card.name=[Need translate]
-item.immersiverailroading:item_switch_key.name=[Need translate]
-item.immersiverailroading:item_track_exchanger.name=[Need translate]
-item.immersiverailroading:item_consist_placer=[Need translate]
+item.immersiverailroading:item_golden_spike.name=Golden Spike
+item.immersiverailroading:item_radio_control_card.name=Zug-Funksteuerungs-Chip
+item.immersiverailroading:item_switch_key.name=Weichenschlüssel
+item.immersiverailroading:item_track_exchanger.name=Schienenaustausch Werkzeug
 
 tile.immersiverailroading:block_rail.name=Schiene
 tile.immersiverailroading:block_rail_gag.name=Schiene (Gag)
