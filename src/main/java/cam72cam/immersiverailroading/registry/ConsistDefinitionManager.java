@@ -115,6 +115,12 @@ public class ConsistDefinitionManager {
         load();
     }
 
+    public static void removeConsist(ConsistDefinition current) {
+        playerMadeConsist.remove(current.getName(), current);
+        save();
+        load();
+    }
+
     public static Map<String, ConsistDefinition> getValidConsists() {
         return display;
     }

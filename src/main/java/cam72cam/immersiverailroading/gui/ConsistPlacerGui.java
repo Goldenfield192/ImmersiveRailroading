@@ -30,6 +30,7 @@ public class ConsistPlacerGui implements IScreen {
     private Button selection;
     private Button newConsist;
     private Button editCurrent;
+    private Button deleteCurrent;
     private ListSelector<ConsistDefinition> definitionsSelector;
 
     public ConsistPlacerGui() {
@@ -81,6 +82,44 @@ public class ConsistPlacerGui implements IScreen {
                 openEditPanel();
             }
         };
+        ytop += 20;
+        deleteCurrent = new Button(screen, xtop, ytop, 150, 20, "Delete Current") {
+            @Override
+            public void onClick(Player.Hand hand) {
+                if ("Confirm Deletion".equals(this.getText())){
+                    ConsistDefinitionManager.removeConsist(current);
+                    this.setText("Delete Current");
+                    current = null;
+                    boolean flag = false;
+                    if(definitionsSelector.isVisible()){
+                        definitionsSelector.setVisible(false);
+                        flag = true;
+                    }
+
+                    definitionsSelector = new ListSelector<ConsistDefinition>(screen, 150, 200, 20, null,
+                                                                              ConsistDefinitionManager.getValidConsists()) {
+                        @Override
+                        public void onClick(ConsistDefinition option) {
+                            current = option;
+                            if(current != null) {
+                                editCurrent.setVisible(true);
+                                deleteCurrent.setVisible(true);
+                                editCurrent.setEnabled(current.isEditable());
+                                deleteCurrent.setEnabled(current.isEditable());
+                                deleteCurrent.setText("Delete Current");
+                            }
+                        }
+                    };
+                    if(flag) {
+                        definitionsSelector.setVisible(true);
+                    }
+                    deleteCurrent.setVisible(false);
+                    editCurrent.setVisible(false);
+                } else {
+                    this.setText("Confirm Deletion");
+                }
+            }
+        };
 
         definitionsSelector = new ListSelector<ConsistDefinition>(screen, 150, 200, 20, current,
                                                                   ConsistDefinitionManager.getValidConsists()) {
@@ -89,7 +128,10 @@ public class ConsistPlacerGui implements IScreen {
                 current = option;
                 if(current != null) {
                     editCurrent.setVisible(true);
+                    deleteCurrent.setVisible(true);
                     editCurrent.setEnabled(current.isEditable());
+                    deleteCurrent.setEnabled(current.isEditable());
+                    deleteCurrent.setText("Delete Current");
                 }
             }
         };
@@ -104,6 +146,7 @@ public class ConsistPlacerGui implements IScreen {
 
         if(current == null){
             editCurrent.setVisible(false);
+            deleteCurrent.setVisible(false);
         }
         context.panel = Panel.MAIN;
     }
