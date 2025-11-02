@@ -135,6 +135,10 @@ public class ConsistDefinition {
             this.texture = texture;
             this.controlGroup = controlGroup;
         }
+
+        public Stock copy() {
+            return new Stock(defID, direction, texture, controlGroup);
+        }
     }
 
     public enum Direction{

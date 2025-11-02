@@ -68,6 +68,7 @@ public class ConsistPlacerGui implements IScreen {
         newConsist = new Button(screen, xtop, ytop, 150, 20, "New MultiUnit") {
             @Override
             public void onClick(Player.Hand hand) {
+                context.currentPage = 0;
                 openEditPanel();
             }
         };
@@ -168,6 +169,11 @@ public class ConsistPlacerGui implements IScreen {
             }
         }
 
+        public void duplicate(int index) {
+            ConsistDefinition.Stock s = stockListBuilder.get(index);
+            stockListBuilder.add(index, s.copy());
+        }
+
         public int index(int i) {
             return currentPage * 7 + i;
         }
@@ -183,6 +189,7 @@ public class ConsistPlacerGui implements IScreen {
         private List<Button> stockDef;
         private List<Button> swapPrev;
         private List<Button> swapNext;
+        private List<Button> copy;
         private List<Button> delete;
 
         private Button prevPage;
@@ -199,9 +206,10 @@ public class ConsistPlacerGui implements IScreen {
             stockDef = new ArrayList<>(7);
             swapPrev = new ArrayList<>(7);
             swapNext = new ArrayList<>(7);
+            copy = new ArrayList<>(7);
             delete = new ArrayList<>(7);
 
-            int xtop = -138;
+            int xtop = -170;
             int ytop = GUIHelpers.getScreenHeight() / 4 - 70;
             int currX = xtop;
             int spacing = 4;
@@ -237,7 +245,15 @@ public class ConsistPlacerGui implements IScreen {
                     }
                 });
                 currX += 20 + spacing;
-                delete.add(new Button(screen, currX, ytop, 40, 20, "Delete") {
+                copy.add(new Button(screen, currX, ytop, 30, 20, "Dup") {
+                    @Override
+                    public void onClick(Player.Hand hand) {
+                        context.duplicate(context.index(finalI));
+                        updatePage();
+                    }
+                });
+                currX += 30 + spacing;
+                delete.add(new Button(screen, currX, ytop, 30, 20, "Del") {
                     @Override
                     public void onClick(Player.Hand hand) {
                         context.stockListBuilder.remove(context.index(finalI));
@@ -247,6 +263,7 @@ public class ConsistPlacerGui implements IScreen {
                 ytop += 20 + spacing;
                 currX = xtop;
             }
+            currX = -120;
             prevPage = new Button(screen, currX, ytop, 60, 20, "Prev Page") {
                 @Override
                 public void onClick(Player.Hand hand) {
@@ -256,15 +273,15 @@ public class ConsistPlacerGui implements IScreen {
                     }
                 }
             };
-
-            addStock = new Button(screen, currX + 88, ytop, 100, 20, "Add Stock") {
+            currX += 80;
+            addStock = new Button(screen, currX, ytop, 100, 20, "Add Stock") {
                 @Override
                 public void onClick(Player.Hand hand) {
                     openAdditionPanel();
                 }
             };
-
-            nextPage = new Button(screen, currX + 217, ytop, 60, 20, "Next Page") {
+            currX += 120;
+            nextPage = new Button(screen, currX, ytop, 60, 20, "Next Page") {
                 @Override
                 public void onClick(Player.Hand hand) {
                     if(context.currentPage < context.stockListBuilder.size() / 7) {
@@ -331,6 +348,7 @@ public class ConsistPlacerGui implements IScreen {
                     this.stockDef.get(i).setVisible(false);
                     this.swapPrev.get(i).setVisible(false);
                     this.swapNext.get(i).setVisible(false);
+                    this.copy.get(i).setVisible(false);
                     this.delete.get(i).setVisible(false);
                 }
             } else {
@@ -343,12 +361,14 @@ public class ConsistPlacerGui implements IScreen {
                         this.num.get(i).setText("#" + context.index(i));
                         this.swapPrev.get(i).setVisible(true);
                         this.swapNext.get(i).setVisible(true);
+                        this.copy.get(i).setVisible(true);
                         this.delete.get(i).setVisible(true);
                     } else {
                         this.num.get(i).setVisible(false);
                         this.stockDef.get(i).setVisible(false);
                         this.swapPrev.get(i).setVisible(false);
                         this.swapNext.get(i).setVisible(false);
+                        this.copy.get(i).setVisible(false);
                         this.delete.get(i).setVisible(false);
                     }
                     if (context.index(i) == 0) {
@@ -361,7 +381,7 @@ public class ConsistPlacerGui implements IScreen {
             }
 
             prevPage.setEnabled(context.currentPage != 0);
-            nextPage.setEnabled(context.currentPage != (context.stockListBuilder.size() / 7));
+            nextPage.setEnabled(context.currentPage != ((context.stockListBuilder.size() - 1) / 7));
         }
 
         private void openAdditionPanel() {
@@ -464,6 +484,7 @@ public class ConsistPlacerGui implements IScreen {
                 public void onClick(EntityRollingStockDefinition option) {
                     finish.setText("Finish");
                     if (context.building != null) {
+                        context.building.defID = option.defID;
                         context.building.definition = option;
                         stock.setText(option.name());
                         textureSelector = new ListSelector<String>(screen, 200, 200, 20, context.building.texture,
