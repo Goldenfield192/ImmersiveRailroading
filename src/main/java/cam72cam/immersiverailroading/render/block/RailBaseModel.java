@@ -12,6 +12,8 @@ import cam72cam.mod.MinecraftClient;
 import cam72cam.mod.entity.Player;
 import cam72cam.mod.item.ItemStack;
 import cam72cam.mod.render.StandardModel;
+import cam72cam.mod.render.opengl.DirectDraw;
+import cam72cam.mod.render.opengl.Texture;
 import util.Matrix4;
 
 public class RailBaseModel {
@@ -50,10 +52,25 @@ public class RailBaseModel {
 		}
 
 		if (augment != null) {
-			height = height + 0.1f * (float)gauge.scale() * 1.25f;
+			ItemStack heldItem = MinecraftClient.getPlayer().getHeldItem(Player.Hand.PRIMARY);
+			if(MinecraftClient.isReady() && (heldItem.is(IRItems.ITEM_MANUAL) || heldItem.is(IRItems.ITEM_AUGMENT))) {
+				height = height + 0.1f * (float)gauge.scale() * 1.25f;
 
-			model.addColorBlock(augment.color(), new Matrix4().scale(1, height, 1));
-			return model;
+				model.addColorBlock(augment.color(), new Matrix4().scale(1, height, 1));
+				model.addCustom((state, pt) -> {
+					DirectDraw draw1 = new DirectDraw();
+					draw1.vertex(-0.5, -0.5, 0).uv(0, 0);
+					draw1.vertex(-0.5, 0.5, 0).uv(0, 1);
+					draw1.vertex(0.5, 0.5, 0).uv(1, 1);
+					draw1.vertex(0.5, -0.5, 0).uv(1, 0);
+					draw1.draw(state.texture(Texture.wrap(augment.texture))
+									.translate(0.5, 1.5, 0.5)
+									.rotate(360 - MinecraftClient.getPlayer().getYawHead(), 0, 1, 0) //TODO
+									.rotate(180, 0, 0, 1));
+				});
+				te.markDirty();
+				return model;
+			}
 		}
 
 		height = height + 0.1f * (float)gauge.scale();

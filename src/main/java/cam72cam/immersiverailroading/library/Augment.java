@@ -1,21 +1,28 @@
 package cam72cam.immersiverailroading.library;
 
 import cam72cam.mod.render.Color;
+import cam72cam.mod.resource.Identifier;
 
 public enum Augment {
-	SPEED_RETARDER,
-	WATER_TROUGH,
-	LOCO_CONTROL,
-	ITEM_LOADER,
-	ITEM_UNLOADER,
-	FLUID_LOADER,
-	FLUID_UNLOADER,
-	DETECTOR,
-	COUPLER,
-	ACTUATOR,
+	SPEED_RETARDER("immersiverailroading:textures/augment/speed_retarder.png"),
+	WATER_TROUGH("immersiverailroading:textures/augment/fluid_loader.png"), //NOT PLACEABLE
+	LOCO_CONTROL("immersiverailroading:textures/augment/locomotive_controller.png"),
+	ITEM_LOADER("immersiverailroading:textures/augment/item_loader.png"),
+	ITEM_UNLOADER("immersiverailroading:textures/augment/item_unloader.png"),
+	FLUID_LOADER("immersiverailroading:textures/augment/fluid_loader.png"),
+	FLUID_UNLOADER("immersiverailroading:textures/augment/fluid_unloader.png"),
+	DETECTOR("immersiverailroading:textures/augment/detector.png"),
+	COUPLER("immersiverailroading:textures/augment/coupler.png"),
+	ACTUATOR("immersiverailroading:textures/augment/door_actuator.png"),
 	;
-	
-	public Color color() {
+
+	public final Identifier texture;
+
+    Augment(String s) {
+        texture = new Identifier(s);
+    }
+
+    public Color color() {
 		switch (this) {
 		case DETECTOR:
 			return Color.RED;
