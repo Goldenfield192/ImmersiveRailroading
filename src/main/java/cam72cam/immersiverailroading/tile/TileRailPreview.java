@@ -122,7 +122,7 @@ public class TileRailPreview extends BlockEntityTickable {
 				this.setPlacementInfo(new PlacementInfo(this.getItem(), player.getYawHead(), hit));
 			}
 			return false;
-		} else if (!player.getHeldItem(hand).is(IRItems.ITEM_GOLDEN_SPIKE)) {
+		} else if (getWorld().isClient && !player.getHeldItem(hand).is(IRItems.ITEM_GOLDEN_SPIKE)) {
 			GuiTypes.RAIL_PREVIEW.open(player, getPos());
 			return true;
 		}
