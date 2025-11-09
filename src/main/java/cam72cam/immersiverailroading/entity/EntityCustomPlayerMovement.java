@@ -3,7 +3,6 @@ package cam72cam.immersiverailroading.entity;
 import cam72cam.immersiverailroading.ImmersiveRailroading;
 import cam72cam.immersiverailroading.floor.NavMesh;
 import cam72cam.immersiverailroading.model.part.Door;
-import cam72cam.immersiverailroading.util.VecUtil;
 import cam72cam.mod.entity.Entity;
 import cam72cam.mod.entity.Player;
 import cam72cam.mod.entity.boundingbox.IBoundingBox;
@@ -11,7 +10,6 @@ import cam72cam.mod.math.Vec3d;
 import cam72cam.mod.model.obj.OBJFace;
 
 import java.util.*;
-import java.util.stream.Collectors;
 
 public abstract class EntityCustomPlayerMovement extends EntityRidableRollingStock {
 
@@ -225,21 +223,13 @@ public abstract class EntityCustomPlayerMovement extends EntityRidableRollingSto
         start = start.rotateYaw(-90);
         end = start.add(end.rotateYaw(-90));
 
-        List<Door<?>> doors = getDefinition().getModel().getDoors().stream()
-                .filter(d -> d.type == Door.Types.INTERNAL || d.type == Door.Types.CONNECTING)
-                .filter(d -> !d.isOpen(this)).collect(Collectors.toList());
-        boolean intersects = false;
-        for (Door<?> door : doors) {
-            IBoundingBox box = IBoundingBox.from(
-                    door.part.min,
-                    door.part.max
-            );
-            intersects = box.intersectsSegment(start, end);
-            if (intersects) {
-                break;
-            }
-        }
-        return intersects;
+        Vec3d finalStart = start;
+        Vec3d finalEnd = end;
+        return getDefinition().getModel().getDoors().stream()
+                              .filter(d -> d.type == Door.Types.INTERNAL || d.type == Door.Types.CONNECTING)
+                              .filter(d -> !d.isOpen(this))
+                              .map(door -> IBoundingBox.from(door.part.min, door.part.max))
+                              .anyMatch(box -> box.intersectsSegment(finalStart, finalEnd));
     }
 
     private boolean isAtCoupler(Vec3d offset, Vec3d movement, EntityCoupleableRollingStock.CouplerType type) {
@@ -334,9 +324,5 @@ public abstract class EntityCustomPlayerMovement extends EntityRidableRollingSto
         double y = vec.y * cos - vec.z * sin;
         double z = vec.y * sin + vec.z * cos;
         return new Vec3d(vec.x, y, z);
-    }
-
-    private static double clamp(double val, double min, double max) {
-        return Math.max(min, Math.min(max, val));
     }
 }

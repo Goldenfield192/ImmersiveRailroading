@@ -2,7 +2,6 @@ package cam72cam.immersiverailroading.util;
 
 import java.awt.*;
 import java.awt.geom.AffineTransform;
-import java.awt.geom.Area;
 import java.awt.geom.Rectangle2D;
 
 import cam72cam.mod.entity.boundingbox.IBoundingBox;
@@ -16,6 +15,7 @@ import org.apache.commons.lang3.tuple.Pair;
  */
 public class RealBB implements IBoundingBox {
 	private final Vec3d min;
+	private final Vec3d center;
 	private final Vec3d max;
 	private final double front;
 	private final double rear;
@@ -79,12 +79,18 @@ public class RealBB implements IBoundingBox {
 		}
 
 		this.min = new Vec3d(xMin + centerX, centerY, zMin + centerZ);
+		this.center = new Vec3d(centerX, centerY, centerZ);
 		this.max = new Vec3d(xMax + centerX, centerY + height, zMax + centerZ);
 	}
 
 	@Override
 	public Vec3d min() {
 		return min;
+	}
+
+	@Override
+	public Vec3d center() {
+		return center;
 	}
 
 	@Override
@@ -249,12 +255,7 @@ public class RealBB implements IBoundingBox {
 
 	@Override
 	public IBoundingBox expandToFit(IBoundingBox other) {
-		return null;
-	}
-
-	@Override
-	public Vec3d getCenter() {
-		return null;
+		throw new UnsupportedOperationException();
 	}
 
 	@Override
