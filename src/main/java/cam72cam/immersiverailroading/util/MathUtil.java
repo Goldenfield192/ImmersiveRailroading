@@ -1,5 +1,7 @@
 package cam72cam.immersiverailroading.util;
 
+import cam72cam.mod.math.Vec3d;
+
 public class MathUtil {
 	public static double gradeToRadians(double grade) {
 		return Math.atan2(grade, 100);
@@ -36,5 +38,73 @@ public class MathUtil {
 		a -= a > mod/2 ? mod : 0;
 		a += a < -mod ? mod : 0;
 		return a;
+	}
+
+	public static int gcd(int a, int b) {
+		if (b == 0) {
+			return a;
+		}
+		return gcd(b, a % b);
+	}
+
+	//Enough for now
+	public static int clamp(int val, int min, int max) {
+		return Math.max(min, Math.min(max, val));
+	}
+
+	public static long clamp(long val, long min, long max) {
+		return Math.max(min, Math.min(max, val));
+	}
+
+	public static float clamp(float val, float min, float max) {
+		return Math.max(min, Math.min(max, val));
+	}
+
+	public static double clamp(double val, double min, double max) {
+		return Math.max(min, Math.min(max, val));
+	}
+
+	public static Vec3d closestPointOnTriangle(Vec3d p, Vec3d p0, Vec3d p1, Vec3d p2) {
+		Vec3d ab = p1.subtract(p0);
+		Vec3d ac = p2.subtract(p0);
+		Vec3d ap = p.subtract(p0);
+		double d1 = ab.dotProduct(ap);
+		double d2 = ac.dotProduct(ap);
+
+		if (d1 <= 0f && d2 <= 0f) return p0;
+
+		Vec3d bp = p.subtract(p1);
+		double d3 = ab.dotProduct(bp);
+		double d4 = ac.dotProduct(bp);
+		if (d3 >= 0f && d4 <= d3) return p1;
+
+		double vc = d1 * d4 - d3 * d2;
+		if (vc <= 0f && d1 >= 0f && d3 <= 0f) {
+			double v = d1 / (d1 - d3);
+			return p0.add(ab.scale(v));
+		}
+
+		Vec3d cp = p.subtract(p2);
+		double d5 = ab.dotProduct(cp);
+		double d6 = ac.dotProduct(cp);
+		if (d6 >= 0f && d5 <= d6) return p2;
+
+		double vb = d5 * d2 - d1 * d6;
+		if (vb <= 0f && d2 >= 0f && d6 <= 0f) {
+			double w = d2 / (d2 -d6);
+			return p0.add(ac.scale(w));
+		}
+
+		double va = d3 * d6 -d5 * d4;
+		Vec3d bc = p2.subtract(p1);
+		if (va <= 0f && (d4 - d3) >= 0.0 && (d5 - d6) >= 0f) {
+			double w = (d4 - d3) / ((d4 - d3) + (d5 - d6));
+			return p1.add(bc.scale(w));
+		}
+
+		double denom = 1f / (va + vb + vc);
+		double v = vb * denom;
+		double w = vc  * denom;
+		return p0.add(ab.scale(v)).add(ac.scale(w));
 	}
 }
