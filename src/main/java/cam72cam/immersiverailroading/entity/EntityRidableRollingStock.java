@@ -164,31 +164,24 @@ public abstract class EntityRidableRollingStock extends EntityBuildableRollingSt
 
 			Vec3d localTarget = targetXZ.rotateYaw(-90);
 
+			double scale = this.gauge.scale();
+			double bbOffset = 0.5 * scale;
 			IBoundingBox rayBox = IBoundingBox.from(
-					localTarget.subtract(0.5f, 0.5f, 0.5f),
-					localTarget.add(0.5f, 0.5f, 0.5f)
+					localTarget.subtract(bbOffset, bbOffset, bbOffset),
+					localTarget.add(bbOffset, bbOffset, bbOffset)
 			);
 			MeshNavigator navMesh = getDefinition().navigator;
-			List<OBJFace> nearby = navMesh.getFloorFacesWithin(rayBox, this.gauge.scale());
+			List<OBJFace> nearby = navMesh.getFloorFacesWithin(rayBox, scale);
 
-			double closestY = Float.NEGATIVE_INFINITY;
-			boolean hit = false;
+			OptionalDouble maxY = nearby.stream()
+										.map(tri -> MathUtil.intersectRayTriangle(rayStart, rayDir, tri))
+										.filter(t -> t != null && t >= 0)
+										.mapToDouble(t -> rayStart.add(rayDir.scale(t)).y)
+										.max();
 
-			for(OBJFace tri : nearby) {
-				Double t = MathUtil.intersectRayTriangle(rayStart, rayDir, tri);
-				if (t != null && t >= 0) {
-					Vec3d hitPoint = rayStart.add(rayDir.scale(t));
-					if (!hit || hitPoint.y > closestY) {
-						closestY = hitPoint.y;
-						hit = true;
-					}
-				}
+			if (maxY.isPresent()) {
+				offset = VecUtil.rotatePitch(new Vec3d(targetXZ.x, maxY.getAsDouble(), targetXZ.z), this.getRotationPitch());
 			}
-
-			if (hit) {
-				offset = VecUtil.rotatePitch(new Vec3d(targetXZ.x, closestY, targetXZ.z), this.getRotationPitch());
-			}
-
 		} else {
 			if (passenger.isPlayer()) {
 				offset = playerMovement(passenger.asPlayer(), offset);
@@ -201,7 +194,6 @@ public abstract class EntityRidableRollingStock extends EntityBuildableRollingSt
 				offset = this.getDefinition().correctPassengerBounds(gauge, offset, shouldRiderSit(passenger));
 			}
 			offset = offset.add(0, Math.sin(Math.toRadians(this.getRotationPitch())) * offset.z, 0);
-
 		}
 		return offset;
 	}

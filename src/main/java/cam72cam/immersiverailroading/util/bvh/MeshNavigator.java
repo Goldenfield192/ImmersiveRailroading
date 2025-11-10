@@ -131,8 +131,8 @@ public class MeshNavigator {
     }
 
     private static IBoundingBox scaleBB(IBoundingBox box, double s) {
-        Vec3d a = box.min().scale(1.0 / s);
-        Vec3d b = box.max().scale(1.0 / s);
+        Vec3d a = box.min().scale(s);
+        Vec3d b = box.max().scale(s);
 
 		return IBoundingBox.from(
                 new Vec3d(Math.min(a.x, b.x), Math.min(a.y, b.y), Math.min(a.z, b.z)),

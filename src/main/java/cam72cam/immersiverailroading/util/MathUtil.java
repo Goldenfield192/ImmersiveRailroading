@@ -115,27 +115,29 @@ public class MathUtil {
 		return p0.add(ab.scale(v)).add(ac.scale(w));
 	}
 
-	public static Double intersectRayTriangle(Vec3d rayOrigin, Vec3d rayDir, OBJFace face) {
+	public static Double intersectRayTriangle(Vec3d origin, Vec3d direction, OBJFace face) {
+		return intersectRayTriangle(origin, direction, face.vertices.get(0), face.vertices.get(1), face.vertices.get(2));
+	}
+
+	public static Double intersectRayTriangle(Vec3d origin, Vec3d direction, Vec3d p0, Vec3d p1, Vec3d p2) {
 		final float EPSILON = 1e-6f;
 
-		List<Vec3d> tri = face.vertices;
+		Vec3d edge1 = p1.subtract(p0);
+		Vec3d edge2 = p2.subtract(p0);
 
-		Vec3d edge1 = tri.get(1).subtract(tri.get(0));
-		Vec3d edge2 = tri.get(2).subtract(tri.get(0));
-
-		Vec3d h = rayDir.crossProduct(edge2);
+		Vec3d h = direction.crossProduct(edge2);
 		double a = edge1.dotProduct(h);
 
 		if (Math.abs(a) < EPSILON) return null;
 
 		double f = 1.0f / a;
-		Vec3d s = rayOrigin.subtract(tri.get(0));
+		Vec3d s = origin.subtract(p0);
 		double u = f * s.dotProduct(h);
 
 		if (u < 0.0f || u > 1.0f) return null;
 
 		Vec3d q = s.crossProduct(edge1);
-		double v = f * rayDir.dotProduct(q);
+		double v = f * direction.dotProduct(q);
 
 		if (v < 0.0f || u + v > 1.0f) return null;
 
