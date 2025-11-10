@@ -5,7 +5,7 @@ import cam72cam.immersiverailroading.ConfigSound;
 import cam72cam.immersiverailroading.ImmersiveRailroading;
 import cam72cam.immersiverailroading.entity.*;
 import cam72cam.immersiverailroading.entity.EntityCoupleableRollingStock.CouplerType;
-import cam72cam.immersiverailroading.util.MeshNavigator;
+import cam72cam.immersiverailroading.util.bvh.MeshNavigator;
 import cam72cam.immersiverailroading.util.*;
 import cam72cam.immersiverailroading.gui.overlay.GuiBuilder;
 import cam72cam.immersiverailroading.gui.overlay.Readouts;
@@ -104,7 +104,7 @@ public abstract class EntityRollingStockDefinition {
     public Map<String, Float> cgDefaults;
     public Map<String, DataBlock> widgetConfig;
 
-    public MeshNavigator navMesh;
+    public MeshNavigator navigator;
 
     public static class SoundDefinition {
         public final Identifier start;
@@ -315,7 +315,7 @@ public abstract class EntityRollingStockDefinition {
         this.model = createModel();
         this.itemGroups = model.groups.keySet().stream().filter(x -> !ModelComponentType.shouldRender(x)).collect(Collectors.toList());
 
-        this.navMesh = new MeshNavigator(this.model);
+        this.navigator = new MeshNavigator(this.model);
 
         this.renderComponents = new EnumMap<>(ModelComponentType.class);
         for (ModelComponent component : model.allComponents) {

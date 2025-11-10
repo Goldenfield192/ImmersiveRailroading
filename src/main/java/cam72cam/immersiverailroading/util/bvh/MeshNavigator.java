@@ -1,6 +1,7 @@
-package cam72cam.immersiverailroading.util;
+package cam72cam.immersiverailroading.util.bvh;
 
 import cam72cam.immersiverailroading.model.StockModel;
+import cam72cam.immersiverailroading.util.VecUtil;
 import cam72cam.mod.entity.boundingbox.IBoundingBox;
 import cam72cam.mod.math.Vec3d;
 import cam72cam.mod.math.Vec3i;

@@ -3,6 +3,8 @@ package cam72cam.immersiverailroading.util;
 import cam72cam.mod.math.Vec3d;
 import cam72cam.mod.model.obj.OBJFace;
 
+import java.util.List;
+
 public class MathUtil {
 	public static double gradeToRadians(double grade) {
 		return Math.atan2(grade, 100);
@@ -111,5 +113,34 @@ public class MathUtil {
 		double v = vb * denom;
 		double w = vc  * denom;
 		return p0.add(ab.scale(v)).add(ac.scale(w));
+	}
+
+	public static Double intersectRayTriangle(Vec3d rayOrigin, Vec3d rayDir, OBJFace face) {
+		final float EPSILON = 1e-6f;
+
+		List<Vec3d> tri = face.vertices;
+
+		Vec3d edge1 = tri.get(1).subtract(tri.get(0));
+		Vec3d edge2 = tri.get(2).subtract(tri.get(0));
+
+		Vec3d h = rayDir.crossProduct(edge2);
+		double a = edge1.dotProduct(h);
+
+		if (Math.abs(a) < EPSILON) return null;
+
+		double f = 1.0f / a;
+		Vec3d s = rayOrigin.subtract(tri.get(0));
+		double u = f * s.dotProduct(h);
+
+		if (u < 0.0f || u > 1.0f) return null;
+
+		Vec3d q = s.crossProduct(edge1);
+		double v = f * rayDir.dotProduct(q);
+
+		if (v < 0.0f || u + v > 1.0f) return null;
+
+		double t = f * edge2.dotProduct(q);
+
+		return t >= 0 ? t : null;
 	}
 }
