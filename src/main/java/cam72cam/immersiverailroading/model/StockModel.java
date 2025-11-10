@@ -367,6 +367,10 @@ public class StockModel<ENTITY extends EntityMoveableRollingStock, DEFINITION ex
         headlights.forEach(x -> x.postRender(stock, state));
     }
 
+    public DEFINITION getDefinition() {
+        return def;
+    }
+
     public List<Control<ENTITY>> getControls() {
         return controls;
     }

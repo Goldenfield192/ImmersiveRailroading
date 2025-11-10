@@ -1,12 +1,14 @@
 package cam72cam.immersiverailroading.util.bvh;
 
 import cam72cam.immersiverailroading.model.StockModel;
+import cam72cam.immersiverailroading.registry.EntityRollingStockDefinition;
 import cam72cam.immersiverailroading.util.VecUtil;
 import cam72cam.mod.entity.boundingbox.IBoundingBox;
 import cam72cam.mod.math.Vec3d;
 import cam72cam.mod.math.Vec3i;
 import cam72cam.mod.model.obj.FaceAccessor;
 import cam72cam.mod.model.obj.OBJFace;
+import cam72cam.mod.model.obj.Vec2f;
 import cam72cam.mod.util.Axis;
 
 import java.util.*;
@@ -22,8 +24,8 @@ public class MeshNavigator {
     private final boolean hasNavMesh;
 
     public MeshNavigator(StockModel<?, ?> model) {
-        hasNavMesh = model.groups().stream().anyMatch(s -> s.contains("FLOOR"));
-        if (hasNavMesh) {
+        boolean hasFloor = model.groups().stream().anyMatch(s -> s.contains("FLOOR"));
+        if (hasFloor) {
             FaceAccessor accessor = model.getFaceAccessor();
 
             List<OBJFace> floor = new ArrayList<>();
@@ -44,9 +46,28 @@ public class MeshNavigator {
             }
             this.collisionRoot = buildBVH(collision, 0);
         } else {
-            root = null;
-            collisionRoot = null;
+            OBJFace face1 = new OBJFace();
+            OBJFace face2 = new OBJFace();
+            EntityRollingStockDefinition def = model.getDefinition();
+            Vec3d center = def.passengerCenter.rotateYaw(-90);
+            Vec3d v1 = center.add(def.passengerCompartmentLength, 0, def.passengerCompartmentWidth/2);
+            Vec3d v2 = center.add(-def.passengerCompartmentLength, 0, def.passengerCompartmentWidth/2);
+            Vec3d v3 = center.add(-def.passengerCompartmentLength, 0, -def.passengerCompartmentWidth/2);
+            Vec3d v4 = center.add(def.passengerCompartmentLength, 0, -def.passengerCompartmentWidth/2);
+
+            Vec2f emptyUV = new Vec2f(0, 0);
+
+            face1.vertices = Arrays.asList(v1, v2, v3);
+            face1.normal = new Vec3d(0, 1, 0);
+            face1.uv = Arrays.asList(emptyUV, emptyUV, emptyUV);
+            face2.vertices = Arrays.asList(v2, v3, v4);
+            face2.normal = new Vec3d(0, 1, 0);
+            face2.uv = Arrays.asList(emptyUV, emptyUV, emptyUV);
+
+            root = buildBVH(Arrays.asList(face1, face2), 0);
+            collisionRoot = buildBVH(Collections.emptyList(), 0);
         }
+        hasNavMesh = true;
     }
 
     public boolean hasNavMesh() {

@@ -76,8 +76,8 @@ public abstract class EntityRollingStockDefinition {
     private double rearBounds;
     private double heightBounds;
     private double widthBounds;
-    private double passengerCompartmentLength;
-    private double passengerCompartmentWidth;
+    public double passengerCompartmentLength;
+    public double passengerCompartmentWidth;
     private double weight;
     private int maxPassengers;
     private int snowLayers;
@@ -594,16 +594,6 @@ public abstract class EntityRollingStockDefinition {
         pos = new Vec3d(pos.x, passengerCenter.y - (shouldSit ? 0.75 : 0), pos.z + passengerCenter.z);
 
         return pos;
-    }
-
-    public boolean isAtFront(Gauge gauge, Vec3d pos) {
-        pos = pos.subtract(passengerCenter.scale(gauge.scale()));
-        return pos.z >= this.passengerCompartmentLength * gauge.scale();
-    }
-
-    public boolean isAtRear(Gauge gauge, Vec3d pos) {
-        pos = pos.subtract(passengerCenter.scale(gauge.scale()));
-        return pos.z <= -this.passengerCompartmentLength * gauge.scale();
     }
 
     public List<ItemComponentType> getItemComponents() {

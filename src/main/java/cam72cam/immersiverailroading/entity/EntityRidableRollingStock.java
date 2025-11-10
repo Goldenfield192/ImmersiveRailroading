@@ -2,7 +2,6 @@ package cam72cam.immersiverailroading.entity;
 
 import cam72cam.immersiverailroading.Config;
 import cam72cam.immersiverailroading.ImmersiveRailroading;
-import cam72cam.immersiverailroading.entity.EntityCoupleableRollingStock.CouplerType;
 import cam72cam.immersiverailroading.util.bvh.MeshNavigator;
 import cam72cam.immersiverailroading.library.Permissions;
 import cam72cam.immersiverailroading.model.part.Door;
@@ -99,13 +98,15 @@ public abstract class EntityRidableRollingStock extends EntityBuildableRollingSt
 
 			List<OBJFace> nearby = navMesh.getFloorFacesWithin(range, scale);
 
-			return nearby.stream()
-						 .map(tri -> MathUtil.closestPointOnTriangle(realOffset, tri))
-						 .min(Comparator.comparingDouble(point -> realOffset.subtract(point).lengthSquared()))
-						 .map(closestPoint -> closestPoint.rotateYaw(90))
-						 .orElse(null);
+			Optional<Vec3d> closestPoint = nearby.stream()
+										  		 .map(tri -> MathUtil.closestPointOnTriangle(realOffset, tri))
+										  		 .min(Comparator.comparingDouble(point -> realOffset.subtract(point).lengthSquared()));
+			if (closestPoint.isPresent()) {
+				return closestPoint.get().rotateYaw(90);
+			}
 		}
 
+		//fallback
 		if (passenger.isVillager() && !payingPassengerPositions.containsKey(passenger.getUUID())) {
 			payingPassengerPositions.put(passenger.getUUID(), passenger.getPosition());
 		}
@@ -147,53 +148,40 @@ public abstract class EntityRidableRollingStock extends EntityBuildableRollingSt
 
 	@Override
 	public Vec3d onPassengerUpdate(Entity passenger, Vec3d offset) {
-		if (useCustomMovementData) {
-			Vec3d seat = getSeatPosition(passenger.getUUID());
-			if (seat != null) {
-				return seat;
-			}
+		Vec3d seat = getSeatPosition(passenger.getUUID());
+		if (seat != null) {
+			return seat;
+		}
 
-			Vec3d movement = Vec3d.ZERO;
-			if (passenger.isPlayer()) {
-				movement = movement(passenger.asPlayer(), offset);
-			}
-			Vec3d targetXZ = VecUtil.rotatePitch(movement, -this.getRotationPitch());
+		Vec3d movement = Vec3d.ZERO;
+		if (passenger.isPlayer()) {
+			movement = playerMovement(passenger.asPlayer(), offset);
+		}
+		Vec3d targetXZ = VecUtil.rotatePitch(movement, -this.getRotationPitch());
 
-			Vec3d rayStart = targetXZ.rotateYaw(-90).add(0, 1, 0);
-			Vec3d rayDir = new Vec3d(0, -1, 0);
+		Vec3d rayStart = targetXZ.rotateYaw(-90).add(0, 1, 0);
+		Vec3d rayDir = new Vec3d(0, -1, 0);
 
-			Vec3d localTarget = targetXZ.rotateYaw(-90);
+		Vec3d localTarget = targetXZ.rotateYaw(-90);
 
-			double scale = this.gauge.scale();
-			double bbOffset = 0.5 * scale;
-			IBoundingBox rayBox = IBoundingBox.from(
-					localTarget.subtract(bbOffset, bbOffset, bbOffset),
-					localTarget.add(bbOffset, bbOffset, bbOffset)
-			);
-			MeshNavigator navMesh = getDefinition().navigator;
-			List<OBJFace> nearby = navMesh.getFloorFacesWithin(rayBox, scale);
+		double scale = this.gauge.scale();
+		double bbOffset = 0.5 * scale;
+		IBoundingBox rayBox = IBoundingBox.from(
+				localTarget.subtract(bbOffset, bbOffset, bbOffset),
+				localTarget.add(bbOffset, bbOffset, bbOffset)
+		);
+		MeshNavigator navMesh = getDefinition().navigator;
+		List<OBJFace> nearby = navMesh.getFloorFacesWithin(rayBox, scale);
 
-			OptionalDouble maxY = nearby.stream()
-										.map(tri -> MathUtil.intersectRayTriangle(rayStart, rayDir, tri))
-										.filter(t -> t != null && t >= 0)
-										.mapToDouble(t -> rayStart.add(rayDir.scale(t)).y)
-										.max();
+		OptionalDouble maxY = nearby.stream()
+									.map(tri -> MathUtil.intersectRayTriangle(rayStart, rayDir, tri))
+									.filter(t -> t != null && t >= 0)
+									.mapToDouble(t -> rayStart.add(rayDir.scale(t)).y)
+									.max();
 
-			if (maxY.isPresent()) {
-				offset = VecUtil.rotatePitch(new Vec3d(targetXZ.x, maxY.getAsDouble(), targetXZ.z), this.getRotationPitch());
-			}
-		} else {
-			if (passenger.isPlayer()) {
-				offset = playerMovement(passenger.asPlayer(), offset);
-			}
-
-			Vec3d seat = getSeatPosition(passenger.getUUID());
-			if (seat != null) {
-				offset = seat;
-			} else {
-				offset = this.getDefinition().correctPassengerBounds(gauge, offset, shouldRiderSit(passenger));
-			}
-			offset = offset.add(0, Math.sin(Math.toRadians(this.getRotationPitch())) * offset.z, 0);
+		if (maxY.isPresent()) {
+			offset = VecUtil.rotatePitch(new Vec3d(targetXZ.x, maxY.getAsDouble(), targetXZ.z),
+										 this.getRotationPitch());
 		}
 		return offset;
 	}
@@ -224,117 +212,6 @@ public abstract class EntityRidableRollingStock extends EntityBuildableRollingSt
 	}
 
 	protected Vec3d playerMovement(Player source, Vec3d offset) {
-		Vec3d movement = source.getMovementInput();
-        /*
-        if (sprinting) {
-            movement = movement.scale(3);
-        }
-        */
-        if (movement.length() < 0.1) {
-            return offset;
-        }
-
-        movement = new Vec3d(movement.x, 0, movement.z).rotateYaw(this.getRotationYaw() - source.getRotationYawHead());
-
-        offset = offset.add(movement);
-
-        if (this instanceof EntityCoupleableRollingStock) {
-			EntityCoupleableRollingStock couplable = (EntityCoupleableRollingStock) this;
-
-			boolean atFront = this.getDefinition().isAtFront(gauge, offset);
-			boolean atBack = this.getDefinition().isAtRear(gauge, offset);
-			// TODO config for strict doors
-			boolean atDoor = isNearestConnectingDoorOpen(source);
-
-			atFront &= atDoor;
-			atBack &= atDoor;
-
-			for (CouplerType coupler : CouplerType.values()) {
-				boolean atCoupler = coupler == CouplerType.FRONT ? atFront : atBack;
-				if (atCoupler && couplable.isCoupled(coupler)) {
-					EntityCoupleableRollingStock coupled = ((EntityCoupleableRollingStock) this).getCoupled(coupler);
-					if (coupled != null) {
-						if (coupled.isNearestConnectingDoorOpen(source)) {
-							coupled.addPassenger(source);
-						}
-					} else if (this.getTickCount() > 20) {
-						ImmersiveRailroading.info(
-								"Tried to move between cars (%s, %s), but %s was not found",
-								this.getUUID(),
-								couplable.getCoupledUUID(coupler),
-								couplable.getCoupledUUID(coupler)
-						);
-					}
-					return offset;
-				}
-			}
-        }
-
-        if (getDefinition().getModel().getDoors().stream()
-						   .anyMatch(x -> x.isAtOpenDoor(source, this, Door.Types.EXTERNAL))
-				&& getWorld().isServer
-				&& !this.getDefinition().correctPassengerBounds(gauge, offset, shouldRiderSit(source)).equals(offset)
-		) {
-        	this.removePassenger(source);
-		}
-
-		return offset;
-	}
-
-	@Override
-	public void onTick() {
-		super.onTick();
-
-		if (getWorld().isServer) {
-			remount.forEach((uuid, pos) -> {
-				Player player = getWorld().getEntity(uuid, Player.class);
-				if (player != null) {
-					player.setPosition(pos);
-					player.startRiding(this);
-				}
-			});
-			remount.clear();
-			for (Player source : getWorld().getEntities(Player.class)) {
-				if (source.getRiding() == null && getDefinition().getModel().getDoors().stream().anyMatch(x -> x.isAtOpenDoor(source, this, Door.Types.EXTERNAL))) {
-					this.addPassenger(source);
-				}
-			}
-		}
-	}
-
-	public Vec3d onDismountPassenger(Entity passenger, Vec3d offset) {
-		List<String> seats = seatedPassengers.entrySet().stream().filter(x -> x.getValue().equals(passenger.getUUID()))
-				.map(Map.Entry::getKey).collect(Collectors.toList());
-		if (!seats.isEmpty()) {
-			seats.forEach(seatedPassengers::remove);
-			if (getWorld().isServer && passenger.isPlayer()) {
-				remount.put(passenger.getUUID(), passenger.getPosition());
-			}
-		}
-
-		//TODO calculate better dismount offset
-		offset = new Vec3d(Math.copySign(getDefinition().getWidth(gauge)/2 + 1, offset.x), 0, offset.z);
-
-		if (getWorld().isServer && passenger.isVillager() && payingPassengerPositions.containsKey(passenger.getUUID())) {
-			double distanceMoved = passenger.getPosition().distanceTo(payingPassengerPositions.get(passenger.getUUID()));
-
-			int payout = (int) Math.floor(distanceMoved * Config.ConfigBalance.villagerPayoutPerMeter);
-
-			List<ItemStack> payouts = Config.ConfigBalance.getVillagerPayout();
-			if (payouts.size() != 0) {
-				int type = (int)(Math.random() * 100) % payouts.size();
-				ItemStack stack = payouts.get(type).copy();
-				stack.setCount(payout);
-				getWorld().dropItem(stack, getBlockPosition());
-				// TODO drop by player or new pos?
-			}
-			payingPassengerPositions.remove(passenger.getUUID());
-		}
-
-		return offset;
-	}
-
-	public Vec3d movement(Player source, Vec3d offset) {
 		Vec3d movement = source.getMovementInput();
 		if (movement.length() <= 0.1) {
 			return offset;
@@ -408,6 +285,59 @@ public abstract class EntityRidableRollingStock extends EntityBuildableRollingSt
 					}
 				}
 			}
+		}
+
+		return offset;
+	}
+
+	@Override
+	public void onTick() {
+		super.onTick();
+
+		if (getWorld().isServer) {
+			remount.forEach((uuid, pos) -> {
+				Player player = getWorld().getEntity(uuid, Player.class);
+				if (player != null) {
+					player.setPosition(pos);
+					player.startRiding(this);
+				}
+			});
+			remount.clear();
+			for (Player source : getWorld().getEntities(Player.class)) {
+				if (source.getRiding() == null && getDefinition().getModel().getDoors().stream().anyMatch(x -> x.isAtOpenDoor(source, this, Door.Types.EXTERNAL))) {
+					this.addPassenger(source);
+				}
+			}
+		}
+	}
+
+	public Vec3d onDismountPassenger(Entity passenger, Vec3d offset) {
+		List<String> seats = seatedPassengers.entrySet().stream().filter(x -> x.getValue().equals(passenger.getUUID()))
+				.map(Map.Entry::getKey).collect(Collectors.toList());
+		if (!seats.isEmpty()) {
+			seats.forEach(seatedPassengers::remove);
+			if (getWorld().isServer && passenger.isPlayer()) {
+				remount.put(passenger.getUUID(), passenger.getPosition());
+			}
+		}
+
+		//TODO calculate better dismount offset
+		offset = new Vec3d(Math.copySign(getDefinition().getWidth(gauge)/2 + 1, offset.x), 0, offset.z);
+
+		if (getWorld().isServer && passenger.isVillager() && payingPassengerPositions.containsKey(passenger.getUUID())) {
+			double distanceMoved = passenger.getPosition().distanceTo(payingPassengerPositions.get(passenger.getUUID()));
+
+			int payout = (int) Math.floor(distanceMoved * Config.ConfigBalance.villagerPayoutPerMeter);
+
+			List<ItemStack> payouts = Config.ConfigBalance.getVillagerPayout();
+			if (payouts.size() != 0) {
+				int type = (int)(Math.random() * 100) % payouts.size();
+				ItemStack stack = payouts.get(type).copy();
+				stack.setCount(payout);
+				getWorld().dropItem(stack, getBlockPosition());
+				// TODO drop by player or new pos?
+			}
+			payingPassengerPositions.remove(passenger.getUUID());
 		}
 
 		return offset;
