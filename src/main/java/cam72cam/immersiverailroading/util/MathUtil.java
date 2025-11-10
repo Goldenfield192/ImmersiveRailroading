@@ -1,6 +1,7 @@
 package cam72cam.immersiverailroading.util;
 
 import cam72cam.mod.math.Vec3d;
+import cam72cam.mod.model.obj.OBJFace;
 
 public class MathUtil {
 	public static double gradeToRadians(double grade) {
@@ -62,6 +63,10 @@ public class MathUtil {
 
 	public static double clamp(double val, double min, double max) {
 		return Math.max(min, Math.min(max, val));
+	}
+
+	public static Vec3d closestPointOnTriangle(Vec3d p, OBJFace triangle) {
+		return closestPointOnTriangle(p, triangle.vertices.get(0), triangle.vertices.get(1), triangle.vertices.get(2));
 	}
 
 	public static Vec3d closestPointOnTriangle(Vec3d p, Vec3d p0, Vec3d p1, Vec3d p2) {

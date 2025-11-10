@@ -3,7 +3,7 @@ package cam72cam.immersiverailroading.entity;
 import cam72cam.immersiverailroading.Config;
 import cam72cam.immersiverailroading.ImmersiveRailroading;
 import cam72cam.immersiverailroading.entity.EntityCoupleableRollingStock.CouplerType;
-import cam72cam.immersiverailroading.floor.NavMesh;
+import cam72cam.immersiverailroading.util.MeshNavigator;
 import cam72cam.immersiverailroading.library.Permissions;
 import cam72cam.immersiverailroading.model.part.Door;
 import cam72cam.immersiverailroading.model.part.Seat;
@@ -86,7 +86,7 @@ public abstract class EntityRidableRollingStock extends EntityBuildableRollingSt
 				return seat;
 			}
 
-			NavMesh navMesh = this.getDefinition().navMesh;
+			MeshNavigator navMesh = this.getDefinition().navMesh;
 			off = off.scale(gauge.scale());
 
 			Vec3d realOffset = off.rotateYaw(-90);
@@ -95,18 +95,13 @@ public abstract class EntityRidableRollingStock extends EntityBuildableRollingSt
 					realOffset.add(4, 4, 4)
 			);
 
-			List<OBJFace> nearby = new ArrayList<>();
-			navMesh.queryBVH(navMesh.root, queryBox, nearby, this.gauge.scale());
+			List<OBJFace> nearby = navMesh.getFloorFacesWithin(queryBox, this.gauge.scale());
 
 			Vec3d closestPoint = null;
 			double closestDistanceSq = Double.MAX_VALUE;
 
 			for (OBJFace tri : nearby) {
-				Vec3d p0 = tri.vertices.get(0);
-				Vec3d p1 = tri.vertices.get(1);
-				Vec3d p2 = tri.vertices.get(2);
-
-				Vec3d pointOnTri = MathUtil.closestPointOnTriangle(realOffset, p0, p1, p2);
+				Vec3d pointOnTri = MathUtil.closestPointOnTriangle(realOffset, tri);
 				double distSq = realOffset.subtract(pointOnTri).lengthSquared();
 
 				if (distSq < closestDistanceSq) {
@@ -177,9 +172,8 @@ public abstract class EntityRidableRollingStock extends EntityBuildableRollingSt
 					localTarget.subtract(0.5f, 0.5f, 0.5f),
 					localTarget.add(0.5f, 0.5f, 0.5f)
 			);
-			List<OBJFace> nearby = new ArrayList<>();
-			NavMesh navMesh = getDefinition().navMesh;
-			navMesh.queryBVH(navMesh.root, rayBox, nearby, this.gauge.scale());
+			MeshNavigator navMesh = getDefinition().navMesh;
+			List<OBJFace> nearby = navMesh.getFloorFacesWithin(rayBox, this.gauge.scale());
 
 			double closestY = Float.NEGATIVE_INFINITY;
 			boolean hit = false;
@@ -380,9 +374,8 @@ public abstract class EntityRidableRollingStock extends EntityBuildableRollingSt
 				localOffset.subtract(0.2f, 0.2f, 0.2f),
 				localOffset.add(0.2f, 0.2f, 0.2f)
 		);
-		List<OBJFace> nearby = new ArrayList<>();
-		NavMesh navMesh = getDefinition().navMesh;
-		navMesh.queryBVH(navMesh.collisionRoot, rayBox, nearby, this.gauge.scale());
+		MeshNavigator navMesh = getDefinition().navMesh;
+		List<OBJFace> nearby = navMesh.getCollisionFacesWithin(rayBox, this.gauge.scale());
 
 		Vec3d rayStart = localOffset.add(0, 1, 0);
 		Vec3d rayDir = movement.rotateYaw(-90).normalize();
@@ -486,16 +479,11 @@ public abstract class EntityRidableRollingStock extends EntityBuildableRollingSt
 				couplerPos.add(0.2, 0.2, 0.2)
 		);
 
-		List<OBJFace> nearby = new ArrayList<>();
-		NavMesh navMesh = getDefinition().navMesh;
-		navMesh.queryBVH(navMesh.root, queryBox, nearby, this.gauge.scale());
+		MeshNavigator navMesh = getDefinition().navMesh;
+		List<OBJFace> nearby = navMesh.getFloorFacesWithin(queryBox, this.gauge.scale());
 
 		for (OBJFace tri : nearby) {
-			Vec3d p0 = tri.vertices.get(0);
-			Vec3d p1 = tri.vertices.get(1);
-			Vec3d p2 = tri.vertices.get(2);
-
-			Vec3d closestPoint = MathUtil.closestPointOnTriangle(offset, p0, p1, p2);
+			Vec3d closestPoint = MathUtil.closestPointOnTriangle(offset, tri);
 			double distance = offset.subtract(closestPoint).length();
 			if (distance < 0.5) {
 				Vec3d toCoupler = couplerPos.subtract(offset).normalize();
