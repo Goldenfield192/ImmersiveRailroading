@@ -313,7 +313,7 @@ public abstract class EntityRollingStockDefinition {
         loadData(transformData(data));
 
         this.model = createModel();
-        this.itemGroups = model.groups.keySet().stream().filter(x -> !ModelComponentType.shouldRender(x)).collect(Collectors.toList());
+        this.itemGroups = model.groups.keySet().stream().filter(ModelComponentType::shouldRender).collect(Collectors.toList());
 
         this.navigator = new MeshNavigator(this.model);
 
