@@ -142,21 +142,21 @@ public abstract class EntityRidableRollingStock extends EntityBuildableRollingSt
 
 		double scale = this.gauge.scale();
 		double bbOffset = 0.5 * scale;
+		//Make able to pass 1m high slab
 		IBoundingBox rayBox = IBoundingBox.from(
-				localTarget.subtract(bbOffset, bbOffset, bbOffset),
-				localTarget.add(bbOffset, bbOffset, bbOffset)
+				localTarget.subtract(bbOffset, 2 * bbOffset, bbOffset),
+				localTarget.add(bbOffset, 2 * bbOffset, bbOffset)
 		);
 		MeshNavigator navMesh = getDefinition().navigator;
 		List<OBJFace> nearby = navMesh.getFloorFacesWithin(rayBox, scale);
+		OptionalDouble targetY = nearby.stream()
+									   .map(tri -> MathUtil.intersectRayTriangle(rayStart, rayDir, tri))
+									   .filter(t -> t != null && t >= 0)
+									   .mapToDouble(t -> rayStart.add(rayDir.scale(t)).y)
+									   .max();
 
-		OptionalDouble maxY = nearby.stream()
-									.map(tri -> MathUtil.intersectRayTriangle(rayStart, rayDir, tri))
-									.filter(t -> t != null && t >= 0)
-									.mapToDouble(t -> rayStart.add(rayDir.scale(t)).y)
-									.max();
-
-		if (maxY.isPresent()) {
-			offset = VecUtil.rotatePitch(new Vec3d(targetXZ.x, maxY.getAsDouble(), targetXZ.z),
+		if (targetY.isPresent()) {
+			offset = VecUtil.rotatePitch(new Vec3d(targetXZ.x, targetY.getAsDouble(), targetXZ.z),
 										 this.getRotationPitch());
 		}
 		return offset;
@@ -170,6 +170,18 @@ public abstract class EntityRidableRollingStock extends EntityBuildableRollingSt
 		Vec3d realOffset = offset.rotateYaw(-90);
 
 		List<OBJFace> faces = navMesh.getAllFloorFaces(scale);
+		//Check if we could move downward first
+		Vec3d direction = new Vec3d(0, -1, 0);
+		OptionalDouble shadowDown = faces.stream()
+										 .map(face -> MathUtil.intersectRayTriangle(realOffset, direction, face))
+										 .filter(t -> t != null && t >= 0)
+										 .mapToDouble(t -> realOffset.add(direction.scale(t)).y)
+										 .max();
+
+		if (shadowDown.isPresent() && (offset.y - shadowDown.getAsDouble()) <= 1) {
+			return new Vec3d(offset.x, shadowDown.getAsDouble(), offset.z);
+		}
+
 		Optional<Vec3d> closestPoint = faces.stream()
 											.map(tri -> MathUtil.closestPointOnTriangle(realOffset, tri))
 											.min(Comparator.comparingDouble(
