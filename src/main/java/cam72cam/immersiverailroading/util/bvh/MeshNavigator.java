@@ -24,8 +24,8 @@ public class MeshNavigator {
     private final boolean hasNavMesh;
 
     public MeshNavigator(StockModel<?, ?> model) {
-        boolean hasFloor = model.groups().stream().anyMatch(s -> s.contains("FLOOR"));
-        if (hasFloor) {
+        hasNavMesh = model.groups().stream().anyMatch(s -> s.contains("FLOOR"));
+        if (hasNavMesh) {
             FaceAccessor accessor = model.getFaceAccessor();
 
             List<OBJFace> floor = new ArrayList<>();
@@ -50,10 +50,10 @@ public class MeshNavigator {
             OBJFace face2 = new OBJFace();
             EntityRollingStockDefinition def = model.getDefinition();
             Vec3d center = def.passengerCenter.rotateYaw(-90);
-            Vec3d v1 = center.add(def.passengerCompartmentLength, 0, def.passengerCompartmentWidth/2);
-            Vec3d v2 = center.add(-def.passengerCompartmentLength, 0, def.passengerCompartmentWidth/2);
-            Vec3d v3 = center.add(-def.passengerCompartmentLength, 0, -def.passengerCompartmentWidth/2);
-            Vec3d v4 = center.add(def.passengerCompartmentLength, 0, -def.passengerCompartmentWidth/2);
+            Vec3d v1 = center.add(-def.passengerCompartmentLength, 0, def.passengerCompartmentWidth/2);
+            Vec3d v2 = center.add(def.passengerCompartmentLength, 0, def.passengerCompartmentWidth/2);
+            Vec3d v3 = center.add(def.passengerCompartmentLength, 0, -def.passengerCompartmentWidth/2);
+            Vec3d v4 = center.add(-def.passengerCompartmentLength, 0, -def.passengerCompartmentWidth/2);
 
             Vec2f emptyUV = new Vec2f(0, 0);
 
@@ -67,7 +67,6 @@ public class MeshNavigator {
             root = buildBVH(Arrays.asList(face1, face2), 0);
             collisionRoot = buildBVH(Collections.emptyList(), 0);
         }
-        hasNavMesh = true;
     }
 
     public boolean hasNavMesh() {
@@ -117,6 +116,10 @@ public class MeshNavigator {
         node.right = buildBVH(triangles.subList(mid, triangles.size()), depth + 1);
         node.bound = bound;
         return node;
+    }
+
+    public List<OBJFace> getAllFloorFaces(double scale) {
+        return getFloorFacesWithin(root.bound.grow(new Vec3d(scale, scale, scale)), scale);
     }
 
     public List<OBJFace> getFloorFacesWithin(IBoundingBox targetBB, double gaugeScale) {

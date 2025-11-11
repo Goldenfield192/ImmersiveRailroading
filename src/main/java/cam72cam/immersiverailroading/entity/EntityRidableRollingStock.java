@@ -78,35 +78,6 @@ public abstract class EntityRidableRollingStock extends EntityBuildableRollingSt
 
 	@Override
 	public Vec3d getMountOffset(Entity passenger, Vec3d off) {
-		if (useCustomMovementData) {
-			Vec3d seat = getSeatPosition(passenger.getUUID());
-			if (seat != null) {
-				return seat;
-			}
-
-			MeshNavigator navMesh = this.getDefinition().navigator;
-			double scale = gauge.scale();
-			off = off.scale(scale);
-
-			Vec3d realOffset = off.rotateYaw(-90);
-
-			double bbOffset = 4 * scale; //4 meters in original model
-			IBoundingBox range = IBoundingBox.from(
-					realOffset.subtract(bbOffset, bbOffset, bbOffset),
-					realOffset.add(bbOffset, bbOffset, bbOffset)
-			);
-
-			List<OBJFace> nearby = navMesh.getFloorFacesWithin(range, scale);
-
-			Optional<Vec3d> closestPoint = nearby.stream()
-										  		 .map(tri -> MathUtil.closestPointOnTriangle(realOffset, tri))
-										  		 .min(Comparator.comparingDouble(point -> realOffset.subtract(point).lengthSquared()));
-			if (closestPoint.isPresent()) {
-				return closestPoint.get().rotateYaw(90);
-			}
-		}
-
-		//fallback
 		if (passenger.isVillager() && !payingPassengerPositions.containsKey(passenger.getUUID())) {
 			payingPassengerPositions.put(passenger.getUUID(), passenger.getPosition());
 		}
@@ -126,8 +97,26 @@ public abstract class EntityRidableRollingStock extends EntityBuildableRollingSt
 		}
 
 		int wiggle = passenger.isVillager() ? 10 : 0;
-		off = off.add((Math.random()-0.5) * wiggle, 0, (Math.random()-0.5) * wiggle);
-		off = this.getDefinition().correctPassengerBounds(gauge, off, shouldRiderSit(passenger));
+		off = off.add((Math.random() - 0.5) * wiggle, 0, (Math.random() - 0.5) * wiggle);
+
+		MeshNavigator navMesh = this.getDefinition().navigator;
+		double scale = gauge.scale();
+		off = off.scale(scale);
+
+		Vec3d realOffset = off.rotateYaw(-90);
+
+		List<OBJFace> faces = navMesh.getAllFloorFaces(scale);
+		Optional<Vec3d> closestPoint = faces.stream()
+													.map(tri -> MathUtil.closestPointOnTriangle(realOffset, tri))
+													.min(Comparator.comparingDouble(
+													  point -> realOffset.subtract(point).lengthSquared()));
+		if (closestPoint.isPresent()) {
+			off = closestPoint.get().rotateYaw(90);
+		}
+
+		if(shouldRiderSit(passenger)) {
+			off = off.subtract(0, 0.75, 0);
+		}
 
 		return off;
 	}

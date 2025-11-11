@@ -450,9 +450,16 @@ public abstract class EntityRollingStockDefinition {
         modelLoc = data.getValue("model").asIdentifier();
 
         DataBlock passenger = data.getBlock("passenger");
-        passengerCenter = new Vec3d(0, passenger.getValue("center_y").asDouble() - 0.35, passenger.getValue("center_x").asDouble()).scale(internal_model_scale);
-        passengerCompartmentLength = passenger.getValue("length").asDouble() * internal_model_scale;
-        passengerCompartmentWidth = passenger.getValue("width").asDouble() * internal_model_scale;
+        if (!navigator.hasNavMesh()) {
+            passengerCenter = new Vec3d(0, passenger.getValue("center_y").asDouble() - 0.35,
+                                        passenger.getValue("center_x").asDouble()).scale(internal_model_scale);
+            passengerCompartmentLength = passenger.getValue("length").asDouble() * internal_model_scale;
+            passengerCompartmentWidth = passenger.getValue("width").asDouble() * internal_model_scale;
+        } else {
+            passengerCenter = Vec3d.ZERO;
+            passengerCompartmentLength = 0;
+            passengerCompartmentWidth = 0;
+        }
         maxPassengers = passenger.getValue("slots").asInteger();
         shouldSit = passenger.getValue("should_sit").asBoolean();
 
@@ -573,27 +580,6 @@ public abstract class EntityRollingStockDefinition {
             return null;
         }
         return renderComponents.get(name);
-    }
-
-    public Vec3d correctPassengerBounds(Gauge gauge, Vec3d pos, boolean shouldSit) {
-        double gs = gauge.scale();
-        Vec3d passengerCenter = this.passengerCenter.scale(gs);
-        pos = pos.subtract(passengerCenter);
-        if (pos.z > this.passengerCompartmentLength * gs) {
-            pos = new Vec3d(pos.x, pos.y, this.passengerCompartmentLength * gs);
-        }
-
-        if (pos.z < -this.passengerCompartmentLength * gs) {
-            pos = new Vec3d(pos.x, pos.y, -this.passengerCompartmentLength * gs);
-        }
-
-        if (Math.abs(pos.x) > this.passengerCompartmentWidth / 2 * gs) {
-            pos = new Vec3d(Math.copySign(this.passengerCompartmentWidth / 2 * gs, pos.x), pos.y, pos.z);
-        }
-
-        pos = new Vec3d(pos.x, passengerCenter.y - (shouldSit ? 0.75 : 0), pos.z + passengerCenter.z);
-
-        return pos;
     }
 
     public List<ItemComponentType> getItemComponents() {
