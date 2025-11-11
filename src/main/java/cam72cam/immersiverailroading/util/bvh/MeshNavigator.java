@@ -118,6 +118,10 @@ public class MeshNavigator {
         return node;
     }
 
+    public boolean atCarEnds(Vec3d vec3d) {
+        return vec3d.x >= root.bound.max().x || vec3d.x <= root.bound.min().x;
+    }
+
     public List<OBJFace> getAllFloorFaces(double scale) {
         return getFloorFacesWithin(root.bound.grow(new Vec3d(scale, scale, scale)), scale);
     }

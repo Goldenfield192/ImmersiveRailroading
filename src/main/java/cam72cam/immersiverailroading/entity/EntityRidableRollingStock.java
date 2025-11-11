@@ -36,15 +36,8 @@ public abstract class EntityRidableRollingStock extends EntityBuildableRollingSt
 	// Hack to remount players if they were seated
 	private Map<UUID, Vec3d> remount = new HashMap<>();
 
-	public boolean useCustomMovementData;
-
 	public float getRidingSoundModifier() {
 		return getDefinition().dampeningAmount;
-	}
-
-	@Override
-	public void load(TagCompound tag) {
-		this.useCustomMovementData = getDefinition().navigator.hasNavMesh();
 	}
 
 	@Override
@@ -268,8 +261,8 @@ public abstract class EntityRidableRollingStock extends EntityBuildableRollingSt
 		if (this instanceof EntityCoupleableRollingStock) {
 			EntityCoupleableRollingStock coupleable = (EntityCoupleableRollingStock) this;
 
-			boolean isAtFront = isAtCouplerWithFloor(offset, movement, EntityCoupleableRollingStock.CouplerType.FRONT);
-			boolean isAtBack =  isAtCouplerWithFloor(offset, movement, EntityCoupleableRollingStock.CouplerType.BACK);
+			boolean isAtFront = isAtCouplerWithFloor(offset, movement);
+			boolean isAtBack =  isAtCouplerWithFloor(offset, movement);
 			boolean atDoor = isNearestConnectingDoorOpen(source);
 
 			isAtFront &= atDoor;
@@ -351,30 +344,10 @@ public abstract class EntityRidableRollingStock extends EntityBuildableRollingSt
 		return offset;
 	}
 
-	private boolean isAtCouplerWithFloor(Vec3d offset, Vec3d movement, EntityCoupleableRollingStock.CouplerType type) {
-		double coupler = getDefinition().getCouplerPosition(type, this.gauge);
-		Vec3d couplerPos = new Vec3d(type == EntityCoupleableRollingStock.CouplerType.FRONT ? -coupler : coupler, offset.y, offset.z);
-
-		double scale = this.gauge.scale();
-		double bbOffset = 0.2 * scale;
-		IBoundingBox range = IBoundingBox.from(
-				couplerPos.subtract(bbOffset, bbOffset, bbOffset),
-				couplerPos.add(bbOffset, bbOffset, bbOffset)
-		);
-
+	private boolean isAtCouplerWithFloor(Vec3d offset, Vec3d movement) {
 		MeshNavigator navMesh = getDefinition().navigator;
-		List<OBJFace> nearby = navMesh.getFloorFacesWithin(range, scale);
-
-		Vec3d finalOffset = offset.rotateYaw(-90);
-		return nearby.stream()
-					 .map(face -> MathUtil.closestPointOnTriangle(finalOffset, face))
-					 .map(point -> finalOffset.subtract(point).length())
-					 .filter(dis -> dis < 0.5)
-					 .anyMatch(d -> {
-						 Vec3d toCoupler = couplerPos.subtract(finalOffset).normalize();
-					 	 double dot = toCoupler.dotProduct(movement.rotateYaw(-90).normalize());
-					 	 return dot > 0.5;
-					 });
+		Vec3d finalOffset = offset.add(movement).rotateYaw(-90);
+		return navMesh.atCarEnds(finalOffset);
 	}
 
 	public void onSeatClick(String seat, Player player) {
