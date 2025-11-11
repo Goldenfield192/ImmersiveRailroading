@@ -99,20 +99,7 @@ public abstract class EntityRidableRollingStock extends EntityBuildableRollingSt
 		int wiggle = passenger.isVillager() ? 10 : 0;
 		off = off.add((Math.random() - 0.5) * wiggle, 0, (Math.random() - 0.5) * wiggle);
 
-		MeshNavigator navMesh = this.getDefinition().navigator;
-		double scale = gauge.scale();
-		off = off.scale(scale);
-
-		Vec3d realOffset = off.rotateYaw(-90);
-
-		List<OBJFace> faces = navMesh.getAllFloorFaces(scale);
-		Optional<Vec3d> closestPoint = faces.stream()
-													.map(tri -> MathUtil.closestPointOnTriangle(realOffset, tri))
-													.min(Comparator.comparingDouble(
-													  point -> realOffset.subtract(point).lengthSquared()));
-		if (closestPoint.isPresent()) {
-			off = closestPoint.get().rotateYaw(90);
-		}
+		off = restrictPassengerPosition(off);
 
 		if(shouldRiderSit(passenger)) {
 			off = off.subtract(0, 0.75, 0);
@@ -175,6 +162,24 @@ public abstract class EntityRidableRollingStock extends EntityBuildableRollingSt
 		return offset;
 	}
 
+	private Vec3d restrictPassengerPosition(Vec3d offset) {
+		MeshNavigator navMesh = this.getDefinition().navigator;
+		double scale = gauge.scale();
+		offset = offset.scale(scale);
+
+		Vec3d realOffset = offset.rotateYaw(-90);
+
+		List<OBJFace> faces = navMesh.getAllFloorFaces(scale);
+		Optional<Vec3d> closestPoint = faces.stream()
+											.map(tri -> MathUtil.closestPointOnTriangle(realOffset, tri))
+											.min(Comparator.comparingDouble(
+													point -> realOffset.subtract(point).lengthSquared()));
+		if (closestPoint.isPresent()) {
+			offset = closestPoint.get().rotateYaw(90);
+		}
+		return offset;
+	}
+
 	protected boolean isNearestConnectingDoorOpen(Player source) {
 		// Find any doors that are close enough that are closed (and then negate)
 		return !this.getDefinition().getModel().getDoors().stream()
@@ -186,7 +191,7 @@ public abstract class EntityRidableRollingStock extends EntityBuildableRollingSt
 	}
 
 	//Used for custom movement
-	private boolean isInternalDoorOpen(Vec3d start, Vec3d end) {
+	private boolean isInternalDoorClosed(Vec3d start, Vec3d end) {
 		start = VecUtil.rotatePitch(start, this.getRotationPitch());
 		end  = VecUtil.rotatePitch(end, -this.getRotationPitch());
 
@@ -209,28 +214,30 @@ public abstract class EntityRidableRollingStock extends EntityBuildableRollingSt
 		movement = new Vec3d(movement.x, 0, movement.z).rotateYaw(this.getRotationYaw() - source.getRotationYawHead());
 		Vec3d localOffset = offset.rotateYaw(-90).add(movement.rotateYaw(-90));
 
+		double scale = this.gauge.scale();
+		double bbOffset = 0.2 * scale;
 		IBoundingBox rayBox = IBoundingBox.from(
-				localOffset.subtract(0.2f, 0.2f, 0.2f),
-				localOffset.add(0.2f, 0.2f, 0.2f)
+				localOffset.subtract(bbOffset, bbOffset, bbOffset),
+					localOffset.add(bbOffset, bbOffset, bbOffset)
 		);
 		MeshNavigator navMesh = getDefinition().navigator;
-		List<OBJFace> nearby = navMesh.getCollisionFacesWithin(rayBox, this.gauge.scale());
+		List<OBJFace> nearbyCollision = navMesh.getCollisionFacesWithin(rayBox, scale);
 
 		Vec3d rayStart = localOffset.add(0, 1, 0);
 		Vec3d rayDir = movement.rotateYaw(-90).normalize();
 
-		for (OBJFace tri : nearby) {
+		for (OBJFace tri : nearbyCollision) {
 			Double t = MathUtil.intersectRayTriangle(rayStart, rayDir, tri);
 			if (t != null && t >= 0) {
 				return offset;
 			}
 		}
 
-		if (isInternalDoorOpen(offset, movement)) {
+		if (isInternalDoorClosed(offset, movement)) {
 			return offset;
 		}
 
-		offset = offset.add(movement);
+		offset = restrictPassengerPosition(offset.add(movement));
 
 		if (getWorld().isServer) {
 			for (Door<?> door : getDefinition().getModel().getDoors()) {

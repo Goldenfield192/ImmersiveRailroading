@@ -60,7 +60,7 @@ public class MeshNavigator {
             face1.vertices = Arrays.asList(v1, v2, v3);
             face1.normal = new Vec3d(0, 1, 0);
             face1.uv = Arrays.asList(emptyUV, emptyUV, emptyUV);
-            face2.vertices = Arrays.asList(v2, v3, v4);
+            face2.vertices = Arrays.asList(v1, v3, v4);
             face2.normal = new Vec3d(0, 1, 0);
             face2.uv = Arrays.asList(emptyUV, emptyUV, emptyUV);
 
