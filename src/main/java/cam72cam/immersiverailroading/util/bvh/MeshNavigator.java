@@ -122,28 +122,28 @@ public class MeshNavigator {
         return vec3d.x >= root.bound.max().x || vec3d.x <= root.bound.min().x;
     }
 
-    public List<OBJFace> getAllFloorFaces(double scale) {
-        return getFloorFacesWithin(root.bound.grow(new Vec3d(scale, scale, scale)), scale);
+    public List<OBJFace> getAllFloorMesh(double scale) {
+        return getFloorMeshWithin(root.bound.grow(new Vec3d(scale, scale, scale)), scale);
     }
 
-    public List<OBJFace> getFloorFacesWithin(IBoundingBox targetBB, double gaugeScale) {
-        return getCollidingFaces(this.root, targetBB, gaugeScale);
+    public List<OBJFace> getFloorMeshWithin(IBoundingBox targetBB, double gaugeScale) {
+        return getCollidingMesh(this.root, targetBB, gaugeScale);
     }
 
-    public List<OBJFace> getCollisionFacesWithin(IBoundingBox targetBB, double gaugeScale) {
-        return getCollidingFaces(this.collisionRoot, targetBB, gaugeScale);
+    public List<OBJFace> getCollisionMeshWithin(IBoundingBox targetBB, double gaugeScale) {
+        return getCollidingMesh(this.collisionRoot, targetBB, gaugeScale);
     }
 
-    public List<OBJFace> getCollidingFaces(BVHNode root, IBoundingBox targetBB, double gaugeScale) {
+    public List<OBJFace> getCollidingMesh(BVHNode root, IBoundingBox targetBB, double gaugeScale) {
         //Scale back to normal model
         targetBB = scaleBB(targetBB, 1 / gaugeScale);
         List<OBJFace> faces = new ArrayList<>();
-        getCollidingFacesInternal(root, targetBB, faces);
+        getCollidingMeshInternal(root, targetBB, faces);
         //Scale model faces to match gauge
         return faces.stream().map(f -> f.scale(gaugeScale)).collect(Collectors.toList());
     }
 
-    private void getCollidingFacesInternal(BVHNode parent, IBoundingBox targetBB, List<OBJFace> result) {
+    private void getCollidingMeshInternal(BVHNode parent, IBoundingBox targetBB, List<OBJFace> result) {
         if (parent == null || !parent.bound.intersects(targetBB)) {
             return;
         }
@@ -153,8 +153,8 @@ public class MeshNavigator {
                             .filter(face -> face.getBoundingBox().intersects(targetBB))
                             .forEach(result::add);
         } else {
-            getCollidingFacesInternal(parent.left, targetBB, result);
-            getCollidingFacesInternal(parent.right, targetBB, result);
+            getCollidingMeshInternal(parent.left, targetBB, result);
+            getCollidingMeshInternal(parent.right, targetBB, result);
         }
     }
 

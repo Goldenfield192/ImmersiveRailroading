@@ -141,7 +141,7 @@ public abstract class EntityRidableRollingStock extends EntityBuildableRollingSt
 				localTarget.add(bbOffset, 2 * bbOffset, bbOffset)
 		);
 		MeshNavigator navMesh = getDefinition().navigator;
-		List<OBJFace> nearby = navMesh.getFloorFacesWithin(rayBox, scale);
+		List<OBJFace> nearby = navMesh.getFloorMeshWithin(rayBox, scale);
 		OptionalDouble targetY = nearby.stream()
 									   .map(tri -> MathUtil.intersectRayTriangle(rayStart, rayDir, tri))
 									   .filter(t -> t != null && t >= 0)
@@ -162,7 +162,7 @@ public abstract class EntityRidableRollingStock extends EntityBuildableRollingSt
 
 		Vec3d realOffset = offset.rotateYaw(-90);
 
-		List<OBJFace> faces = navMesh.getAllFloorFaces(scale);
+		List<OBJFace> faces = navMesh.getAllFloorMesh(scale);
 		//Check if we could move downward first
 		Vec3d direction = new Vec3d(0, -1, 0);
 		OptionalDouble shadowDown = faces.stream()
@@ -226,7 +226,7 @@ public abstract class EntityRidableRollingStock extends EntityBuildableRollingSt
 					localOffset.add(bbOffset, bbOffset, bbOffset)
 		);
 		MeshNavigator navMesh = getDefinition().navigator;
-		List<OBJFace> nearbyCollision = navMesh.getCollisionFacesWithin(rayBox, scale);
+		List<OBJFace> nearbyCollision = navMesh.getCollisionMeshWithin(rayBox, scale);
 
 		Vec3d rayStart = localOffset.add(0, 1, 0);
 		Vec3d rayDir = movement.rotateYaw(-90).normalize();
