@@ -316,6 +316,11 @@ public abstract class EntityRollingStockDefinition {
         this.itemGroups = model.groups.keySet().stream().filter(ModelComponentType::shouldRender).collect(Collectors.toList());
 
         this.navigator = new MeshNavigator(this.model);
+        if (!navigator.hasNavMesh() && passengerCompartmentWidth == 0 && passengerCompartmentLength == 0) {
+            //Meaning this stock have neither a navigation mesh nor legacy walk-space definition
+            //We can't add check in loadData because navigator isn't initialized then
+            throw new IllegalArgumentException("You must have FLOOR objects specified in your model, or have \"length\" and \"width\" defined in your jason's passenger session!");
+        }
 
         this.renderComponents = new EnumMap<>(ModelComponentType.class);
         for (ModelComponent component : model.allComponents) {
@@ -450,16 +455,10 @@ public abstract class EntityRollingStockDefinition {
         modelLoc = data.getValue("model").asIdentifier();
 
         DataBlock passenger = data.getBlock("passenger");
-        if (!navigator.hasNavMesh()) {
-            passengerCenter = new Vec3d(0, passenger.getValue("center_y").asDouble() - 0.35,
-                                        passenger.getValue("center_x").asDouble()).scale(internal_model_scale);
-            passengerCompartmentLength = passenger.getValue("length").asDouble() * internal_model_scale;
-            passengerCompartmentWidth = passenger.getValue("width").asDouble() * internal_model_scale;
-        } else {
-            passengerCenter = Vec3d.ZERO;
-            passengerCompartmentLength = 0;
-            passengerCompartmentWidth = 0;
-        }
+        passengerCenter = new Vec3d(0, passenger.getValue("center_y").asDouble(0) - 0.35,
+                                    passenger.getValue("center_x").asDouble(0)).scale(internal_model_scale);
+        passengerCompartmentLength = passenger.getValue("length").asDouble(0) * internal_model_scale;
+        passengerCompartmentWidth = passenger.getValue("width").asDouble(0) * internal_model_scale;
         maxPassengers = passenger.getValue("slots").asInteger();
         shouldSit = passenger.getValue("should_sit").asBoolean();
 
