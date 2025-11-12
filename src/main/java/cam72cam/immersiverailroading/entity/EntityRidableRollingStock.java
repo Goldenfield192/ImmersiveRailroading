@@ -246,7 +246,7 @@ public abstract class EntityRidableRollingStock extends EntityBuildableRollingSt
 
 		if (getWorld().isServer) {
 			for (Door<?> door : getDefinition().getModel().getDoors()) {
-				if (door.isAtOpenDoor(source, this, Door.Types.EXTERNAL)) {
+				if (door.isAtOpenDoor(source, this, offset.rotateYaw(-90), Door.Types.EXTERNAL)) {
 					Vec3d doorCenter = door.center(this);
 					Vec3d toDoor = doorCenter.subtract(offset).normalize();
 					double dot = toDoor.dotProduct(movement.normalize());
@@ -305,7 +305,8 @@ public abstract class EntityRidableRollingStock extends EntityBuildableRollingSt
 			});
 			remount.clear();
 			for (Player source : getWorld().getEntities(Player.class)) {
-				if (source.getRiding() == null && getDefinition().getModel().getDoors().stream().anyMatch(x -> x.isAtOpenDoor(source, this, Door.Types.EXTERNAL))) {
+				if (source.getRiding() == null && getDefinition().getModel().getDoors().stream()
+																 .anyMatch(x -> x.isAtOpenDoor(source, this, Door.Types.EXTERNAL))) {
 					this.addPassenger(source);
 				}
 			}
