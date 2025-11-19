@@ -17,6 +17,8 @@ import cam72cam.mod.entity.Player;
 import cam72cam.mod.math.Vec3d;
 import cam72cam.mod.math.Vec3i;
 import cam72cam.mod.util.Facing;
+import org.apache.commons.lang3.tuple.Pair;
+import org.apache.commons.lang3.tuple.Triple;
 
 import java.util.Collections;
 import java.util.List;
@@ -49,21 +51,28 @@ public class ItemGoldenSpike extends CustomItem {
 			d.write();
 			Audio.playSound(world, pos, StandardSound.BLOCK_ANVIL_PLACE, SoundCategory.BLOCKS, 0.5f, 0.2f);
 		} else {
-			pos = pos.up();
 
 			Vec3i tepos = new Data(held).pos;
 			if (tepos != null) {
-				if (BlockUtil.canBeReplaced(world, pos.down(), true)) {
-					if (!BlockUtil.isIRRail(world, pos.down()) || world.getBlockEntity(pos.down(), TileRailBase.class).getRailHeight() < 0.5) {
-						pos = pos.down();
-					}
-				}
 				TileRailPreview tr = world.getBlockEntity(tepos, TileRailPreview.class);
 				if (tr != null) {
+					Triple<Pair<Vec3i, Vec3d>, Float, Boolean> triple = TrackCapture.getNeighborEnd(player, player.getWorld(), pos, hit, tr.getItem());
+
+					if(triple.getRight()) {
+						pos = triple.getLeft().getLeft();
+						hit = triple.getLeft().getRight();
+					} else {
+						pos = pos.up();
+						if (BlockUtil.canBeReplaced(world, pos.down(), true)) {
+							if (!BlockUtil.isIRRail(world, pos.down()) || world.getBlockEntity(pos.down(), TileRailBase.class).getRailHeight() < 0.5) {
+								pos = pos.down();
+							}
+						}
+					}
 					if (tr.isAboveRails()) {
 						tepos = tepos.down();
 					}
-					tr.setCustomInfo(new PlacementInfo(tr.getItem(), player.getYawHead(), hit.subtract(0, hit.y, 0).add(pos).subtract(tepos)));
+					tr.setCustomInfo(new PlacementInfo(tr.getItem(), triple.getMiddle(), hit.subtract(0, hit.y, 0).add(pos).subtract(tepos), true));
 				}
 			}
 		}

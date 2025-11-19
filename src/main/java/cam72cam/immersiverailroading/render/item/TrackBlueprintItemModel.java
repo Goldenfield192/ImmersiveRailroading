@@ -1,5 +1,7 @@
 package cam72cam.immersiverailroading.render.item;
 
+import cam72cam.immersiverailroading.Config;
+import cam72cam.immersiverailroading.items.TrackCapture;
 import cam72cam.immersiverailroading.library.TrackItems;
 import cam72cam.immersiverailroading.render.ExpireableMap;
 import cam72cam.immersiverailroading.render.rail.RailRender;
@@ -15,6 +17,8 @@ import cam72cam.mod.math.Vec3i;
 import cam72cam.mod.render.opengl.BlendMode;
 import cam72cam.mod.render.opengl.RenderState;
 import cam72cam.mod.world.World;
+import org.apache.commons.lang3.tuple.Pair;
+import org.apache.commons.lang3.tuple.Triple;
 
 public class TrackBlueprintItemModel implements ItemRender.IItemModel {
 	@Override
@@ -55,33 +59,62 @@ public class TrackBlueprintItemModel implements ItemRender.IItemModel {
 
 	private static ExpireableMap<String, RailInfo> infoCache = new ExpireableMap<>();
 	public static void renderMouseover(Player player, ItemStack stack, Vec3i pos, Vec3d vec, RenderState state, float partialTicks) {
-		Vec3d hit = vec.subtract(pos);
-		World world = player.getWorld();
+		Triple<Pair<Vec3i, Vec3d>, Float, Boolean> triple = TrackCapture.getNeighborEnd(player, player.getWorld(), pos, vec.subtract(pos), stack);
 
-		pos = pos.up();
+		if(!triple.getRight() || !Config.ConfigDebug.enableTrackSnapping) {
+			Vec3d hit = vec.subtract(pos);
+			World world = player.getWorld();
 
-		if (BlockUtil.canBeReplaced(world, pos.down(), true)) {
-			if (!BlockUtil.isIRRail(world, pos.down()) || world.getBlockEntity(pos.down(), TileRailBase.class).getRailHeight() < 0.5) {
-				pos = pos.down();
+			pos = pos.up();
+
+			if (BlockUtil.canBeReplaced(world, pos.down(), true)) {
+				if (!BlockUtil.isIRRail(world, pos.down()) || world.getBlockEntity(pos.down(), TileRailBase.class).getRailHeight() < 0.5) {
+					pos = pos.down();
+				}
 			}
-		}
 
-		RailInfo info = new RailInfo(stack, new PlacementInfo(stack, player.getRotationYawHead(), hit.subtract(0, hit.y, 0)), null);
-		String key = info.uniqueID + info.placementInfo.placementPosition;
-		RailInfo cached = infoCache.get(key);
-		if (cached != null) {
-			info = cached;
+			RailInfo info = new RailInfo(stack, new PlacementInfo(stack, player.getRotationYawHead(), hit.subtract(0, hit.y, 0)), null);
+			String key = info.uniqueID + info.placementInfo.placementPosition;
+			RailInfo cached = infoCache.get(key);
+			if (cached != null) {
+				info = cached;
+			} else {
+				infoCache.put(key, info);
+			}
+
+			state.blend(new BlendMode(BlendMode.GL_CONSTANT_ALPHA, BlendMode.GL_ONE).constantColor(1, 1, 1, 0.5f)).lightmap(1, 1);
+
+
+			Vec3d cameraPos = GlobalRender.getCameraPos(partialTicks);
+			Vec3d offPos = info.placementInfo.placementPosition.add(pos).subtract(cameraPos);
+			state.translate(offPos.x, offPos.y, offPos.z);
+
+			RailRender.render(info, world, pos, true, state);
 		} else {
-			infoCache.put(key, info);
+			Vec3d hit = triple.getLeft().getRight();
+			World world = player.getWorld();
+
+			pos = triple.getLeft().getLeft();
+			float yaw = triple.getMiddle();
+
+			RailInfo info = new RailInfo(stack, new PlacementInfo(stack, yaw, hit.subtract(0, hit.y, 0), true), null);
+			String key = info.uniqueID + info.placementInfo.placementPosition;
+			RailInfo cached = infoCache.get(key);
+			if (cached != null) {
+				info = cached;
+			} else {
+				infoCache.put(key, info);
+			}
+
+			state.blend(new BlendMode(BlendMode.GL_CONSTANT_ALPHA, BlendMode.GL_ONE).constantColor(1, 1, 1, 0.5f)).lightmap(1, 1);
+
+
+			Vec3d cameraPos = GlobalRender.getCameraPos(partialTicks);
+			Vec3d offPos = info.placementInfo.placementPosition.add(pos).subtract(cameraPos);
+			state.translate(offPos.x, offPos.y, offPos.z);
+
+			RailRender.render(info, world, pos, true, state);
 		}
 
-		state.blend(new BlendMode(BlendMode.GL_CONSTANT_ALPHA, BlendMode.GL_ONE).constantColor(1, 1, 1, 0.5f)).lightmap(1, 1);
-
-
-		Vec3d cameraPos = GlobalRender.getCameraPos(partialTicks);
-		Vec3d offPos = info.placementInfo.placementPosition.add(pos).subtract(cameraPos);
-		state.translate(offPos.x, offPos.y, offPos.z);
-
-		RailRender.render(info, world, pos, true, state);
 	}
 }
