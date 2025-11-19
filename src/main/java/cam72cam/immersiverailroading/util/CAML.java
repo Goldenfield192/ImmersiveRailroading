@@ -110,12 +110,12 @@ public class CAML {
                     if (primitives.containsKey(key) || primitiveSets.containsKey(key)) {
                         throw new ParseException(String.format("Invalid line: '%s' can not be specified multiple times %s", line, context));
                     }
-                    primitives.put(key, createValue(trimmed));
+                    primitives.put(key, createValue(key, trimmed));
                 } else {
                     if (primitives.containsKey(key)) {
                         throw new ParseException(String.format("Invalid line: '%s' can not be specified multiple times %s", line, context));
                     }
-                    primitiveSets.computeIfAbsent(key, k -> new ArrayList<>()).add(createValue(trimmed));
+                    primitiveSets.computeIfAbsent(key, k -> new ArrayList<>()).add(createValue(key, trimmed));
                 }
             }
         }
@@ -180,6 +180,50 @@ public class CAML {
         };
     }
 
+    private static DataBlock.Value createValue(String key, String value) {
+        if (value == null || value.equalsIgnoreCase("null")) {
+            return DataBlock.Value.nullValue(key);
+        }
+        return new DataBlock.Value(key) {
+            @Override
+            public boolean asBoolean() {
+                return Boolean.parseBoolean(value);
+            }
+
+            @Override
+            public int asInteger() {
+                try {
+                    return Integer.parseInt(value);
+                } catch (NumberFormatException e) {
+                    throw new IllegalArgumentException("Attempting to get integer field "+this.name+" but field isn't integer", e);
+                }
+            }
+
+            @Override
+            public float asFloat() {
+                try {
+                    return Float.parseFloat(value);
+                } catch (NumberFormatException e) {
+                    throw new IllegalArgumentException("Attempting to get float field "+this.name+" but field isn't float", e);
+                }
+            }
+
+            @Override
+            public double asDouble() {
+                try {
+                    return Double.parseDouble(value);
+                } catch (NumberFormatException e) {
+                    throw new IllegalArgumentException("Attempting to get double field "+this.name+" but field isn't double", e);
+                }
+            }
+
+            @Override
+            public String asString() {
+                return value;
+            }
+        };
+    }
+
     public static class ParseException extends RuntimeException {
         public ParseException(String text, Object... params) {
             super(String.format(text, params));
@@ -190,37 +234,5 @@ public class CAML {
         public FormatException(String text, Object... params) {
             super(String.format(text, params));
         }
-    }
-
-    private static DataBlock.Value createValue(String value) {
-        if (value == null || value.equalsIgnoreCase("null")) {
-            return DataBlock.Value.NULL;
-        }
-        return new DataBlock.Value() {
-            @Override
-            public Boolean asBoolean() {
-                                     return Boolean.parseBoolean(value);
-                                                                                               }
-
-            @Override
-            public Integer asInteger() {
-                                     return Integer.parseInt(value);
-                                                                                           }
-
-            @Override
-            public Float asFloat() {
-                                 return Float.parseFloat(value);
-                                                                                       }
-
-            @Override
-            public Double asDouble() {
-                                   return Double.parseDouble(value);
-                                                                                           }
-
-            @Override
-            public String asString() {
-                return value;
-            }
-        };
     }
 }

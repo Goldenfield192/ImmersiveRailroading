@@ -28,7 +28,7 @@ public class JSON {
         Map<String, DataBlock> blocks = new LinkedHashMap<>();
         for (Map.Entry<String, JsonElement> entry : obj.entrySet()) {
             if (entry.getValue().isJsonPrimitive()) {
-                primitives.put(entry.getKey(), wrapValue(entry.getValue().getAsJsonPrimitive()));
+                primitives.put(entry.getKey(), wrapValue(entry.getKey(), entry.getValue().getAsJsonPrimitive()));
             }
             if (entry.getValue().isJsonObject()) {
                 blocks.put(entry.getKey(), wrapObject(entry.getValue().getAsJsonObject()));
@@ -40,7 +40,7 @@ public class JSON {
             if (entry.getValue().isJsonArray()) {
                 for (JsonElement element : entry.getValue().getAsJsonArray()) {
                     if (element.isJsonPrimitive()) {
-                        primitiveSets.computeIfAbsent(entry.getKey(), key -> new ArrayList<>()).add(wrapValue(element.getAsJsonPrimitive()));
+                        primitiveSets.computeIfAbsent(entry.getKey(), key -> new ArrayList<>()).add(wrapValue(entry.getKey(), element.getAsJsonPrimitive()));
                     }
                     if (element.isJsonObject()) {
                         blockSets.computeIfAbsent(entry.getKey(), key -> new ArrayList<>()).add(wrapObject(element.getAsJsonObject()));
@@ -74,31 +74,47 @@ public class JSON {
         };
     }
 
-    private static DataBlock.Value wrapValue(JsonPrimitive primitive) {
-        return new DataBlock.Value() {
+    private static DataBlock.Value wrapValue(String key, JsonPrimitive primitive) {
+        if (primitive == null) {
+            return DataBlock.Value.nullValue(key);
+        }
+
+        return new DataBlock.Value(key) {
             @Override
-            public Boolean asBoolean() {
-                return primitive == null ? null : primitive.getAsBoolean();
+            public boolean asBoolean() {
+                return primitive.getAsBoolean();
             }
 
             @Override
-            public Integer asInteger() {
-                return primitive == null ? null : primitive.getAsInt();
+            public int asInteger() {
+                try {
+                    return primitive.getAsInt();
+                } catch (NumberFormatException e) {
+                    throw new IllegalArgumentException("Attempting to get integer field "+this.name+" but field isn't integer", e);
+                }
             }
 
             @Override
-            public Float asFloat() {
-                return primitive == null ? null : primitive.getAsFloat();
+            public float asFloat() {
+                try {
+                    return primitive.getAsFloat();
+                } catch (NumberFormatException e) {
+                    throw new IllegalArgumentException("Attempting to get float field "+this.name+" but field isn't float", e);
+                }
             }
 
             @Override
-            public Double asDouble() {
-                return primitive == null ? null : primitive.getAsDouble();
+            public double asDouble() {
+                try {
+                    return primitive.getAsDouble();
+                } catch (NumberFormatException e) {
+                    throw new IllegalArgumentException("Attempting to get double field "+this.name+" but field isn't double", e);
+                }
             }
 
             @Override
             public String asString() {
-                return primitive == null ? null : primitive.getAsString();
+                return primitive.getAsString();
             }
         };
     }

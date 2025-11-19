@@ -6,7 +6,6 @@ import org.apache.commons.io.IOUtils;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.StringReader;
 import java.nio.charset.Charset;
 import java.util.List;
 import java.util.Locale;
@@ -26,78 +25,139 @@ public interface DataBlock {
         return getBlocksMap().get(key);
     }
     default Value getValue(String key) {
-        return getValueMap().getOrDefault(key, Value.NULL);
+        return getValueMap().getOrDefault(key, Value.nullValue(key));
     }
     default List<Value> getValues(String key) {
         return getValuesMap().get(key);
     }
 
-    interface Value {
-        Boolean asBoolean();
-        default boolean asBoolean(boolean fallback) {
-            Boolean val = asBoolean();
-            return val != null ? val : fallback;
+    abstract class Value {
+        String name;
+        boolean isNull;
+
+        public Value(String name) {
+            this(name, false);
         }
 
-        Integer asInteger();
-        default int asInteger(int fallback) {
-            Integer val = asInteger();
-            return val != null ? val : fallback;
+        public Value(String name, boolean isNull) {
+            this.name = name;
+            this.isNull = isNull;
         }
 
-        Float asFloat();
-        default float asFloat(float fallback) {
-            Float val = asFloat();
-            return val != null ? val : fallback;
+        public static Value nullValue(String name) {
+            return new Value(name, true) {
+                @Override
+                public boolean asBoolean() {
+                    throw new NullPointerException(String.format("Attempting to get boolean with key %s", this.name));
+                }
+
+                @Override
+                public int asInteger() {
+                    throw new NullPointerException(String.format("Attempting to get integer with key %s", this.name));
+                }
+
+                @Override
+                public float asFloat() {
+                    throw new NullPointerException(String.format("Attempting to get float with key %s", this.name));
+                }
+
+                @Override
+                public double asDouble() {
+                    throw new NullPointerException(String.format("Attempting to get double with key %s", this.name));
+                }
+
+                @Override
+                public String asString() {
+                    throw new NullPointerException(String.format("Attempting to get String with key %s", this.name));
+                }
+            };
         }
 
-        Double asDouble();
-        default double asDouble(double fallback) {
-            Double val = asDouble();
-            return val != null ? val : fallback;
+        public abstract boolean asBoolean();
+        public boolean asBoolean(boolean fallback) {
+            return isNull ? fallback : asBoolean();
+        }
+        public boolean isBoolean() {
+            try{
+                this.asBoolean();
+            } catch (Exception ignored) {
+                return false;
+            }
+            return true;
         }
 
-        String asString();
-        default String asString(String fallback) {
-            String val = asString();
-            return val != null ? val : fallback;
+        public abstract int asInteger();
+        public int asInteger(int fallback) {
+            return isNull ? fallback : asInteger();
+        }
+        public boolean isInteger() {
+            try{
+                this.asInteger();
+            } catch (Exception ignored) {
+                return false;
+            }
+            return true;
         }
 
-        default Identifier asIdentifier() {
-            String value = asString();
-            return value != null ? new Identifier(ImmersiveRailroading.MODID, new Identifier(value).getPath()) : null;
+        public abstract float asFloat();
+        public float asFloat(float fallback) {
+            return isNull ? fallback : asFloat();
         }
-        default Identifier asIdentifier(Identifier fallback) {
+        public boolean isFloat() {
+            try{
+                this.asFloat();
+            } catch (Exception ignored) {
+                return false;
+            }
+            return true;
+        }
+
+        public abstract double asDouble();
+        public double asDouble(double fallback) {
+            return isNull ? fallback : asDouble();
+        }
+        public boolean isDouble() {
+            try{
+                this.asDouble();
+            } catch (Exception ignored) {
+                return false;
+            }
+            return true;
+        }
+
+        public abstract String asString();
+        public String asString(String fallback) {
+            return isNull ? fallback : asString();
+        }
+        public boolean isString() {
+            try{
+                this.asString();
+            } catch (Exception ignored) {
+                return false;
+            }
+            return true;
+        }
+
+        public Identifier asIdentifier() {
+            try {
+                String value = asString();
+                return new Identifier(ImmersiveRailroading.MODID, new Identifier(value).getPath());
+            } catch (Exception e) {
+                throw new IllegalArgumentException("Attempting to get identifier field "+this.name+" but field isn't identifier", e);
+            }
+        }
+        public Identifier asIdentifier(Identifier fallback) {
             Identifier val = asIdentifier();
             return val != null && val.canLoad() ? val : fallback;
         }
-
-        Value NULL = new Value() {
-            @Override
-            public Boolean asBoolean() {
-                return null;
+        public boolean isIdentifier() {
+            try{
+                this.asIdentifier();
+            } catch (Exception ignored) {
+                return false;
             }
-
-            @Override
-            public Integer asInteger() {
-                return null;
-            }
-
-            @Override
-            public Float asFloat() {
-                return null;
-            }
-
-            @Override
-            public Double asDouble() {
-                return null;
-            }
-
-            @Override
-            public String asString() {
-                return null;
-            }
-        };
+            return true;
+        }
     }
 
 
