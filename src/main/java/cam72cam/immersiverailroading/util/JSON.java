@@ -17,9 +17,7 @@ import java.util.Map;
 public class JSON {
     public static DataBlock parse(InputStream stream) throws IOException {
         try {
-            DataBlock block = wrapObject(new JsonParser().parse(new InputStreamReader(stream)).getAsJsonObject());
-            block.processParent();
-            return block;
+            return wrapObject(new JsonParser().parse(new InputStreamReader(stream)).getAsJsonObject()).processLocation("root");
         } finally {
             stream.close();
         }

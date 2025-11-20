@@ -23,8 +23,7 @@ public class DataBlock {
 
     private static final String DEFAULT_ERROR = "Missing property \"%s\" in \"%s\" (Expected type: %s)";
 
-    protected DataBlock parent;
-    protected String name;
+    protected String location;
     protected final Map<String, Value> valueMap;
     protected final Map<String, List<Value>> valuesMap;
     protected final Map<String, DataBlock> blockMap;
@@ -70,125 +69,80 @@ public class DataBlock {
         return valuesMap;
     }
 
-    private String getPath() {
-        if (this.parent == null) {
-            return "root";
-        }
-        return parent.getPath() + "/" + this.name;
-    }
-
-    public void processParent() {
-        this.valueMap.forEach((s, value) -> value.setParent(this));
-        this.valuesMap.forEach((s, value) -> value.forEach(value1 -> value1.setParent(this)));
-        this.blockMap.forEach((s, block) -> {
-            block.parent = this;
-            block.processParent();
-        });
-        this.blocksMap.forEach((s, blocks) ->
-            blocks.forEach(block -> {
-                block.parent = this;
-                block.processParent();
-        }));
+    public DataBlock processLocation(String selfName) {        
+        this.valueMap.forEach((s, value) -> value.loc = this.location + "/" + value.key);
+        this.valuesMap.forEach((s, values) -> values.forEach(value -> value.loc = this.location + "/" + value.key));
+        this.blockMap.forEach((s, block) -> block.processLocation(selfName + "/" + s));
+        this.blocksMap.forEach((s, blocks) -> blocks.forEach(block -> block.processLocation(selfName + "/" + s)));
+        return this;
     }
 
     public abstract static class Value {
-        private DataBlock parent;
         private final String key;
+        private String loc;
 
         public Value(String key) {
             this.key = key;
         }
-
-        public void setParent(DataBlock parent) {
-            this.parent = parent;
-        }
-
-        public String getParentPath() {
-            if (this.parent == null) {
-                return "root";
-            }
-            return parent.getPath();
-        }
-
         public abstract @Nullable Boolean asBooleanNullable();
         public boolean asBoolean() {
-            Boolean b = asBooleanNullable();
-            if (b == null) {
-                throw new IllegalArgumentException(String.format(DEFAULT_ERROR, key, getParentPath(), "boolean"));
-            }
-            return b;
+            return Optional.ofNullable(asBooleanNullable())
+                           .orElseThrow(() -> new IllegalArgumentException(String.format(DEFAULT_ERROR, key, loc, "boolean")));
         }
         public boolean asBoolean(boolean fallback) {
-            Boolean val = asBooleanNullable();
-            return val != null ? val : fallback;
+            return Optional.ofNullable(asBooleanNullable()).orElse(fallback);
         }
 
         public abstract @Nullable Integer asIntegerNullable();
         public int asInteger() {
-            Integer i = asIntegerNullable();
-            if (i == null) {
-                throw new IllegalArgumentException(String.format(DEFAULT_ERROR, key, getParentPath(), "integer"));
-            }
-            return i;
+            return Optional.ofNullable(asIntegerNullable())
+                           .orElseThrow(() -> new IllegalArgumentException(String.format(DEFAULT_ERROR, key, loc, "integer")));
         }
         public int asInteger(int fallback) {
-            Integer val = asIntegerNullable();
-            return val != null ? val : fallback;
+            return Optional.ofNullable(asIntegerNullable()).orElse(fallback);
         }
 
         public abstract @Nullable Float asFloatNullable();
         public float asFloat() {
-            Float f = asFloatNullable();
-            if (f == null) {
-                throw new IllegalArgumentException(String.format(DEFAULT_ERROR, key, getParentPath(), "float"));
-            }
-            return f;
+            return Optional.ofNullable(asFloatNullable())
+                           .orElseThrow(() -> new IllegalArgumentException(String.format(DEFAULT_ERROR, key, loc, "float")));
         }
         public float asFloat(float fallback) {
-            Float val = asFloatNullable();
-            return val != null ? val : fallback;
+            return Optional.ofNullable(asFloatNullable()).orElse(fallback);
         }
 
         public abstract @Nullable Double asDoubleNullable();
         public double asDouble() {
-            Double d = asDoubleNullable();
-            if (d == null) {
-                throw new IllegalArgumentException(String.format(DEFAULT_ERROR, key, getParentPath(), "double"));
-            }
-            return d;
+            return Optional.ofNullable(asDoubleNullable())
+                           .orElseThrow(() -> new IllegalArgumentException(String.format(DEFAULT_ERROR, key, loc, "double")));
         }
         public double asDouble(double fallback) {
-            Double val = asDoubleNullable();
-            return val != null ? val : fallback;
+            return Optional.ofNullable(asDoubleNullable()).orElse(fallback);
         }
 
         public abstract @Nullable String asStringNullable();
         public @Nonnull String asString() {
-            String s = asStringNullable();
-            if (s == null) {
-                throw new IllegalArgumentException(String.format(DEFAULT_ERROR, key, getParentPath(), "string"));
-            }
-            return s;
+            return Optional.ofNullable(asStringNullable())
+                           .orElseThrow(() -> new IllegalArgumentException(String.format(DEFAULT_ERROR, key, loc, "string")));
         }
         public @Nonnull String asString(String fallback) {
-            String val = asStringNullable();
-            return val != null ? val : fallback;
+            return Optional.ofNullable(asStringNullable()).orElse(fallback);
         }
 
         public @Nullable Identifier asIdentifierNullable() {
-            String value = asStringNullable();
-            return value != null ? new Identifier(ImmersiveRailroading.MODID, new Identifier(value).getPath()) : null;
+            return Optional.ofNullable(asStringNullable())
+                           .map(value -> new Identifier(ImmersiveRailroading.MODID, new Identifier(value).getPath()))
+                           .orElse(null);
         }
         public @Nonnull Identifier asIdentifier() {
-            String value = asStringNullable();
-            if (value == null) {
-                throw new IllegalArgumentException(String.format(DEFAULT_ERROR, key, getParentPath(), "location"));
-            }
-            return new Identifier(ImmersiveRailroading.MODID, new Identifier(value).getPath());
+            return Optional.ofNullable(asStringNullable())
+                           .map(value -> new Identifier(ImmersiveRailroading.MODID, new Identifier(value).getPath()))
+                           .orElseThrow(() -> new IllegalArgumentException(String.format(DEFAULT_ERROR, key, loc, "location")));
         }
         public @Nonnull Identifier asIdentifier(Identifier fallback) {
-            Identifier val = asIdentifierNullable();
-            return val != null && val.canLoad() ? val : fallback;
+            return Optional.ofNullable(asIdentifierNullable())
+                           .filter(Identifier::canLoad)
+                           .orElse(fallback);
         }
 
         public static Value ofNull(String key) {
