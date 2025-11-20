@@ -11,13 +11,17 @@ import java.io.InputStream;
 import java.nio.charset.Charset;
 import java.util.*;
 
+/**
+ * Standard data object, representing JSON or CAML file
+ */
 @SuppressWarnings("unused")
 public class DataBlock {
     public static final DataBlock EMPTY_BLOCK = new DataBlock(Collections.emptyMap(),
                                                               Collections.emptyMap(),
                                                               Collections.emptyMap(),
                                                               Collections.emptyMap());
-    private static final String DEFAULT_ERROR = "Failed to get essential property %s in file %s as %s";
+
+    private static final String DEFAULT_ERROR = "Missing property \"%s\" in \"%s\" (Expected type: %s)";
 
     protected DataBlock parent;
     protected String name;
@@ -35,31 +39,31 @@ public class DataBlock {
     }
 
     public DataBlock getBlock(String key) {
-        return blockMap.get(key);
+        return blockMap.getOrDefault(key, EMPTY_BLOCK);
+    }
+
+    public List<DataBlock> getBlocks(String key) {
+        return blocksMap.getOrDefault(key, Collections.singletonList(EMPTY_BLOCK));
+    }
+
+    public Value getValue(String key) {
+        return valueMap.getOrDefault(key, Value.ofNull(key));
+    }
+
+    public List<Value> getValues(String key) {
+        return valuesMap.getOrDefault(key, Collections.singletonList(Value.ofNull(key)));
     }
 
     public Map<String, DataBlock> getBlockMap() {
         return blockMap;
     }
 
-    public List<DataBlock> getBlocks(String key) {
-        return blocksMap.get(key);
-    }
-
     public Map<String, List<DataBlock>> getBlocksMap() {
         return blocksMap;
     }
-    
-    public Value getValue(String key) {
-        return valueMap.getOrDefault(key, Value.ofNull(key));
-    }
-    
+
     public Map<String, Value> getValueMap() {
         return valueMap;
-    }
-    
-    public List<Value> getValues(String key) {
-        return valuesMap.get(key);
     }
 
     public Map<String, List<Value>> getValuesMap() {
@@ -68,7 +72,7 @@ public class DataBlock {
 
     private String getPath() {
         if (this.parent == null) {
-            return this.name;
+            return "root";
         }
         return parent.getPath() + "/" + this.name;
     }
@@ -81,9 +85,9 @@ public class DataBlock {
             block.processParent();
         });
         this.blocksMap.forEach((s, blocks) ->
-                                       blocks.forEach(block -> {
-                                           block.parent = this;
-                                           block.processParent();
+            blocks.forEach(block -> {
+                block.parent = this;
+                block.processParent();
         }));
     }
 
@@ -99,11 +103,18 @@ public class DataBlock {
             this.parent = parent;
         }
 
+        public String getParentPath() {
+            if (this.parent == null) {
+                return "root";
+            }
+            return parent.getPath();
+        }
+
         public abstract @Nullable Boolean asBooleanNullable();
         public boolean asBoolean() {
             Boolean b = asBooleanNullable();
             if (b == null) {
-                throw new IllegalArgumentException(String.format(DEFAULT_ERROR, key, parent.getPath(), "boolean"));
+                throw new IllegalArgumentException(String.format(DEFAULT_ERROR, key, getParentPath(), "boolean"));
             }
             return b;
         }
@@ -116,7 +127,7 @@ public class DataBlock {
         public int asInteger() {
             Integer i = asIntegerNullable();
             if (i == null) {
-                throw new IllegalArgumentException(String.format(DEFAULT_ERROR, key, parent.getPath(), "integer"));
+                throw new IllegalArgumentException(String.format(DEFAULT_ERROR, key, getParentPath(), "integer"));
             }
             return i;
         }
@@ -129,7 +140,7 @@ public class DataBlock {
         public float asFloat() {
             Float f = asFloatNullable();
             if (f == null) {
-                throw new IllegalArgumentException(String.format(DEFAULT_ERROR, key, parent.getPath(), "float"));
+                throw new IllegalArgumentException(String.format(DEFAULT_ERROR, key, getParentPath(), "float"));
             }
             return f;
         }
@@ -142,7 +153,7 @@ public class DataBlock {
         public double asDouble() {
             Double d = asDoubleNullable();
             if (d == null) {
-                throw new IllegalArgumentException(String.format(DEFAULT_ERROR, key, parent.getPath(), "double"));
+                throw new IllegalArgumentException(String.format(DEFAULT_ERROR, key, getParentPath(), "double"));
             }
             return d;
         }
@@ -155,7 +166,7 @@ public class DataBlock {
         public @Nonnull String asString() {
             String s = asStringNullable();
             if (s == null) {
-                throw new IllegalArgumentException(String.format(DEFAULT_ERROR, key, parent.getPath(), "string"));
+                throw new IllegalArgumentException(String.format(DEFAULT_ERROR, key, getParentPath(), "string"));
             }
             return s;
         }
@@ -171,7 +182,7 @@ public class DataBlock {
         public @Nonnull Identifier asIdentifier() {
             String value = asStringNullable();
             if (value == null) {
-                throw new IllegalArgumentException(String.format(DEFAULT_ERROR, key, parent.getPath(), "location"));
+                throw new IllegalArgumentException(String.format(DEFAULT_ERROR, key, getParentPath(), "location"));
             }
             return new Identifier(ImmersiveRailroading.MODID, new Identifier(value).getPath());
         }

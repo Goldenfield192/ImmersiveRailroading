@@ -3,6 +3,7 @@ package cam72cam.immersiverailroading.util;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
 
+import javax.annotation.Nonnull;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
@@ -124,7 +125,7 @@ public class CAML {
 
         return new DataBlock(primitives, primitiveSets, blocks, blockSets) {
             @Override
-            public Value getValue(String key) {
+            public @Nonnull Value getValue(String key) {
                 Value value = super.getValue(key);
                 if (value.asStringNullable() == null && getValuesMap().containsKey(key)) {
                     throw new FormatException("Error in CAML file: expected single value '=' but found multiple ':' for key %s '%s'", context, key);
@@ -133,7 +134,7 @@ public class CAML {
             }
 
             @Override
-            public List<Value> getValues(String key) {
+            public @Nonnull List<Value> getValues(String key) {
                 List<Value> values = super.getValues(key);
                 if (values == null && getValueMap().containsKey(key)) {
                     throw new FormatException("Error in CAML file: multiple values ':' but found single value '=' for key %s '%s'", context, key);
@@ -142,7 +143,7 @@ public class CAML {
             }
 
             @Override
-            public DataBlock getBlock(String key) {
+            public @Nonnull DataBlock getBlock(String key) {
                 DataBlock block = super.getBlock(key);
                 if (block == null && getBlocksMap().containsKey(key)) {
                     throw new FormatException("Error in CAML file: expected single block '=' but found multiple ':' for key %s '%s'", context, key);
@@ -151,7 +152,7 @@ public class CAML {
             }
 
             @Override
-            public List<DataBlock> getBlocks(String key) {
+            public @Nonnull List<DataBlock> getBlocks(String key) {
                 List<DataBlock> blocks = super.getBlocks(key);
                 if (blocks == null && getBlockMap().containsKey(key)) {
                     throw new FormatException("Error in CAML file: multiple blocks ':' but found single value '=' for key %s '%s'", context, key);
@@ -181,23 +182,23 @@ public class CAML {
         return new DataBlock.Value(key) {
             @Override
             public Boolean asBooleanNullable() {
-                                     return Boolean.parseBoolean(value);
-                                                                                               }
+                return Boolean.parseBoolean(value);
+            }
 
             @Override
             public Integer asIntegerNullable() {
-                                     return Integer.parseInt(value);
-                                                                                           }
+                return Integer.parseInt(value);
+            }
 
             @Override
             public Float asFloatNullable() {
-                                 return Float.parseFloat(value);
-                                                                                       }
+                return Float.parseFloat(value);
+            }
 
             @Override
             public Double asDoubleNullable() {
-                                   return Double.parseDouble(value);
-                                                                                           }
+                return Double.parseDouble(value);
+            }
 
             @Override
             public String asStringNullable() {
