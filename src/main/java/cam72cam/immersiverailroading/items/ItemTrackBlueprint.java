@@ -10,6 +10,7 @@ import cam72cam.immersiverailroading.registry.DefinitionManager;
 import cam72cam.immersiverailroading.registry.TrackDefinition;
 import cam72cam.immersiverailroading.tile.TileRailBase;
 import cam72cam.immersiverailroading.tile.TileRailPreview;
+import cam72cam.immersiverailroading.track.TrackMap;
 import cam72cam.immersiverailroading.util.BlockUtil;
 import cam72cam.immersiverailroading.util.IRFuzzy;
 import cam72cam.immersiverailroading.util.PlacementInfo;
@@ -20,8 +21,6 @@ import cam72cam.mod.math.Vec3d;
 import cam72cam.mod.math.Vec3i;
 import cam72cam.mod.util.Facing;
 import cam72cam.mod.world.World;
-import org.apache.commons.lang3.tuple.Pair;
-import org.apache.commons.lang3.tuple.Triple;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -58,7 +57,7 @@ public class ItemTrackBlueprint extends CustomItem {
 	@Override
     public ClickResult onClickBlock(Player player, World world, Vec3i pos, Player.Hand hand, Facing facing, Vec3d hit) {
 		ItemStack stack = player.getHeldItem(hand);
-		Triple<Pair<Vec3i, Vec3d>, Float, Boolean> triple = TrackCapture.getNeighborEnd(player, player.getWorld(), pos, hit, stack);
+		PlacementInfo snapped = TrackMap.getNeighborNode(player, player.getWorld(), pos, hit, stack);
 		RailSettings stackInfo = RailSettings.from(stack);
 		float yaw;
 
@@ -73,10 +72,11 @@ public class ItemTrackBlueprint extends CustomItem {
 			return ClickResult.ACCEPTED;
 		}
 
-		if(triple.getRight() && Config.ConfigDebug.enableTrackSnapping) {
-			pos = triple.getLeft().getLeft();
-			hit = triple.getLeft().getRight();
-			yaw = triple.getMiddle();
+		boolean useSnapping = snapped != null && Config.ConfigDebug.enableTrackSnapping;
+		if(useSnapping) {
+			pos = new Vec3i(snapped.placementPosition);
+			hit = snapped.placementPosition.subtract(pos);
+			yaw = snapped.yaw;
 		} else {
 			pos = pos.up();
 			yaw = player.getRotationYawHead();
@@ -88,8 +88,6 @@ public class ItemTrackBlueprint extends CustomItem {
 			}
 		}
 
-
-
 		if (stackInfo.isPreview) {
 			if (!BlockUtil.canBeReplaced(world, pos, false)) {
 				pos = pos.up();
@@ -97,13 +95,13 @@ public class ItemTrackBlueprint extends CustomItem {
 			world.setBlock(pos, IRBlocks.BLOCK_RAIL_PREVIEW);
 			TileRailPreview te = world.getBlockEntity(pos, TileRailPreview.class);
 			if (te != null) {
-				PlacementInfo placementInfo = new PlacementInfo(stack, yaw, hit.subtract(0, hit.y, 0), triple.getRight());
+				PlacementInfo placementInfo = new PlacementInfo(stack, yaw, hit.subtract(0, hit.y, 0), useSnapping);
 				te.setup(stack, placementInfo);
 			}
 			return ClickResult.ACCEPTED;
 		}
 
-		PlacementInfo placementInfo = new PlacementInfo(stack, yaw, hit.subtract(0, hit.y, 0), triple.getRight());
+		PlacementInfo placementInfo = new PlacementInfo(stack, yaw, hit.subtract(0, hit.y, 0), useSnapping);
 		RailInfo info = new RailInfo(stack, placementInfo, null);
 		info.build(player, pos);
 		return ClickResult.ACCEPTED;

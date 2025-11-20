@@ -1,10 +1,12 @@
 package cam72cam.immersiverailroading.items;
 
+import cam72cam.immersiverailroading.Config;
 import cam72cam.immersiverailroading.IRBlocks;
 import cam72cam.immersiverailroading.ImmersiveRailroading;
 import cam72cam.immersiverailroading.library.GuiTypes;
 import cam72cam.immersiverailroading.tile.TileRailBase;
 import cam72cam.immersiverailroading.tile.TileRailPreview;
+import cam72cam.immersiverailroading.track.TrackMap;
 import cam72cam.immersiverailroading.util.BlockUtil;
 import cam72cam.immersiverailroading.util.PlacementInfo;
 import cam72cam.mod.item.*;
@@ -17,8 +19,6 @@ import cam72cam.mod.entity.Player;
 import cam72cam.mod.math.Vec3d;
 import cam72cam.mod.math.Vec3i;
 import cam72cam.mod.util.Facing;
-import org.apache.commons.lang3.tuple.Pair;
-import org.apache.commons.lang3.tuple.Triple;
 
 import java.util.Collections;
 import java.util.List;
@@ -56,11 +56,13 @@ public class ItemGoldenSpike extends CustomItem {
 			if (tepos != null) {
 				TileRailPreview tr = world.getBlockEntity(tepos, TileRailPreview.class);
 				if (tr != null) {
-					Triple<Pair<Vec3i, Vec3d>, Float, Boolean> triple = TrackCapture.getNeighborEnd(player, player.getWorld(), pos, hit, tr.getItem());
-
-					if(triple.getRight()) {
-						pos = triple.getLeft().getLeft();
-						hit = triple.getLeft().getRight();
+					PlacementInfo info = TrackMap.getNeighborNode(player, player.getWorld(), pos, hit, tr.getItem());
+					boolean useSnapping = info != null && Config.ConfigDebug.enableTrackSnapping;
+					float yaw;
+					if(useSnapping) {
+						pos = new Vec3i(info.placementPosition);
+						hit = info.placementPosition.subtract(pos);
+						yaw = info.yaw;
 					} else {
 						pos = pos.up();
 						if (BlockUtil.canBeReplaced(world, pos.down(), true)) {
@@ -68,11 +70,12 @@ public class ItemGoldenSpike extends CustomItem {
 								pos = pos.down();
 							}
 						}
+						yaw = player.getRotationYawHead();
 					}
 					if (tr.isAboveRails()) {
 						tepos = tepos.down();
 					}
-					tr.setCustomInfo(new PlacementInfo(tr.getItem(), triple.getMiddle(), hit.subtract(0, hit.y, 0).add(pos).subtract(tepos), true));
+					tr.setCustomInfo(new PlacementInfo(tr.getItem(), yaw, hit.subtract(0, hit.y, 0).add(pos).subtract(tepos), useSnapping));
 				}
 			}
 		}
