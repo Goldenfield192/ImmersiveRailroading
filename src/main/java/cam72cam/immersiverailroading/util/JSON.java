@@ -50,28 +50,11 @@ public class JSON {
             }
         }
 
-        return new DataBlock() {
-            @Override
-            public Map<String, Value> getValueMap() {
-                return primitives;
-            }
-
-            @Override
-            public Map<String, List<Value>> getValuesMap() {
-                return primitiveSets;
-            }
-
-            @Override
-            public Map<String, DataBlock> getBlockMap() {
-                return blocks;
-            }
-
-            @Override
-            public Map<String, List<DataBlock>> getBlocksMap() {
-                return blockSets;
-            }
-
-        };
+        return new DataBlock(null,
+                             primitives,
+                             primitiveSets,
+                             blocks,
+                             blockSets);
     }
 
     private static DataBlock.Value wrapValue(JsonPrimitive primitive) {

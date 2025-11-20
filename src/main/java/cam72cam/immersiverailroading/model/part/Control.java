@@ -72,16 +72,7 @@ public class Control<T extends EntityMoveableRollingStock> extends Interactable<
         // This is worse...
         String name = rotpat.replace("_ROT", "").replaceAll("\\.\\*", "");
 
-        DataBlock config = widgetConfig.containsKey(name) ? widgetConfig.get(name) : new DataBlock() {
-            @Override
-            public Map<String, Value> getValueMap() { return Collections.emptyMap(); }
-            @Override
-            public Map<String, List<Value>> getValuesMap() { return Collections.emptyMap(); }
-            @Override
-            public Map<String, DataBlock> getBlockMap() { return Collections.emptyMap(); }
-            @Override
-            public Map<String, List<DataBlock>> getBlocksMap() { return Collections.emptyMap(); }
-        };
+        DataBlock config = widgetConfig.getOrDefault(name, DataBlock.EMPTY_BLOCK);
 
         this.controlGroup = config.getValue("CG").asString(part.modelIDs.stream().map(group -> {
             Matcher matcher = Pattern.compile("_CG_([^_]+)").matcher(group);

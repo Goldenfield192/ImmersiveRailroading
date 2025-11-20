@@ -120,7 +120,7 @@ public class CAML {
             }
         }
 
-        return new DataBlock() {
+        return new DataBlock(null, primitives, primitiveSets, blocks, blockSets) {
             @Override
             public Map<String, Value> getValueMap() {
                 return primitives;
@@ -143,7 +143,7 @@ public class CAML {
 
             @Override
             public Value getValue(String key) {
-                Value value = DataBlock.super.getValue(key);
+                Value value = super.getValue(key);
                 if (value.asString() == null && getValuesMap().containsKey(key)) {
                     throw new FormatException("Error in CAML file: expected single value '=' but found multiple ':' for key %s '%s'", context, key);
                 }
@@ -152,7 +152,7 @@ public class CAML {
 
             @Override
             public List<Value> getValues(String key) {
-                List<Value> values = DataBlock.super.getValues(key);
+                List<Value> values = super.getValues(key);
                 if (values == null && getValueMap().containsKey(key)) {
                     throw new FormatException("Error in CAML file: multiple values ':' but found single value '=' for key %s '%s'", context, key);
                 }
@@ -161,7 +161,7 @@ public class CAML {
 
             @Override
             public DataBlock getBlock(String key) {
-                DataBlock block = DataBlock.super.getBlock(key);
+                DataBlock block = super.getBlock(key);
                 if (block == null && getBlocksMap().containsKey(key)) {
                     throw new FormatException("Error in CAML file: expected single block '=' but found multiple ':' for key %s '%s'", context, key);
                 }
@@ -170,7 +170,7 @@ public class CAML {
 
             @Override
             public List<DataBlock> getBlocks(String key) {
-                List<DataBlock> blocks = DataBlock.super.getBlocks(key);
+                List<DataBlock> blocks = super.getBlocks(key);
                 if (blocks == null && getBlockMap().containsKey(key)) {
                     throw new FormatException("Error in CAML file: multiple blocks ':' but found single value '=' for key %s '%s'", context, key);
                 }
