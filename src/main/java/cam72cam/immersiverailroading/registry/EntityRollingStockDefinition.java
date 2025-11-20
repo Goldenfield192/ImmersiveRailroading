@@ -125,11 +125,11 @@ public abstract class EntityRollingStockDefinition {
         }
 
         public SoundDefinition(DataBlock obj) {
-            start = obj.getValue("start").asIdentifier();
-            main = obj.getValue("main").asIdentifier();
+            start = obj.getValue("start").asIdentifierNullable();
+            main = obj.getValue("main").asIdentifierNullable();
             looping = obj.getValue("looping").asBoolean(true);
-            stop = obj.getValue("stop").asIdentifier();
-            distance = obj.getValue("distance").asFloat();
+            stop = obj.getValue("stop").asIdentifierNullable();
+            distance = obj.getValue("distance").asFloatNullable();
             volume = obj.getValue("volume").asFloat(1.0f);
         }
 
@@ -138,7 +138,7 @@ public abstract class EntityRollingStockDefinition {
             if (found != null) {
                 return new SoundDefinition(found);
             }
-            Identifier ident = block.getValue(key).asIdentifier();
+            Identifier ident = block.getValue(key).asIdentifierNullable();
             if (ident != null && ident.canLoad()) {
                 return new SoundDefinition(ident);
             }
@@ -167,8 +167,8 @@ public abstract class EntityRollingStockDefinition {
         public final SoundDefinition sound;
 
         public AnimationDefinition(DataBlock obj) {
-            control_group = obj.getValue("control_group").asString();
-            String readout = obj.getValue("readout").asString();
+            control_group = obj.getValue("control_group").asStringNullable();
+            String readout = obj.getValue("readout").asStringNullable();
             this.readout = readout != null ? Readouts.valueOf(readout.toUpperCase(Locale.ROOT)) : null;
             if (control_group == null && readout == null) {
                 throw new IllegalArgumentException("Must specify either a control group or a readout for an animation");
@@ -204,7 +204,7 @@ public abstract class EntityRollingStockDefinition {
             blinkOffsetSeconds = data.getValue("blinkOffsetSeconds").asFloat(0f);
             blinkFullBright = data.getValue("blinkFullBright").asBoolean(true);
             revertDirection = data.getValue("revertDirection").asBoolean(false);
-            reverseColor = data.getValue("reverseColor").asString();
+            reverseColor = data.getValue("reverseColor").asStringNullable();
             lightTex = data.getValue("texture").asIdentifier(default_light_tex);
             castsLight = data.getValue("castsLight").asBoolean(true);
         }
@@ -229,10 +229,10 @@ public abstract class EntityRollingStockDefinition {
         }
 
         public ControlSoundsDefinition(DataBlock data) {
-            engage = data.getValue("engage").asIdentifier();
-            move = data.getValue("move").asIdentifier();
-            movePercent = data.getValue("movePercent").asFloat();
-            disengage = data.getValue("disengage").asIdentifier();
+            engage = data.getValue("engage").asIdentifierNullable();
+            move = data.getValue("move").asIdentifierNullable();
+            movePercent = data.getValue("movePercent").asFloatNullable();
+            disengage = data.getValue("disengage").asIdentifierNullable();
         }
 
         public static void cleanupStoppedSounds() {
@@ -397,20 +397,20 @@ public abstract class EntityRollingStockDefinition {
     }
 
     public void loadData(DataBlock data) throws Exception {
-        name = data.getValue("name").asString();
-        modelerName = data.getValue("modeler").asString();
-        packName = data.getValue("pack").asString();
+        name = data.getValue("name").asStringNullable();
+        modelerName = data.getValue("modeler").asStringNullable();
+        packName = data.getValue("pack").asStringNullable();
         darken = data.getValue("darken_model").asFloat();
         internal_model_scale = 1;
         internal_inv_scale = 1;
         // TODO Gauge.from(Gauge.STANDARD).value() what happens when != Gauge.STANDARD
         this.recommended_gauge = Gauge.from(Gauge.STANDARD);
-        Double model_gauge_m = data.getValue("model_gauge_m").asDouble();
+        Double model_gauge_m = data.getValue("model_gauge_m").asDoubleNullable();
         if (model_gauge_m != null) {
             this.recommended_gauge = Gauge.from(model_gauge_m);
             internal_model_scale = Gauge.STANDARD / model_gauge_m;
         }
-        Double recommended_gauge_m = data.getValue("recommended_gauge_m").asDouble();
+        Double recommended_gauge_m = data.getValue("recommended_gauge_m").asDoubleNullable();
         if (recommended_gauge_m != null) {
             this.recommended_gauge = Gauge.from(recommended_gauge_m);
         }
@@ -453,7 +453,7 @@ public abstract class EntityRollingStockDefinition {
         passengerCompartmentLength = passenger.getValue("length").asDouble() * internal_model_scale;
         passengerCompartmentWidth = passenger.getValue("width").asDouble() * internal_model_scale;
         maxPassengers = passenger.getValue("slots").asInteger();
-        shouldSit = passenger.getValue("should_sit").asBoolean();
+        shouldSit = passenger.getValue("should_sit").asBooleanNullable();
 
         DataBlock pivot = data.getBlock("trucks"); // Legacy
         if (pivot == null) {
@@ -520,7 +520,7 @@ public abstract class EntityRollingStockDefinition {
             soundControls.getBlockMap().forEach((key, block) -> controlSounds.put(key, new ControlSoundsDefinition(block)));
         }
 
-        Identifier overlay = data.getValue("overlay").asIdentifier();
+        Identifier overlay = data.getValue("overlay").asIdentifierNullable();
         this.overlay = overlay != null ? GuiBuilder.parse(overlay) : getDefaultOverlay(data);
 
         extraTooltipInfo = new ArrayList<>();

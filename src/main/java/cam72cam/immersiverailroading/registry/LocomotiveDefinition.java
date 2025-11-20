@@ -56,21 +56,21 @@ public abstract class LocomotiveDefinition extends FreightDefinition {
             muliUnitCapable = true;
             factorOfAdhesion = 0;
         } else {
-            if (properties.getValue("horsepower").asFloat() != null) {
+            if (properties.getValue("horsepower").asFloatNullable() != null) {
                 power_kW = properties.getValue("horsepower").asFloat() * PowerDisplayType.hpToKW * internal_inv_scale;
-            } else if (properties.getValue("power_hp").asFloat() != null) {
+            } else if (properties.getValue("power_hp").asFloatNullable() != null) {
                 power_kW = properties.getValue("power_hp").asFloat() * PowerDisplayType.hpToKW * internal_inv_scale;
-            } else if (properties.getValue("power_ps").asFloat() != null) {
+            } else if (properties.getValue("power_ps").asFloatNullable() != null) {
                 power_kW = properties.getValue("power_ps").asFloat() * PowerDisplayType.PSToKW * internal_inv_scale;
-            } else if (properties.getValue("power_kw").asFloat() != null) {
+            } else if (properties.getValue("power_kw").asFloatNullable() != null) {
                 power_kW = properties.getValue("power_kw").asFloat() * internal_inv_scale;
             } else {
                 power_kW = properties.getValue("power_w").asFloat() / 1000 * internal_inv_scale;
             }
 
-            if (properties.getValue("tractive_effort_lbf").asFloat() != null) {
+            if (properties.getValue("tractive_effort_lbf").asFloatNullable() != null) {
                 traction_N = properties.getValue("tractive_effort_lbf").asFloat() * ForceDisplayType.lbfToNewton * internal_inv_scale;
-            } else if (properties.getValue("tractive_effort_kn").asFloat() != null) {
+            } else if (properties.getValue("tractive_effort_kn").asFloatNullable() != null) {
                 traction_N = properties.getValue("tractive_effort_kn").asFloat() * 1000 * internal_inv_scale;
             } else {
                 traction_N = properties.getValue("tractive_effort_n").asFloat() * internal_inv_scale;

@@ -202,7 +202,7 @@ public class DefinitionManager {
 
                         definitionIDMap.put(defID, defType);
                         DataBlock.Value pack = stock.getValue("pack");
-                        if (pack.asString() != null) {
+                        if (pack.asStringNullable() != null) {
                             definitionIDPacks.put(defID, pack);
                         }
                     }
@@ -230,7 +230,7 @@ public class DefinitionManager {
 
                 DataBlock block = DataBlock.load(resource);
 
-                if (definitionIDPacks.containsKey(defID) && block.getValue("pack").asString() == null) {
+                if (definitionIDPacks.containsKey(defID) && block.getValue("pack").asStringNullable() == null) {
                     // This is kind of a nasty hack...
                     block.getValueMap().put("pack", definitionIDPacks.get(defID));
                 }
@@ -333,7 +333,7 @@ public class DefinitionManager {
 
                 DataBlock block = DataBlock.load(identifier);
 
-                if (track.getValue("pack").asString() != null && block.getValue("pack").asString() != null) {
+                if (track.getValue("pack").asStringNullable() != null && block.getValue("pack").asStringNullable() != null) {
                     // Copy in the pack name if not specified
                     block.getValueMap().put("pack", track.getValue("pack"));
                 }

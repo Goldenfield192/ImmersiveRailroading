@@ -42,7 +42,9 @@ public class CAML {
                 .collect(Collectors.toList());
         stream.close();
 
-        return createBlock(lines, "");
+        DataBlock block = createBlock(lines, "");
+        block.processParent();
+        return block;
     }
 
     private static DataBlock createBlock(List<String> lines, String context) throws ParseException {
@@ -110,41 +112,21 @@ public class CAML {
                     if (primitives.containsKey(key) || primitiveSets.containsKey(key)) {
                         throw new ParseException(String.format("Invalid line: '%s' can not be specified multiple times %s", line, context));
                     }
-                    primitives.put(key, createValue(trimmed));
+                    primitives.put(key, createValue(key, trimmed));
                 } else {
                     if (primitives.containsKey(key)) {
                         throw new ParseException(String.format("Invalid line: '%s' can not be specified multiple times %s", line, context));
                     }
-                    primitiveSets.computeIfAbsent(key, k -> new ArrayList<>()).add(createValue(trimmed));
+                    primitiveSets.computeIfAbsent(key, k -> new ArrayList<>()).add(createValue(key, trimmed));
                 }
             }
         }
 
-        return new DataBlock(null, primitives, primitiveSets, blocks, blockSets) {
-            @Override
-            public Map<String, Value> getValueMap() {
-                return primitives;
-            }
-
-            @Override
-            public Map<String, List<Value>> getValuesMap() {
-                return primitiveSets;
-            }
-
-            @Override
-            public Map<String, DataBlock> getBlockMap() {
-                return blocks;
-            }
-
-            @Override
-            public Map<String, List<DataBlock>> getBlocksMap() {
-                return blockSets;
-            }
-
+        return new DataBlock(primitives, primitiveSets, blocks, blockSets) {
             @Override
             public Value getValue(String key) {
                 Value value = super.getValue(key);
-                if (value.asString() == null && getValuesMap().containsKey(key)) {
+                if (value.asStringNullable() == null && getValuesMap().containsKey(key)) {
                     throw new FormatException("Error in CAML file: expected single value '=' but found multiple ':' for key %s '%s'", context, key);
                 }
                 return value;
@@ -192,33 +174,33 @@ public class CAML {
         }
     }
 
-    private static DataBlock.Value createValue(String value) {
+    private static DataBlock.Value createValue(String key, String value) {
         if (value == null || value.equalsIgnoreCase("null")) {
-            return DataBlock.Value.NULL;
+            return DataBlock.Value.ofNull(key);
         }
-        return new DataBlock.Value() {
+        return new DataBlock.Value(key) {
             @Override
-            public Boolean asBoolean() {
+            public Boolean asBooleanNullable() {
                                      return Boolean.parseBoolean(value);
                                                                                                }
 
             @Override
-            public Integer asInteger() {
+            public Integer asIntegerNullable() {
                                      return Integer.parseInt(value);
                                                                                            }
 
             @Override
-            public Float asFloat() {
+            public Float asFloatNullable() {
                                  return Float.parseFloat(value);
                                                                                        }
 
             @Override
-            public Double asDouble() {
+            public Double asDoubleNullable() {
                                    return Double.parseDouble(value);
                                                                                            }
 
             @Override
-            public String asString() {
+            public String asStringNullable() {
                 return value;
             }
         };

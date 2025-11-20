@@ -52,7 +52,7 @@ public class ValveGearConfig {
 			animatrix.getValueMap().forEach((percent, anim) -> custom.put(Float.parseFloat(percent), anim.asIdentifier()));
 			return new ValveGearConfig(ValveGearType.CUSTOM, custom);
 		}
-		String name = def.getValue(key).asString();
+		String name = def.getValue(key).asStringNullable();
 		if (name != null) {
 			return new ValveGearConfig(ValveGearType.from(name.toUpperCase(Locale.ROOT)), null);
 		}

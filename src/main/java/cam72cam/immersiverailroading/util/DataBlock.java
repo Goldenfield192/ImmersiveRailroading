@@ -4,6 +4,8 @@ import cam72cam.immersiverailroading.ImmersiveRailroading;
 import cam72cam.mod.resource.Identifier;
 import org.apache.commons.io.IOUtils;
 
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.Charset;
@@ -11,21 +13,21 @@ import java.util.*;
 
 @SuppressWarnings("unused")
 public class DataBlock {
-    public static final DataBlock EMPTY_BLOCK = new DataBlock(null,
-                                                              Collections.emptyMap(),
+    public static final DataBlock EMPTY_BLOCK = new DataBlock(Collections.emptyMap(),
                                                               Collections.emptyMap(),
                                                               Collections.emptyMap(),
                                                               Collections.emptyMap());
+    private static final String DEFAULT_ERROR = "Failed to get essential property %s in file %s as %s";
 
-    protected final DataBlock parent;
+    protected DataBlock parent;
+    protected String name;
     protected final Map<String, Value> valueMap;
     protected final Map<String, List<Value>> valuesMap;
     protected final Map<String, DataBlock> blockMap;
     protected final Map<String, List<DataBlock>> blocksMap;
 
-    DataBlock(DataBlock parent, Map<String, Value> valueMap, Map<String, List<Value>> valuesMap,
-                     Map<String, DataBlock> blockMap, Map<String, List<DataBlock>> blocksMap) {
-        this.parent = parent;
+    DataBlock(Map<String, Value> valueMap, Map<String, List<Value>> valuesMap,
+              Map<String, DataBlock> blockMap, Map<String, List<DataBlock>> blocksMap) {
         this.valueMap = valueMap;
         this.valuesMap = valuesMap;
         this.blockMap = blockMap;
@@ -49,7 +51,7 @@ public class DataBlock {
     }
     
     public Value getValue(String key) {
-        return valueMap.getOrDefault(key, Value.NULL);
+        return valueMap.getOrDefault(key, Value.ofNull(key));
     }
     
     public Map<String, Value> getValueMap() {
@@ -64,77 +66,149 @@ public class DataBlock {
         return valuesMap;
     }
 
+    private String getPath() {
+        if (this.parent == null) {
+            return this.name;
+        }
+        return parent.getPath() + "/" + this.name;
+    }
+
+    public void processParent() {
+        this.valueMap.forEach((s, value) -> value.setParent(this));
+        this.valuesMap.forEach((s, value) -> value.forEach(value1 -> value1.setParent(this)));
+        this.blockMap.forEach((s, block) -> {
+            block.parent = this;
+            block.processParent();
+        });
+        this.blocksMap.forEach((s, blocks) ->
+                                       blocks.forEach(block -> {
+                                           block.parent = this;
+                                           block.processParent();
+        }));
+    }
+
     public abstract static class Value {
         private DataBlock parent;
-        private String propertyName;
+        private final String key;
 
-        public abstract Boolean asBoolean();
+        public Value(String key) {
+            this.key = key;
+        }
+
+        public void setParent(DataBlock parent) {
+            this.parent = parent;
+        }
+
+        public abstract @Nullable Boolean asBooleanNullable();
+        public boolean asBoolean() {
+            Boolean b = asBooleanNullable();
+            if (b == null) {
+                throw new IllegalArgumentException(String.format(DEFAULT_ERROR, key, parent.getPath(), "boolean"));
+            }
+            return b;
+        }
         public boolean asBoolean(boolean fallback) {
-            Boolean val = asBoolean();
+            Boolean val = asBooleanNullable();
             return val != null ? val : fallback;
         }
 
-        public abstract Integer asInteger();
+        public abstract @Nullable Integer asIntegerNullable();
+        public int asInteger() {
+            Integer i = asIntegerNullable();
+            if (i == null) {
+                throw new IllegalArgumentException(String.format(DEFAULT_ERROR, key, parent.getPath(), "integer"));
+            }
+            return i;
+        }
         public int asInteger(int fallback) {
-            Integer val = asInteger();
+            Integer val = asIntegerNullable();
             return val != null ? val : fallback;
         }
 
-        public abstract Float asFloat();
+        public abstract @Nullable Float asFloatNullable();
+        public float asFloat() {
+            Float f = asFloatNullable();
+            if (f == null) {
+                throw new IllegalArgumentException(String.format(DEFAULT_ERROR, key, parent.getPath(), "float"));
+            }
+            return f;
+        }
         public float asFloat(float fallback) {
-            Float val = asFloat();
+            Float val = asFloatNullable();
             return val != null ? val : fallback;
         }
 
-        public abstract Double asDouble();
+        public abstract @Nullable Double asDoubleNullable();
+        public double asDouble() {
+            Double d = asDoubleNullable();
+            if (d == null) {
+                throw new IllegalArgumentException(String.format(DEFAULT_ERROR, key, parent.getPath(), "double"));
+            }
+            return d;
+        }
         public double asDouble(double fallback) {
-            Double val = asDouble();
+            Double val = asDoubleNullable();
             return val != null ? val : fallback;
         }
 
-        public abstract String asString();
-        public String asString(String fallback) {
-            String val = asString();
+        public abstract @Nullable String asStringNullable();
+        public @Nonnull String asString() {
+            String s = asStringNullable();
+            if (s == null) {
+                throw new IllegalArgumentException(String.format(DEFAULT_ERROR, key, parent.getPath(), "string"));
+            }
+            return s;
+        }
+        public @Nonnull String asString(String fallback) {
+            String val = asStringNullable();
             return val != null ? val : fallback;
         }
 
-        public Identifier asIdentifier() {
-            String value = asString();
+        public @Nullable Identifier asIdentifierNullable() {
+            String value = asStringNullable();
             return value != null ? new Identifier(ImmersiveRailroading.MODID, new Identifier(value).getPath()) : null;
         }
-        public Identifier asIdentifier(Identifier fallback) {
-            Identifier val = asIdentifier();
+        public @Nonnull Identifier asIdentifier() {
+            String value = asStringNullable();
+            if (value == null) {
+                throw new IllegalArgumentException(String.format(DEFAULT_ERROR, key, parent.getPath(), "location"));
+            }
+            return new Identifier(ImmersiveRailroading.MODID, new Identifier(value).getPath());
+        }
+        public @Nonnull Identifier asIdentifier(Identifier fallback) {
+            Identifier val = asIdentifierNullable();
             return val != null && val.canLoad() ? val : fallback;
         }
 
-        public static final Value NULL = new Value() {
-            @Override
-            public Boolean asBoolean() {
-                return null;
-            }
+        public static Value ofNull(String key) {
+            return new Value(key) {
+                @Override
+                public Boolean asBooleanNullable() {
+                    return null;
+                }
 
-            @Override
-            public Integer asInteger() {
-                return null;
-            }
+                @Override
+                public Integer asIntegerNullable() {
+                    return null;
+                }
 
-            @Override
-            public Float asFloat() {
-                return null;
-            }
+                @Override
+                public Float asFloatNullable() {
+                    return null;
+                }
 
-            @Override
-            public Double asDouble() {
-                return null;
-            }
+                @Override
+                public Double asDoubleNullable() {
+                    return null;
+                }
 
-            @Override
-            public String asString() {
-                return null;
-            }
-        };
+                @Override
+                public String asStringNullable() {
+                    return null;
+                }
+            };
+        }
     }
-
 
     public static DataBlock load(Identifier ident) throws IOException {
         return load(ident, null);
@@ -166,11 +240,8 @@ public class DataBlock {
     }
 
     public DataBlock merge(DataBlock other) {
-        DataBlock result = new DataBlock(this.parent,
-              new LinkedHashMap<>(this.getValueMap()),
-              new LinkedHashMap<>(this.getValuesMap()),
-              new LinkedHashMap<>(this.getBlockMap()),
-              new LinkedHashMap<>(this.getBlocksMap()));
+        DataBlock result = new DataBlock(new LinkedHashMap<>(this.getValueMap()), new LinkedHashMap<>(this.getValuesMap()),
+                                         new LinkedHashMap<>(this.getBlockMap()), new LinkedHashMap<>(this.getBlocksMap()));
 
         result.valueMap.putAll(other.getValueMap());
         other.getValuesMap().forEach((key, values) -> {

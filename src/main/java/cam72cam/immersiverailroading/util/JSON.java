@@ -17,7 +17,9 @@ import java.util.Map;
 public class JSON {
     public static DataBlock parse(InputStream stream) throws IOException {
         try {
-            return wrapObject(new JsonParser().parse(new InputStreamReader(stream)).getAsJsonObject());
+            DataBlock block = wrapObject(new JsonParser().parse(new InputStreamReader(stream)).getAsJsonObject());
+            block.processParent();
+            return block;
         } finally {
             stream.close();
         }
@@ -28,7 +30,7 @@ public class JSON {
         Map<String, DataBlock> blocks = new LinkedHashMap<>();
         for (Map.Entry<String, JsonElement> entry : obj.entrySet()) {
             if (entry.getValue().isJsonPrimitive()) {
-                primitives.put(entry.getKey(), wrapValue(entry.getValue().getAsJsonPrimitive()));
+                primitives.put(entry.getKey(), wrapValue(entry.getKey(), entry.getValue().getAsJsonPrimitive()));
             }
             if (entry.getValue().isJsonObject()) {
                 blocks.put(entry.getKey(), wrapObject(entry.getValue().getAsJsonObject()));
@@ -40,7 +42,7 @@ public class JSON {
             if (entry.getValue().isJsonArray()) {
                 for (JsonElement element : entry.getValue().getAsJsonArray()) {
                     if (element.isJsonPrimitive()) {
-                        primitiveSets.computeIfAbsent(entry.getKey(), key -> new ArrayList<>()).add(wrapValue(element.getAsJsonPrimitive()));
+                        primitiveSets.computeIfAbsent(entry.getKey(), key -> new ArrayList<>()).add(wrapValue(entry.getKey(), element.getAsJsonPrimitive()));
                     }
                     if (element.isJsonObject()) {
                         blockSets.computeIfAbsent(entry.getKey(), key -> new ArrayList<>()).add(wrapObject(element.getAsJsonObject()));
@@ -50,37 +52,34 @@ public class JSON {
             }
         }
 
-        return new DataBlock(null,
-                             primitives,
-                             primitiveSets,
-                             blocks,
-                             blockSets);
+        return new DataBlock(primitives, primitiveSets,
+                             blocks, blockSets);
     }
 
-    private static DataBlock.Value wrapValue(JsonPrimitive primitive) {
-        return new DataBlock.Value() {
+    private static DataBlock.Value wrapValue(String key, JsonPrimitive primitive) {
+        return new DataBlock.Value(key) {
             @Override
-            public Boolean asBoolean() {
+            public Boolean asBooleanNullable() {
                 return primitive == null ? null : primitive.getAsBoolean();
             }
 
             @Override
-            public Integer asInteger() {
+            public Integer asIntegerNullable() {
                 return primitive == null ? null : primitive.getAsInt();
             }
 
             @Override
-            public Float asFloat() {
+            public Float asFloatNullable() {
                 return primitive == null ? null : primitive.getAsFloat();
             }
 
             @Override
-            public Double asDouble() {
+            public Double asDoubleNullable() {
                 return primitive == null ? null : primitive.getAsDouble();
             }
 
             @Override
-            public String asString() {
+            public String asStringNullable() {
                 return primitive == null ? null : primitive.getAsString();
             }
         };

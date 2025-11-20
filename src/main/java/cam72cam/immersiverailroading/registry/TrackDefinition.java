@@ -29,8 +29,8 @@ public class TrackDefinition {
     TrackDefinition(String trackID, DataBlock object) throws Exception {
         this.trackID = trackID;
         this.name = object.getValue("name").asString();
-        this.modelerName = object.getValue("modeler").asString();
-        this.packName = object.getValue("pack").asString();
+        this.modelerName = object.getValue("modeler").asStringNullable();
+        this.packName = object.getValue("pack").asStringNullable();
 
         this.clack = object.getValue("clack").asBoolean(true);
         this.bumpiness = object.getValue("bumpiness").asFloat(clack ? 1f : 0f);

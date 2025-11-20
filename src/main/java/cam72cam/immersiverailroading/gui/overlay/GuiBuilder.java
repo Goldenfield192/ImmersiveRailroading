@@ -140,8 +140,8 @@ public class GuiBuilder {
         // common stuff
         this.x = data.getValue("x").asFloat(0f);
         this.y = data.getValue("y").asFloat(0f);
-        this.screen_x = Horizontal.from(data.getValue("screen_x").asString());
-        this.screen_y = Vertical.from(data.getValue("screen_y").asString());
+        this.screen_x = Horizontal.from(data.getValue("screen_x").asStringNullable());
+        this.screen_y = Vertical.from(data.getValue("screen_y").asStringNullable());
 
         // Text stuff
         DataBlock txt = data.getBlock("text");
@@ -168,19 +168,19 @@ public class GuiBuilder {
         }
 
         // Controls
-        String readout = data.getValue("readout").asString();
+        String readout = data.getValue("readout").asStringNullable();
         this.readout = readout != null ? Readouts.valueOf(readout.toUpperCase(Locale.ROOT)) : null;
-        this.control = data.getValue("control").asString();
-        this.setting = data.getValue("setting").asString();
-        this.setting_default = data.getValue("setting_default").asFloat();
-        this.texture_variant = data.getValue("texture_variant").asString();
+        this.control = data.getValue("control").asStringNullable();
+        this.setting = data.getValue("setting").asStringNullable();
+        this.setting_default = data.getValue("setting_default").asFloatNullable();
+        this.texture_variant = data.getValue("texture_variant").asStringNullable();
         DataBlock soundBlock = data.getBlock("sound");
         this.sound = soundBlock != null ? new EntityRollingStockDefinition.ControlSoundsDefinition(soundBlock) : null;
         this.global = data.getValue("global").asBoolean(false);
         this.invert = data.getValue("invert").asBoolean(false);
         this.translucent = data.getValue("translucent").asBoolean(data.getValue("hide").asBoolean(false));
         this.toggle = data.getValue("toggle").asBoolean(false);
-        this.clamp = ClampMode.from(data.getValue("clamp").asString());
+        this.clamp = ClampMode.from(data.getValue("clamp").asStringNullable());
 
         DataBlock tl = data.getBlock("translate");
         if (tl != null) {
@@ -205,8 +205,8 @@ public class GuiBuilder {
 
         DataBlock scale = data.getBlock("scale");
         if (scale != null) {
-            this.scalex = scale.getValue("x").asFloat();
-            this.scaley = scale.getValue("y").asFloat();
+            this.scalex = scale.getValue("x").asFloatNullable();
+            this.scaley = scale.getValue("y").asFloatNullable();
         } else {
             this.scalex = null;
             this.scaley = null;
