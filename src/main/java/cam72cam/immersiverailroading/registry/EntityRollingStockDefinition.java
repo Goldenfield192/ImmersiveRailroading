@@ -319,7 +319,7 @@ public abstract class EntityRollingStockDefinition {
         if (!navigator.hasNavMesh() && passengerCompartmentWidth == 0 && passengerCompartmentLength == 0) {
             //Meaning this stock have neither a navigation mesh nor legacy walk-space definition
             //We can't add check in loadData because navigator isn't initialized then
-            throw new IllegalArgumentException("You must have FLOOR objects specified in your model, or have \"length\" and \"width\" defined in your jason's passenger session!");
+            throw new IllegalArgumentException("You must have FLOOR objects specified in your model, or have \"length\" and \"width\" defined in your json's passenger session!");
         }
 
         this.renderComponents = new EnumMap<>(ModelComponentType.class);
