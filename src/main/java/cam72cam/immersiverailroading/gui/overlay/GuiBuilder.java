@@ -8,7 +8,6 @@ import cam72cam.immersiverailroading.library.GuiText;
 import cam72cam.immersiverailroading.registry.EntityRollingStockDefinition;
 import cam72cam.immersiverailroading.util.DataBlock;
 import cam72cam.immersiverailroading.util.MathUtil;
-import cam72cam.immersiverailroading.util.MergedBlocks;
 import cam72cam.mod.MinecraftClient;
 import cam72cam.mod.config.ConfigFile;
 import cam72cam.mod.entity.Entity;
@@ -122,13 +121,14 @@ public class GuiBuilder {
         List<DataBlock.Value> direct = data.getValues("import");
         if (direct != null) {
             for (DataBlock.Value imp : direct) {
-                data = new MergedBlocks(data, processImports(DataBlock.load(imp.asIdentifier())));
+                data = data.merge(processImports(DataBlock.load(imp.asIdentifier())));
             }
         }
         List<DataBlock> imports = data.getBlocks("import");
         if (imports != null) {
             for (DataBlock imp : imports) {
-                data = new MergedBlocks(data, processImports(DataBlock.load(imp.getValue("source").asIdentifier(), imp.getBlock("replace"))));
+                DataBlock tmp = processImports(DataBlock.load(imp.getValue("source").asIdentifier(), imp.getBlock("replace")));
+                data = data.merge(tmp);
             }
         }
         return data;

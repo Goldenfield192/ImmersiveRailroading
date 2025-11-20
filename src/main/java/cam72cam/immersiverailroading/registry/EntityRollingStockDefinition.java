@@ -384,15 +384,16 @@ public abstract class EntityRollingStockDefinition {
                 DataBlock loaded = DataBlock.load(toImport.asIdentifier());
                 loaded = withImports(loaded);
                 // Graft data on TOP of loaded
-                data = new MergedBlocks(loaded, data);
+                data = loaded.merge(data);
             }
         }
         return data;
     }
 
     private DataBlock transformData(DataBlock data) throws IOException {
-        DataBlock base = DataBlock.load(defaultDataLocation());
-        return new MergedBlocks(withImports(base), withImports(data));
+        DataBlock base = withImports(DataBlock.load(defaultDataLocation()));
+        data = withImports(data);
+        return base.merge(data);
     }
 
     public void loadData(DataBlock data) throws Exception {
