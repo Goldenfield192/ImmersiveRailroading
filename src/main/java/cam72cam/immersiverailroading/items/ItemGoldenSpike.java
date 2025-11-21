@@ -6,7 +6,7 @@ import cam72cam.immersiverailroading.ImmersiveRailroading;
 import cam72cam.immersiverailroading.library.GuiTypes;
 import cam72cam.immersiverailroading.tile.TileRailBase;
 import cam72cam.immersiverailroading.tile.TileRailPreview;
-import cam72cam.immersiverailroading.track.TrackMap;
+import cam72cam.immersiverailroading.util.TrackUtil;
 import cam72cam.immersiverailroading.util.BlockUtil;
 import cam72cam.immersiverailroading.util.PlacementInfo;
 import cam72cam.mod.item.*;
@@ -56,7 +56,7 @@ public class ItemGoldenSpike extends CustomItem {
 			if (tepos != null) {
 				TileRailPreview tr = world.getBlockEntity(tepos, TileRailPreview.class);
 				if (tr != null) {
-					PlacementInfo info = TrackMap.getNeighborNode(player, player.getWorld(), pos, hit, tr.getItem());
+					PlacementInfo info = TrackUtil.getNeighborNode(player, player.getWorld(), pos, hit, tr.getItem());
 					boolean useSnapping = info != null && Config.ConfigDebug.enableTrackSnapping;
 					float yaw;
 					if(useSnapping) {

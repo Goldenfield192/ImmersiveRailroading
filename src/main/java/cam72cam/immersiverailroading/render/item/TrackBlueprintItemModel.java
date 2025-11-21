@@ -1,7 +1,7 @@
 package cam72cam.immersiverailroading.render.item;
 
 import cam72cam.immersiverailroading.Config;
-import cam72cam.immersiverailroading.track.TrackMap;
+import cam72cam.immersiverailroading.util.TrackUtil;
 import cam72cam.immersiverailroading.library.TrackItems;
 import cam72cam.immersiverailroading.render.ExpireableMap;
 import cam72cam.immersiverailroading.render.rail.RailRender;
@@ -60,7 +60,7 @@ public class TrackBlueprintItemModel implements ItemRender.IItemModel {
 		World world = player.getWorld();
 		Vec3d cameraPos = GlobalRender.getCameraPos(partialTicks);
 
-		PlacementInfo closeEnd = TrackMap.getNeighborNode(player, world, pos, vec.subtract(pos), stack);
+		PlacementInfo closeEnd = TrackUtil.getNeighborNode(player, world, pos, vec.subtract(pos), stack);
 		boolean useSnapping = closeEnd != null && Config.ConfigDebug.enableTrackSnapping;
 
 		Vec3d hit;
