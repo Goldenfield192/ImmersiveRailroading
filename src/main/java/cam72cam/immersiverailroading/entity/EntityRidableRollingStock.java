@@ -34,7 +34,7 @@ public abstract class EntityRidableRollingStock extends EntityBuildableRollingSt
 	private Map<String, UUID> seatedPassengers = new HashMap<>();
 
 	// Hack to remount players if they were seated
-	private Map<UUID, Vec3d> remount = new HashMap<>();
+	private final Map<UUID, Vec3d> remount = new HashMap<>();
 
 	public float getRidingSoundModifier() {
 		return getDefinition().dampeningAmount;
@@ -246,14 +246,9 @@ public abstract class EntityRidableRollingStock extends EntityBuildableRollingSt
 
 		if (getWorld().isServer) {
 			for (Door<?> door : getDefinition().getModel().getDoors()) {
-				if (door.isAtOpenDoor(source, this, offset.rotateYaw(-90), Door.Types.EXTERNAL)) {
-					Vec3d doorCenter = door.center(this);
-					Vec3d toDoor = doorCenter.subtract(offset).normalize();
-					double dot = toDoor.dotProduct(movement.normalize());
-					if (dot > 0.5) {
-						this.removePassenger(source);
-						break;
-					}
+				if (door.isAtOpenDoorFromInternal(source, this, offset.rotateYaw(-90), Door.Types.EXTERNAL)) {
+					this.removePassenger(source);
+					break;
 				}
 			}
 		}
@@ -332,7 +327,7 @@ public abstract class EntityRidableRollingStock extends EntityBuildableRollingSt
 			int payout = (int) Math.floor(distanceMoved * Config.ConfigBalance.villagerPayoutPerMeter);
 
 			List<ItemStack> payouts = Config.ConfigBalance.getVillagerPayout();
-			if (payouts.size() != 0) {
+			if (!payouts.isEmpty()) {
 				int type = (int)(Math.random() * 100) % payouts.size();
 				ItemStack stack = payouts.get(type).copy();
 				stack.setCount(payout);

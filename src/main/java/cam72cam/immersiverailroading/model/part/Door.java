@@ -72,7 +72,7 @@ public class Door<T extends EntityMoveableRollingStock> extends Control<T> {
         return true;
     }
 
-    public boolean isAtOpenDoor(Player player, EntityRollingStock stock, Vec3d offset, Types type) {
+    public boolean isAtOpenDoorFromInternal(Player player, EntityRollingStock stock, Vec3d offset, Types type) {
         if (!isAvailable(player, stock, type)) return false;
 
         IBoundingBox bb = IBoundingBox.from(
@@ -97,11 +97,7 @@ public class Door<T extends EntityMoveableRollingStock> extends Control<T> {
             return false;
         }
 
-        if (!isOpen(stock)
-            || player.getPosition().distanceTo(stock.getPosition()) > stock.getDefinition().getLength(stock.gauge)) {
-            return false;
-        }
-
-        return true;
+        return isOpen(stock)
+               && !(player.getPosition().distanceTo(stock.getPosition()) > stock.getDefinition().getLength(stock.gauge));
     }
 }
