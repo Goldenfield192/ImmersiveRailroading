@@ -35,7 +35,7 @@ public class MeshNavigator {
                     sub.forEach(a -> floor.add(a.asOBJFace()));
                 });
             }
-            root = buildBVH(floor, 0);
+            root = buildBVH(rotateToWorld(floor), 0);
 
             List<OBJFace> collision = new ArrayList<>();
             if (model.collision != null) {
@@ -44,7 +44,7 @@ public class MeshNavigator {
                     sub.forEach(a -> collision.add(a.asOBJFace()));
                 });
             }
-            collisionRoot = buildBVH(collision, 0);
+            collisionRoot = buildBVH(rotateToWorld(collision), 0);
         } else {
             OBJFace face1 = new OBJFace();
             OBJFace face2 = new OBJFace();
@@ -64,7 +64,7 @@ public class MeshNavigator {
             face2.normal = new Vec3d(0, 1, 0);
             face2.uv = Arrays.asList(emptyUV, emptyUV, emptyUV);
 
-            root = buildBVH(Arrays.asList(face1, face2), 0);
+            root = buildBVH(rotateToWorld(Arrays.asList(face1, face2)), 0);
             collisionRoot = buildBVH(Collections.emptyList(), 0);
         }
     }
@@ -178,6 +178,16 @@ public class MeshNavigator {
                 new Vec3d(Math.min(a.x, b.x), Math.min(a.y, b.y), Math.min(a.z, b.z)),
                 new Vec3d(Math.max(a.x, b.x), Math.max(a.y, b.y), Math.max(a.z, b.z))
         );
+    }
+
+    private static List<OBJFace> rotateToWorld(List<OBJFace> triangles) {
+        return triangles.stream().map(f -> {
+            OBJFace face1 = new OBJFace();
+            face1.uv = f.uv;
+            face1.normal = f.normal.rotateYaw(-90);
+            face1.vertices = f.vertices.stream().map(v -> v.rotateYaw(-90)).collect(Collectors.toList());
+            return face1;
+        }).collect(Collectors.toList());
     }
 
     private double getCentroidInAxis(OBJFace tri, Axis axis) {

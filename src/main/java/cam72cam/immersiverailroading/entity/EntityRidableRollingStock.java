@@ -128,10 +128,10 @@ public abstract class EntityRidableRollingStock extends EntityBuildableRollingSt
 		}
 		Vec3d targetXZ = VecUtil.rotatePitch(movement, -this.getRotationPitch());
 
-		Vec3d rayStart = targetXZ.rotateYaw(-90).add(0, 1, 0);
+		Vec3d rayStart = targetXZ.add(0, 1, 0);
 		Vec3d rayDir = new Vec3d(0, -1, 0);
 
-		Vec3d localTarget = targetXZ.rotateYaw(-90);
+		Vec3d localTarget = targetXZ;
 
 		double scale = this.gauge.scale();
 		double bbOffset = 0.5 * scale;
@@ -159,7 +159,7 @@ public abstract class EntityRidableRollingStock extends EntityBuildableRollingSt
 		MeshNavigator navMesh = this.getDefinition().navigator;
 		double scale = gauge.scale();
 
-		Vec3d realOffset = offset.rotateYaw(-90);
+		Vec3d realOffset = offset;
 
 		List<OBJFace> faces = navMesh.getAllFloorMesh(scale);
 		//Check if we could move downward first
@@ -199,8 +199,8 @@ public abstract class EntityRidableRollingStock extends EntityBuildableRollingSt
 		start = VecUtil.rotatePitch(start, this.getRotationPitch());
 		end  = VecUtil.rotatePitch(end, -this.getRotationPitch());
 
-		Vec3d finalStart = start.rotateYaw(-90);
-		Vec3d finalEnd = start.add(end.rotateYaw(-90));
+		Vec3d finalStart = start;
+		Vec3d finalEnd = start.add(end);
 
 		return getDefinition().getModel().getDoors().stream()
 							  .filter(d -> d.type == Door.Types.INTERNAL || d.type == Door.Types.CONNECTING)
@@ -216,7 +216,7 @@ public abstract class EntityRidableRollingStock extends EntityBuildableRollingSt
 		}
 
 		movement = new Vec3d(movement.x, 0, movement.z).rotateYaw(this.getRotationYaw() - source.getRotationYawHead());
-		Vec3d localOffset = offset.rotateYaw(-90).add(movement.rotateYaw(-90));
+		Vec3d localOffset = offset.add(movement);
 
 		double scale = this.gauge.scale();
 		double bbOffset = 0.2 * scale;
@@ -228,7 +228,7 @@ public abstract class EntityRidableRollingStock extends EntityBuildableRollingSt
 		List<OBJFace> nearbyCollision = navMesh.getCollisionMeshWithin(rayBox, scale);
 
 		Vec3d rayStart = localOffset.add(0, 1, 0);
-		Vec3d rayDir = movement.rotateYaw(-90).normalize();
+		Vec3d rayDir = movement.normalize();
 
 		for (OBJFace tri : nearbyCollision) {
 			Double t = MathUtil.intersectRayTriangle(rayStart, rayDir, tri);
@@ -245,7 +245,7 @@ public abstract class EntityRidableRollingStock extends EntityBuildableRollingSt
 
 		if (getWorld().isServer) {
 			for (Door<?> door : getDefinition().getModel().getDoors()) {
-				if (door.isAtOpenDoorFromInternal(source, this, offset.rotateYaw(-90).scale(1/gauge.scale()), Door.Types.EXTERNAL)) {
+				if (door.isAtOpenDoorFromInternal(source, this, offset.scale(1 / gauge.scale()), Door.Types.EXTERNAL)) {
 					this.removePassenger(source);
 					break;
 				}
@@ -341,8 +341,8 @@ public abstract class EntityRidableRollingStock extends EntityBuildableRollingSt
 
 	private boolean isAtCouplerWithFloor(Vec3d offset, Vec3d movement) {
 		MeshNavigator navMesh = getDefinition().navigator;
-		Vec3d finalOffset = offset.add(movement).rotateYaw(-90).scale(1/gauge.scale());
-		return navMesh.atCarEnds(finalOffset, movement.rotateYaw(-90));
+		Vec3d finalOffset = offset.add(movement).scale(1 / gauge.scale());
+		return navMesh.atCarEnds(finalOffset, movement);
 	}
 
 	public void onSeatClick(String seat, Player player) {
