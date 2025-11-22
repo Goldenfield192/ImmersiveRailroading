@@ -138,35 +138,35 @@ public class MeshNavigator {
         return root.getTrianglesRecursive().stream().map(f -> f.scale(scale)).collect(Collectors.toList());
     }
 
-    public List<OBJFace> getFloorMeshWithin(IBoundingBox targetBB, double gaugeScale) {
-        return getCollidingMesh(root, targetBB, gaugeScale);
+    public List<OBJFace> queryFloorMesh(IBoundingBox region, double gaugeScale) {
+        return queryCollidingMesh(root, region, gaugeScale);
     }
 
-    public List<OBJFace> getCollisionMeshWithin(IBoundingBox targetBB, double gaugeScale) {
-        return getCollidingMesh(collisionRoot, targetBB, gaugeScale);
+    public List<OBJFace> queryCollisionMesh(IBoundingBox region, double gaugeScale) {
+        return queryCollidingMesh(collisionRoot, region, gaugeScale);
     }
 
-    public List<OBJFace> getCollidingMesh(BVHNode root, IBoundingBox targetBB, double gaugeScale) {
-        //Scale back to normal model
-        targetBB = scaleBB(targetBB, 1 / gaugeScale);
+    public List<OBJFace> queryCollidingMesh(BVHNode root, IBoundingBox region, double gaugeScale) {
+        //Scale region to normal model space
+        region = scaleBB(region, 1 / gaugeScale);
         List<OBJFace> faces = new ArrayList<>();
-        getCollidingMeshInternal(root, targetBB, faces);
-        //Scale model faces to match gauge
+        queryCollidingMeshInternal(root, region, faces);
+        //Scale model faces bske to match gauge
         return faces.stream().map(f -> f.scale(gaugeScale)).collect(Collectors.toList());
     }
 
-    private void getCollidingMeshInternal(BVHNode parent, IBoundingBox targetBB, List<OBJFace> result) {
-        if (parent == null || !parent.bound.intersects(targetBB)) {
+    private void queryCollidingMeshInternal(BVHNode parent, IBoundingBox region, List<OBJFace> result) {
+        if (parent == null || !parent.bound.intersects(region)) {
             return;
         }
 
         if (parent.isLeaf()) {
             parent.triangles.stream()
-                            .filter(face -> face.getBoundingBox().intersects(targetBB))
+                            .filter(face -> face.getBoundingBox().intersects(region))
                             .forEach(result::add);
         } else {
-            getCollidingMeshInternal(parent.left, targetBB, result);
-            getCollidingMeshInternal(parent.right, targetBB, result);
+            queryCollidingMeshInternal(parent.left, region, result);
+            queryCollidingMeshInternal(parent.right, region, result);
         }
     }
 
