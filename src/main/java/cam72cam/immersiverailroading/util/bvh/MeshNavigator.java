@@ -35,7 +35,7 @@ public class MeshNavigator {
                     sub.forEach(a -> floor.add(a.asOBJFace()));
                 });
             }
-            this.root = buildBVH(floor, 0);
+            root = buildBVH(floor, 0);
 
             List<OBJFace> collision = new ArrayList<>();
             if (model.collision != null) {
@@ -44,7 +44,7 @@ public class MeshNavigator {
                     sub.forEach(a -> collision.add(a.asOBJFace()));
                 });
             }
-            this.collisionRoot = buildBVH(collision, 0);
+            collisionRoot = buildBVH(collision, 0);
         } else {
             OBJFace face1 = new OBJFace();
             OBJFace face2 = new OBJFace();
@@ -82,6 +82,17 @@ public class MeshNavigator {
         boolean isLeaf() {
             return triangles != null;
         }
+        
+        List<OBJFace> getTrianglesRecursive() {
+            List<OBJFace> result = new ArrayList<>(triangles);
+            if (left != null) {
+                result.addAll(left.getTrianglesRecursive());
+            }
+            if (right != null) {
+                result.addAll(right.getTrianglesRecursive());
+            }
+            return result;
+        }
     }
 
     public BVHNode buildBVH(List<OBJFace> triangles, int depth) {
@@ -118,20 +129,21 @@ public class MeshNavigator {
         return node;
     }
 
-    public boolean atCarEnds(Vec3d vec3d) {
-        return vec3d.x >= root.bound.max().x || vec3d.x <= root.bound.min().x;
+    public boolean atCarEnds(Vec3d pos, Vec3d movement) {
+        Vec3d direction = new Vec3d(pos.x - root.bound.center().x, 0, 0);
+        return (pos.x >= root.bound.max().x || pos.x <= root.bound.min().x) & direction.dotProduct(movement) >= 0;
     }
 
     public List<OBJFace> getAllFloorMesh(double scale) {
-        return getFloorMeshWithin(root.bound.grow(new Vec3d(scale, scale, scale)), scale);
+        return root.getTrianglesRecursive().stream().map(f -> f.scale(scale)).collect(Collectors.toList());
     }
 
     public List<OBJFace> getFloorMeshWithin(IBoundingBox targetBB, double gaugeScale) {
-        return getCollidingMesh(this.root, targetBB, gaugeScale);
+        return getCollidingMesh(root, targetBB, gaugeScale);
     }
 
     public List<OBJFace> getCollisionMeshWithin(IBoundingBox targetBB, double gaugeScale) {
-        return getCollidingMesh(this.collisionRoot, targetBB, gaugeScale);
+        return getCollidingMesh(collisionRoot, targetBB, gaugeScale);
     }
 
     public List<OBJFace> getCollidingMesh(BVHNode root, IBoundingBox targetBB, double gaugeScale) {

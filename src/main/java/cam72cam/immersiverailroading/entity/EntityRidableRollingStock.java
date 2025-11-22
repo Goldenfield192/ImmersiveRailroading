@@ -158,7 +158,6 @@ public abstract class EntityRidableRollingStock extends EntityBuildableRollingSt
 	private Vec3d restrictPassengerPosition(Vec3d offset) {
 		MeshNavigator navMesh = this.getDefinition().navigator;
 		double scale = gauge.scale();
-		offset = offset.scale(scale);
 
 		Vec3d realOffset = offset.rotateYaw(-90);
 
@@ -238,7 +237,7 @@ public abstract class EntityRidableRollingStock extends EntityBuildableRollingSt
 			}
 		}
 
-		if (isInternalDoorClosed(offset, movement)) {
+		if (isInternalDoorClosed(offset.scale(1/gauge.scale()), movement.scale(1/gauge.scale()))) {
 			return offset;
 		}
 
@@ -246,7 +245,7 @@ public abstract class EntityRidableRollingStock extends EntityBuildableRollingSt
 
 		if (getWorld().isServer) {
 			for (Door<?> door : getDefinition().getModel().getDoors()) {
-				if (door.isAtOpenDoorFromInternal(source, this, offset.rotateYaw(-90), Door.Types.EXTERNAL)) {
+				if (door.isAtOpenDoorFromInternal(source, this, offset.rotateYaw(-90).scale(1/gauge.scale()), Door.Types.EXTERNAL)) {
 					this.removePassenger(source);
 					break;
 				}
@@ -342,8 +341,8 @@ public abstract class EntityRidableRollingStock extends EntityBuildableRollingSt
 
 	private boolean isAtCouplerWithFloor(Vec3d offset, Vec3d movement) {
 		MeshNavigator navMesh = getDefinition().navigator;
-		Vec3d finalOffset = offset.add(movement).rotateYaw(-90);
-		return navMesh.atCarEnds(finalOffset);
+		Vec3d finalOffset = offset.add(movement).rotateYaw(-90).scale(1/gauge.scale());
+		return navMesh.atCarEnds(finalOffset, movement.rotateYaw(-90));
 	}
 
 	public void onSeatClick(String seat, Player player) {
