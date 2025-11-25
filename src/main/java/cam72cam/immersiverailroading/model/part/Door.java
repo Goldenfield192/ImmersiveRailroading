@@ -41,8 +41,8 @@ public class Door<T extends EntityMoveableRollingStock> extends Control<T> {
     public Door(ModelComponent part, ModelState state, double internal_model_scale, Map<String, DataBlock> widgetConfig) {
         super(part, state, internal_model_scale, widgetConfig);
         type = part.modelIDs.stream().anyMatch(g -> g.contains("EXTERNAL")) ? Types.EXTERNAL :
-                part.modelIDs.stream().anyMatch(g -> g.contains("CONNECTING")) ? Types.CONNECTING :
-                Types.INTERNAL;
+               part.modelIDs.stream().anyMatch(g -> g.contains("CONNECTING")) ? Types.CONNECTING :
+               Types.INTERNAL;
     }
 
 
@@ -51,8 +51,16 @@ public class Door<T extends EntityMoveableRollingStock> extends Control<T> {
     }
 
     public boolean isAtOpenDoor(Player player, EntityRollingStock stock, Types type) {
-        if (!isAvailable(player, stock, type)) return false;
-
+        if (this.type != type) {
+            return false;
+        }
+        int cool = cooldown.getOrDefault(player.getUUID(), 0);
+        if (player.getTickCount() < cool + 10 && player.getTickCount() > cool) {
+            return false;
+        }
+        if (!isOpen(stock) || player.getPosition().distanceTo(stock.getPosition()) > stock.getDefinition().getLength(stock.gauge)) {
+            return false;
+        }
         Matrix4 model = stock.getModelMatrix();
         Matrix4 delta = state.getMatrix((T) stock, 0);
         if (delta != null) {
@@ -70,34 +78,5 @@ public class Door<T extends EntityMoveableRollingStock> extends Control<T> {
         }
         cooldown.put(player.getUUID(), player.getTickCount());
         return true;
-    }
-
-    public boolean isAtOpenDoorFromInternal(Player player, EntityRollingStock stock, Vec3d offset, Types type) {
-        if (!isAvailable(player, stock, type)) return false;
-
-        IBoundingBox bb = IBoundingBox.from(
-                part.min,
-                part.max
-        ).grow(new Vec3d(0.5, 0.5, 0.5));
-
-        if (!bb.contains(offset)) {
-            return false;
-        }
-        cooldown.put(player.getUUID(), player.getTickCount());
-        return true;
-    }
-
-    private boolean isAvailable(Player player, EntityRollingStock stock, Types type) {
-        if (this.type != type) {
-            return false;
-        }
-
-        int cool = cooldown.getOrDefault(player.getUUID(), 0);
-        if (player.getTickCount() < cool + 10 && player.getTickCount() > cool) {
-            return false;
-        }
-
-        return isOpen(stock)
-               && !(player.getPosition().distanceTo(stock.getPosition()) > stock.getDefinition().getLength(stock.gauge));
     }
 }
