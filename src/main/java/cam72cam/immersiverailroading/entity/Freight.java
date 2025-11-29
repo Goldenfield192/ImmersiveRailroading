@@ -1,5 +1,6 @@
 package cam72cam.immersiverailroading.entity;
 
+import cam72cam.immersiverailroading.Config;
 import cam72cam.immersiverailroading.Config.ConfigBalance;
 import cam72cam.immersiverailroading.inventory.FilteredStackHandler;
 import cam72cam.immersiverailroading.library.GuiTypes;
@@ -141,7 +142,7 @@ public abstract class Freight extends EntityScriptableRollingStock {
     public void onTick() {
         super.onTick();
 
-        if (this.getWorld().isClient || this.getWorld().getTicks() % 5 != 0) {
+        if (this.getWorld().isClient || !Config.ImmersionConfig.allowCargoLoadDroppedItem || this.getWorld().getTicks() % 5 != 0) {
             return;
         }
 
