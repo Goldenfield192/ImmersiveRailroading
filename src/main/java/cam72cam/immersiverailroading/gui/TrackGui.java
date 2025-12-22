@@ -100,7 +100,7 @@ public class TrackGui implements IScreen {
 		int ytop = -GUIHelpers.getScreenHeight() / 4;
 
 		this.lengthInput = new NumberInputer(screen, xtop, ytop, width, height, "Length:", "", 10, 1000, settings.length,
-                                             false, true, val -> {
+                                             true, true, val -> {
             int max = 1000;
             if (settings.type.isTable()) {
                 max = settings.type == TrackItems.TURNTABLE

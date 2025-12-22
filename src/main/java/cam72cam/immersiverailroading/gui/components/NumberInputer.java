@@ -10,136 +10,134 @@ import cam72cam.mod.gui.screen.TextField;
 import java.util.function.Consumer;
 
 public class NumberInputer {
-    public TextField number;
-    public Slider slider;
-    public Button btn;
+    private static final int DEFAULT_WIDTH = 150;
+    private static final int DEFAULT_HEIGHT = 20;
+
+    public final TextField number;
+    public final Slider slider;
+    public final Button btn;
 
     private double content;
     private final double min;
     private final double max;
     private final boolean doublePrecision;
-    private boolean flag;
+    private final boolean useLogScale;
+    private final String prefix;
+    private final String suffix;
     private final Consumer<Double> consumer;
+    private boolean showingSlider;
 
     public NumberInputer(IScreenBuilder builder, int x, int y,
-                         String prefix,
-                         double min, double max, double start, boolean doublePrecision,
+                         String label,
+                         double min, double max, double start,
+                         boolean doublePrecision, Consumer<Double> callback) {
+        this(builder, x, y, DEFAULT_WIDTH, DEFAULT_HEIGHT, label, "", min, max, start, doublePrecision, false, callback);
+    }
+
+    public NumberInputer(IScreenBuilder builder, int x, int y,
+                         String label,
+                         double min, double max, double start,
+                         boolean doublePrecision, boolean useLogScale, Consumer<Double> callback) {
+        this(builder, x, y, DEFAULT_WIDTH, DEFAULT_HEIGHT, label, "", min, max, start, doublePrecision, useLogScale, callback);
+    }
+
+    public NumberInputer(IScreenBuilder builder, int x, int y, int width, int height,
+                         String label,
+                         double min, double max, double start,
+                         boolean doublePrecision,
                          Consumer<Double> callback) {
-        this(builder, x, y, 150, 20, prefix, "", min, max, start, doublePrecision, false, callback);
-    }
-
-    public NumberInputer(IScreenBuilder builder, int x, int y,
-                         String prefix,
-                         double min, double max, double start,
-                         boolean doublePrecision, boolean useLogScale, Consumer<Double> callback) {
-        this(builder, x, y, 150, 20, prefix, "", min, max, start, doublePrecision, useLogScale, callback);
-    }
-
-    public NumberInputer(IScreenBuilder builder, int x, int y, int width, int height,
-                         String prefix,
-                         double min, double max, double start,
-                         boolean doublePrecision, Consumer<Double> callback) {
-        this(builder, x, y, width, height, prefix, "",
-             min, max, start, doublePrecision, false, callback);
+        this(builder, x, y, width, height, label, "", min, max, start, doublePrecision, false, callback);
     }
 
     public NumberInputer(IScreenBuilder builder, int x, int y, int width, int height,
                          String prefix, String suffix,
                          double min, double max, double start,
                          boolean doublePrecision, Consumer<Double> callback) {
-        this(builder, x, y, width, height, prefix, suffix,
-             min, max, start, doublePrecision, false, callback);
+        this(builder, x, y, width, height, prefix, suffix, min, max, start, doublePrecision, false, callback);
     }
 
     public NumberInputer(IScreenBuilder builder, int x, int y, int width, int height,
                          String prefix, String suffix,
                          double min, double max, double start,
                          boolean doublePrecision, boolean useLogScale, Consumer<Double> callback) {
-
         if (width <= 2 * height) {
-            throw new IllegalStateException();
+            throw new IllegalStateException("Width must be greater than 2 * height");
         }
 
         this.consumer = callback;
         this.min = min;
         this.max = max;
         this.doublePrecision = doublePrecision;
-
-        start = MathUtil.clamp(start, min, max);
-        content = start;
+        this.useLogScale = useLogScale;
+        this.prefix = prefix;
+        this.suffix = suffix;
+        this.content = MathUtil.clamp(start, min, max);
+        this.showingSlider = false;
 
         number = new TextField(builder, x + 2, y + 2, width - height - 4, height - 4);
-        number.setValidator(s -> {
-            try {
-                double d = Double.parseDouble(s);
-                if (d < this.min || d > this.max) return false;
-
-                content = this.doublePrecision ? d : Math.round(d);
-                content = MathUtil.clamp(content, this.min, this.max);
-
-                callback.accept(content);
-                return true;
-            } catch (Exception e) {
-                return false;
-            }
-        });
+        number.setValidator(this::validateInput);
 
         double sliderMin = useLogScale ? Math.log10(min) : min;
         double sliderMax = useLogScale ? Math.log10(max) : max;
-        double sliderStart = useLogScale ? Math.log10(start) : start;
+        double sliderStart = useLogScale ? Math.log10(content) : content;
 
         slider = new Slider(builder, x, y, width - height, height, prefix,
-                            sliderMin, sliderMax, sliderStart,
-                            doublePrecision, s -> {
-            content = useLogScale ? Math.pow(10,
-                                             Math.log10(min) + ((s.getValue() - sliderMin) / (sliderMax - sliderMin) * (sliderMax - sliderMin))
-            ) : s.getValue();
+                            sliderMin, sliderMax, sliderStart, doublePrecision,
+                            s -> {
+                                content = useLogScale ? Math.pow(10, s.getValue()) : s.getValue();
+                                s.setText(this.prefix + formatValue(content) + this.suffix);
+                                consumer.accept(doublePrecision ? content : Math.round(content));
+                            });
 
-            s.setText(prefix + String.format(doublePrecision ? "%.4f" : "%.0f", content) + suffix);
-            callback.accept(doublePrecision ? content : Math.round(content));
-        });
+        btn = new Button(builder, x + width - height, y, height, height, "↺",
+                         (hand, button) -> {
+                             showingSlider = !showingSlider;
 
-        btn = new Button(builder, x + width - height, y, height, height, "↺") {
-            @Override
-            public void onClick(Player.Hand hand) {
-                toggleMode(useLogScale, prefix, suffix);
-            }
-        };
+                             if (showingSlider) {
+                                 number.setVisible(false);
+                                 slider.setVisible(true);
+                                 slider.setValue(NumberInputer.this.useLogScale ? Math.log10(content) : content);
+                                 slider.onSlider();
+                             } else {
+                                 slider.setVisible(false);
+                                 number.setVisible(true);
+                                 number.setText(formatValue(content));
+                             }
+                         });
 
-        flag = false;
         btn.setVisible(true);
         btn.onClick(Player.Hand.PRIMARY);
-        number.setText(String.format(doublePrecision ? "%.4f" : "%.0f", content));
+        number.setText(formatValue(content));
     }
 
-    private void toggleMode(boolean useLogScale, String prefix, String suffix) {
-        if (flag) {
-            number.setVisible(false);
-            slider.setVisible(true);
-
-            if (useLogScale) {
-                double v = Math.log10(max) - Math.log10(min);
-                double value = (Math.log10(content) - Math.log10(min)) / v;
-                slider.setValue(Math.log10(min) + value * v);
+    private boolean validateInput(String s) {
+        try {
+            if (doublePrecision) {
+                String toValidate = s.endsWith(".") && !s.substring(0, s.length() - 1).contains(".")
+                                    ? s.substring(0, s.length() - 1)
+                                    : s;
+                double d = Double.parseDouble(toValidate);
+                if (d < min || d > max) return false;
+                content = d;
             } else {
-                slider.setValue(content);
+                int i = Integer.parseInt(s);
+                if (i < min || i > max) return false;
+                content = i;
             }
-            slider.onSlider();
-        } else {
-            number.setVisible(true);
-            slider.setVisible(false);
-            number.setText(String.format(doublePrecision ? "%.4f" : "%.0f", content));
+            consumer.accept(content);
+            return true;
+        } catch (NumberFormatException e) {
+            return false;
         }
-        flag = !flag;
     }
 
-    public double getValue() {
-        return content;
+    private String formatValue(double value) {
+        return String.format(doublePrecision ? "%.4f" : "%.0f", value);
     }
 
     public void setVisible(boolean visible) {
         if (visible) {
-            flag = !flag;
+            showingSlider = !showingSlider;
             btn.setVisible(true);
             btn.onClick(Player.Hand.PRIMARY);
         } else {
@@ -149,10 +147,14 @@ public class NumberInputer {
         }
     }
 
+    public double getValue() {
+        return content;
+    }
+
     public void setValue(double value) {
         content = MathUtil.clamp(value, min, max);
-        slider.setValue(content);
-        number.setText(String.format(doublePrecision ? "%.4f" : "%.0f", content));
+        slider.setValue(useLogScale ? Math.log10(content) : content);
+        number.setText(formatValue(content));
         consumer.accept(content);
     }
 }
