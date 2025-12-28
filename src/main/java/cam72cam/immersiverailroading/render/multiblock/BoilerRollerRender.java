@@ -1,8 +1,6 @@
 package cam72cam.immersiverailroading.render.multiblock;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
 
 import cam72cam.mod.render.obj.OBJRender;
 import cam72cam.mod.render.opengl.RenderState;
@@ -11,21 +9,20 @@ import cam72cam.mod.resource.Identifier;
 import cam72cam.mod.model.obj.OBJModel;
 import cam72cam.immersiverailroading.multiblock.BoilerRollerMultiblock.BoilerRollerInstance;
 import cam72cam.immersiverailroading.tile.TileMultiblock;
-import it.unimi.dsi.fastutil.ints.Int2ObjectArrayMap;
 
 public class BoilerRollerRender implements IMultiblockRender {
 	private OBJModel model;
 	private List<String> raw;
 	private List<String> product;
 	private List<String> base;
-	private Int2ObjectArrayMap<List<String>> segments;
+	private Map<Integer, List<String>> segments;
 
 	@Override
 	public void render(TileMultiblock te, RenderState state, float partialTicks) {
 		if (model == null) {
 			try {
 				this.model = new OBJModel(new Identifier("immersiverailroading:models/multiblocks/boiler_rolling_machine.obj"), 0, null);
-				segments = new Int2ObjectArrayMap<>();
+				segments = new HashMap<>();
 				product = new ArrayList<>();
 				base = new ArrayList<>();
 				raw = new ArrayList<>();
