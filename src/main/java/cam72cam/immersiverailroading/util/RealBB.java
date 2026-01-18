@@ -253,7 +253,7 @@ public class RealBB implements IBoundingBox {
 	}
 
 	@Override
-	public Vec3d getCenter() {
+	public Vec3d center() {
 		return null;
 	}
 
