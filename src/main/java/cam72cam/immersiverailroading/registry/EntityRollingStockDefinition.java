@@ -26,6 +26,7 @@ import cam72cam.mod.sound.ISound;
 import cam72cam.mod.text.TextUtil;
 import cam72cam.mod.world.World;
 
+import javax.annotation.Nullable;
 import java.awt.geom.Path2D;
 import java.awt.geom.Rectangle2D;
 
@@ -77,8 +78,8 @@ public abstract class EntityRollingStockDefinition {
     private double rearBounds;
     private double heightBounds;
     private double widthBounds;
-    private double passengerCompartmentLength;
-    private double passengerCompartmentWidth;
+    @Nullable public Double passengerCompartmentLength;
+    @Nullable public Double passengerCompartmentWidth;
     private double weight;
     private int maxPassengers;
     private int snowLayers;
@@ -316,7 +317,7 @@ public abstract class EntityRollingStockDefinition {
         this.model = createModel();
         this.itemGroups = model.groups.keySet().stream().filter(x -> !ModelComponentType.shouldRender(x)).collect(Collectors.toList());
 
-        this.navMesh = new NavMesh(this.model);
+        this.navMesh = new NavMesh(this);
 
         this.renderComponents = new EnumMap<>(ModelComponentType.class);
         for (ModelComponent component : model.allComponents) {
@@ -451,9 +452,17 @@ public abstract class EntityRollingStockDefinition {
         modelLoc = data.getValue("model").asIdentifier();
 
         DataBlock passenger = data.getBlock("passenger");
+
         passengerCenter = new Vec3d(0, passenger.getValue("center_y").asDouble() - 0.35, passenger.getValue("center_x").asDouble()).scale(internal_model_scale);
-        passengerCompartmentLength = passenger.getValue("length").asDouble() * internal_model_scale;
-        passengerCompartmentWidth = passenger.getValue("width").asDouble() * internal_model_scale;
+
+        if (passenger.getValue("length") != null) {
+            passengerCompartmentLength = passenger.getValue("length").asDouble() * internal_model_scale;
+        }
+
+        if (passenger.getValue("width") != null) {
+            passengerCompartmentWidth = passenger.getValue("width").asDouble() * internal_model_scale;
+        }
+
         maxPassengers = passenger.getValue("slots").asInteger();
         shouldSit = passenger.getValue("should_sit").asBoolean();
 
