@@ -63,6 +63,26 @@ public class VecUtil {
 		return new Vec3d((front.x + rear.x) / 2, (front.y + rear.y) / 2, (front.z + rear.z) / 2);
 	}
 
+	public static Vec3d removePitch(Vec3d vec, double pitchDegrees) {
+		double pitch = Math.toRadians(pitchDegrees);
+		double cos = Math.cos(pitch);
+		double sin = Math.sin(pitch);
+
+		double y = vec.y * cos - vec.z * sin;
+		double z = vec.y * sin + vec.z * cos;
+		return new Vec3d(vec.x, y, z);
+	}
+
+	public static Vec3d reapplyPitch(Vec3d vec, double pitchDegrees) {
+		double pitch = Math.toRadians(pitchDegrees);
+		double cos = Math.cos(-pitch);
+		double sin = Math.sin(-pitch);
+
+		double y = vec.y * cos - vec.z * sin;
+		double z = vec.y * sin + vec.z * cos;
+		return new Vec3d(vec.x, y, z);
+	}
+
 	public static double getByAxis(Vec3d vec, Axis axis) {
 		switch (axis) {
 			case X: return vec.x;
