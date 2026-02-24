@@ -460,7 +460,7 @@ public abstract class EntityRollingStockDefinition {
 
         DataBlock passenger = data.getBlock("passenger");
 
-        passengerCenter = new Vec3d(0, passenger.getValue("center_y").asDouble() - 0.35, passenger.getValue("center_x").asDouble()).scale(internal_model_scale);
+        passengerCenter = new Vec3d(-passenger.getValue("center_x").asDouble(), passenger.getValue("center_y").asDouble() - 0.35, 0).scale(internal_model_scale);
 
         if (passenger.getValue("length") != null) {
             passengerCompartmentLength = passenger.getValue("length").asDouble() * internal_model_scale;
