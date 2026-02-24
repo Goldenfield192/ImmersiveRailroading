@@ -63,9 +63,12 @@ public class NavMesh {
         Double length = def.passengerCompartmentLength;
         Double width = def.passengerCompartmentWidth;
 
-        if (center == null || length == null || width == null) {
-            // TODO better error message
-            throw new IllegalArgumentException("No Passenger Values found");
+        if (length == null || width == null) {
+            throw new IllegalArgumentException(String.format("Rolling stock %s needs to have either a FLOOR object or have \"length\" and \"width\" defined in the \"passenger\" section of the stocks json", def.name()));
+        }
+
+        if (center == null) {
+            center = Vec3d.ZERO;
         }
 
         OBJFace face1 = new OBJFace();

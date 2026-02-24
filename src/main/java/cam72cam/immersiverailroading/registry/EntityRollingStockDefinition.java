@@ -12,7 +12,6 @@ import cam72cam.immersiverailroading.gui.overlay.Readouts;
 import cam72cam.immersiverailroading.library.*;
 import cam72cam.immersiverailroading.model.StockModel;
 import cam72cam.immersiverailroading.model.components.ModelComponent;
-import cam72cam.mod.ModCore;
 import cam72cam.mod.entity.EntityRegistry;
 import cam72cam.mod.math.Vec3d;
 import cam72cam.mod.model.obj.FaceAccessor;
@@ -26,7 +25,6 @@ import cam72cam.mod.sound.ISound;
 import cam72cam.mod.text.TextUtil;
 import cam72cam.mod.world.World;
 
-import javax.annotation.Nullable;
 import java.awt.geom.Path2D;
 import java.awt.geom.Rectangle2D;
 
@@ -460,7 +458,9 @@ public abstract class EntityRollingStockDefinition {
 
         DataBlock passenger = data.getBlock("passenger");
 
-        passengerCenter = new Vec3d(-passenger.getValue("center_x").asDouble(), passenger.getValue("center_y").asDouble() - 0.35, 0).scale(internal_model_scale);
+        if (passenger.getValue("center_x") != null && passenger.getValue("center_y") != null) {
+            passengerCenter = new Vec3d(-passenger.getValue("center_x").asDouble(), passenger.getValue("center_y").asDouble() - 0.35, 0).scale(internal_model_scale);
+        }
 
         if (passenger.getValue("length") != null) {
             passengerCompartmentLength = passenger.getValue("length").asDouble() * internal_model_scale;
@@ -590,37 +590,6 @@ public abstract class EntityRollingStockDefinition {
             return null;
         }
         return renderComponents.get(name);
-    }
-
-    public Vec3d correctPassengerBounds(Gauge gauge, Vec3d pos, boolean shouldSit) {
-        double gs = gauge.scale();
-        Vec3d passengerCenter = this.passengerCenter.scale(gs);
-        pos = pos.subtract(passengerCenter);
-        if (pos.z > this.passengerCompartmentLength * gs) {
-            pos = new Vec3d(pos.x, pos.y, this.passengerCompartmentLength * gs);
-        }
-
-        if (pos.z < -this.passengerCompartmentLength * gs) {
-            pos = new Vec3d(pos.x, pos.y, -this.passengerCompartmentLength * gs);
-        }
-
-        if (Math.abs(pos.x) > this.passengerCompartmentWidth / 2 * gs) {
-            pos = new Vec3d(Math.copySign(this.passengerCompartmentWidth / 2 * gs, pos.x), pos.y, pos.z);
-        }
-
-        pos = new Vec3d(pos.x, passengerCenter.y - (shouldSit ? 0.75 : 0), pos.z + passengerCenter.z);
-
-        return pos;
-    }
-
-    public boolean isAtFront(Gauge gauge, Vec3d pos) {
-        pos = pos.subtract(passengerCenter.scale(gauge.scale()));
-        return pos.z >= this.passengerCompartmentLength * gauge.scale();
-    }
-
-    public boolean isAtRear(Gauge gauge, Vec3d pos) {
-        pos = pos.subtract(passengerCenter.scale(gauge.scale()));
-        return pos.z <= -this.passengerCompartmentLength * gauge.scale();
     }
 
     public List<ItemComponentType> getItemComponents() {
