@@ -79,8 +79,8 @@ public abstract class EntityRollingStockDefinition {
     private double rearBounds;
     private double heightBounds;
     private double widthBounds;
-    @Nullable public Double passengerCompartmentLength;
-    @Nullable public Double passengerCompartmentWidth;
+    public Double passengerCompartmentLength;
+    public Double passengerCompartmentWidth;
     private double weight;
     private int maxPassengers;
     private int snowLayers;
