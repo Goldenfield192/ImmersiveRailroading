@@ -100,6 +100,10 @@ public abstract class EntityCoupleableRollingStock extends EntityMoveableRolling
 	@TagSync
 	@TagField("hasElectricalPower")
 	private boolean hasElectricalPower;
+
+	@TagSync
+	@TagField("linkedToLocomotive")
+	private boolean linkedToLocomotive;
 	private boolean hadElectricalPower = false;
 	private int gotElectricalPowerTick = -1;
 
@@ -186,17 +190,23 @@ public abstract class EntityCoupleableRollingStock extends EntityMoveableRolling
 
 		if (this.getTickCount() % 5 == 0) {
 			hasElectricalPower = false;
-			this.mapTrain(this, false, stock ->
-					hasElectricalPower = hasElectricalPower ||
-							stock instanceof Locomotive && ((Locomotive) stock).providesElectricalPower()
+			linkedToLocomotive = false;
+			this.mapTrain(this, false, stock -> {
+							  hasElectricalPower = hasElectricalPower ||
+									  stock instanceof Locomotive && ((Locomotive) stock).providesElectricalPower();
+							  linkedToLocomotive = linkedToLocomotive || stock instanceof Locomotive;
+						  }
 			);
 		}
 
 		hadElectricalPower = hasElectricalPower();
 
 		if (this.getCurrentState() != null && !this.getCurrentState().atRest || ConfigDebug.keepStockLoaded) {
-			keepLoaded();
-		}
+			//Then exclude stocks not linked to any locomotive
+            if (!ConfigDebug.excludeStandaloneWagons || this.linkedToLocomotive) {
+                keepLoaded();
+            }
+        }
 
 		slackFrontPercent = 0;
 		slackRearPercent = 0;

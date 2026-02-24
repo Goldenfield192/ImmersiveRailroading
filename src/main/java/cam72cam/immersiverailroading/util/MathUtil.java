@@ -43,6 +43,30 @@ public class MathUtil {
 		return a;
 	}
 
+	public static int gcd(int a, int b) {
+		if (b == 0) {
+			return a;
+		}
+		return gcd(b, a % b);
+	}
+
+	//Enough for now
+	public static int clamp(int val, int min, int max) {
+		return Math.max(min, Math.min(max, val));
+	}
+
+	public static long clamp(long val, long min, long max) {
+		return Math.max(min, Math.min(max, val));
+	}
+
+	public static float clamp(float val, float min, float max) {
+		return Math.max(min, Math.min(max, val));
+	}
+
+	public static double clamp(double val, double min, double max) {
+		return Math.max(min, Math.min(max, val));
+	}
+
 	public static Double intersectRayTriangle(Vec3d rayOrigin, Vec3d rayDir, OBJFace face) {
 		final float EPSILON = 1e-6f;
 
