@@ -298,12 +298,27 @@ public class TileRailBase extends BlockEntityTrackTickable implements IRedstoneP
 				}
 			}
 		case 5:
-			if (this.stockTag != null && !this.stockTag.isEmpty()) {
-				this.positive = this.positive + "&& nametag:" + stockTag;
-			}
-			if (this.augmentFilterID != null && !this.augmentFilterID.isEmpty()) {
-				this.positive = this.positive + "&& stock:" + augmentFilterID.split("/")[2]
-						.replace(".json", "").replace(".caml", "");
+			if (getWorld().isServer) {
+				if (this.stockTag != null && !this.stockTag.isEmpty()) {
+					//Migrate old stockTag to nametag
+					String tag = "nametag:" + stockTag;
+					if (!this.positive.isEmpty()) {
+						tag = "&& " + tag;
+					}
+					this.positive += tag;
+				}
+				if (this.augmentFilterID != null && !this.augmentFilterID.isEmpty()) {
+					//Migrate old augmentFilterID to stock
+					String stockName = augmentFilterID.split("/")[2]
+							//remove suffix
+							.replace(".json", "")
+							.replace(".caml", "");
+					String tag = "stock:" + stockName;
+					if (!this.positive.isEmpty()) {
+						tag = "&& " + tag;
+					}
+					this.positive += tag;
+				}
 			}
 		}
 		this.compileFilter();
