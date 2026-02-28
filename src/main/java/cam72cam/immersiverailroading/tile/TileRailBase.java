@@ -317,7 +317,7 @@ public class TileRailBase extends BlockEntityTrackTickable implements IRedstoneP
 					}
 					builder.append(tag);
 				}
-				//In some cases the cde is executed twice... check here if it is the second time
+				//In some cases the code is executed twice... check here if it is the second time
 				if (builder.length() > 0 && !positive.contains(builder.toString())) {
 					if (!this.positive.isEmpty()) {
 						builder.insert(0, " && ");
