@@ -299,13 +299,11 @@ public class TileRailBase extends BlockEntityTrackTickable implements IRedstoneP
 			}
 		case 5:
 			if (getWorld().isServer) {
+				StringBuilder builder = new StringBuilder();
 				if (this.stockTag != null && !this.stockTag.isEmpty()) {
 					//Migrate old stockTag to nametag
 					String tag = "nametag:" + stockTag;
-					if (!this.positive.isEmpty()) {
-						tag = "&& " + tag;
-					}
-					this.positive += tag;
+					builder.append(tag);
 				}
 				if (this.augmentFilterID != null && !this.augmentFilterID.isEmpty()) {
 					//Migrate old augmentFilterID to stock
@@ -314,10 +312,17 @@ public class TileRailBase extends BlockEntityTrackTickable implements IRedstoneP
 							.replace(".json", "")
 							.replace(".caml", "");
 					String tag = "stock:" + stockName;
-					if (!this.positive.isEmpty()) {
-						tag = "&& " + tag;
+					if (builder.length() != 0) {
+						tag = " && " + tag;
 					}
-					this.positive += tag;
+					builder.append(tag);
+				}
+				//In some cases the cde is executed twice... check here if it is the second time
+				if (builder.length() > 0 && !positive.contains(builder.toString())) {
+					if (!this.positive.isEmpty()) {
+						builder.insert(0, " && ");
+					}
+					positive += builder.toString();
 				}
 			}
 		}
