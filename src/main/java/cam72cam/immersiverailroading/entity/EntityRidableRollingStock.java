@@ -136,7 +136,7 @@ public abstract class EntityRidableRollingStock extends EntityBuildableRollingSt
 		if (passenger.isPlayer()) {
 			movement = playerMovement(passenger.asPlayer(), offset);
 		}
-		Vec3d targetXZ = VecUtil.removePitch(movement, this.getRotationPitch());
+		Vec3d targetXZ = VecUtil.rotatePitch(movement, -this.getRotationPitch());
 
 		Vec3d rayStart = targetXZ.rotateYaw(-90).add(0, 1, 0);
 		Vec3d rayDir = new Vec3d(0, -1, 0);
@@ -167,7 +167,7 @@ public abstract class EntityRidableRollingStock extends EntityBuildableRollingSt
 		}
 
 		if (hit) {
-			offset = VecUtil.reapplyPitch(new Vec3d(targetXZ.x, closestY, targetXZ.z), this.getRotationPitch());
+			offset = VecUtil.rotatePitch(new Vec3d(targetXZ.x, closestY, targetXZ.z), this.getRotationPitch());
 		}
 
 		Vec3d seat = getSeatPosition(passenger.getUUID());
@@ -269,8 +269,8 @@ public abstract class EntityRidableRollingStock extends EntityBuildableRollingSt
 	}
 
 	private boolean isDoorOpen(Vec3d start, Vec3d end) {
-		start = VecUtil.removePitch(start, this.getRotationPitch());
-		end = VecUtil.removePitch(end, this.getRotationPitch());
+		start = VecUtil.rotatePitch(start, -this.getRotationPitch());
+		end = VecUtil.rotatePitch(end, -this.getRotationPitch());
 
 		start = start.rotateYaw(-90);
 		end = start.add(end.rotateYaw(-90));

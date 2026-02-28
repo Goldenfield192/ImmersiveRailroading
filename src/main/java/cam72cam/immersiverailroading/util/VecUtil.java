@@ -3,7 +3,6 @@ package cam72cam.immersiverailroading.util;
 import cam72cam.mod.math.Vec3d;
 import cam72cam.mod.util.Axis;
 import cam72cam.mod.util.FastMath;
-import util.Matrix4;
 
 public class VecUtil {
 	private VecUtil() {
@@ -31,11 +30,16 @@ public class VecUtil {
 		);
 	}
 	public static Vec3d rotatePitch(Vec3d pos, float rotationPitch) {
-		if (Math.abs(rotationPitch) < 0.01) {
+		if (Math.abs(rotationPitch) == 0) {
 			return pos;
 		}
-		// TODO optimize me!
-		return new Matrix4().rotate(Math.toRadians(rotationPitch), 0, 0, 1).apply(pos);
+		//return new Matrix4().rotate(Math.toRadians(rotationPitch), 0, 0, 1).apply(pos);
+		double rad = Math.toRadians(rotationPitch);
+		double cos = Math.cos(rad);
+		double sin = Math.sin(rad);
+		return new Vec3d(pos.x,
+						 pos.y * cos + pos.z * sin,
+						 pos.z * cos - pos.y * sin);
 	}
 
 	public static Vec3d fromWrongYaw(double distance, float yaw)  {
@@ -61,26 +65,6 @@ public class VecUtil {
 	
 	public static Vec3d between(Vec3d front, Vec3d rear) {
 		return new Vec3d((front.x + rear.x) / 2, (front.y + rear.y) / 2, (front.z + rear.z) / 2);
-	}
-
-	public static Vec3d removePitch(Vec3d vec, double pitchDegrees) {
-		double pitch = Math.toRadians(pitchDegrees);
-		double cos = Math.cos(pitch);
-		double sin = Math.sin(pitch);
-
-		double y = vec.y * cos - vec.z * sin;
-		double z = vec.y * sin + vec.z * cos;
-		return new Vec3d(vec.x, y, z);
-	}
-
-	public static Vec3d reapplyPitch(Vec3d vec, double pitchDegrees) {
-		double pitch = Math.toRadians(pitchDegrees);
-		double cos = Math.cos(-pitch);
-		double sin = Math.sin(-pitch);
-
-		double y = vec.y * cos - vec.z * sin;
-		double z = vec.y * sin + vec.z * cos;
-		return new Vec3d(vec.x, y, z);
 	}
 
 	public static double getByAxis(Vec3d vec, Axis axis) {
