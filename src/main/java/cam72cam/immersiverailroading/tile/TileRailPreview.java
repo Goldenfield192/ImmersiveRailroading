@@ -81,7 +81,7 @@ public class TileRailPreview extends BlockEntityTickable {
 						customInfo.placementPosition.z - placementInfo.placementPosition.z
 				);
 				float yaw = settings.type == TrackItems.TURN
-							? placementInfo.yaw + ((settings.direction == TrackDirection.LEFT ? 1 : -1) * (settings.degrees / 2)) //Calculate arc direction for turn
+							? placementInfo.yaw + ((settings.direction == TrackDirection.LEFT ? -1 : 1) * (Math.abs(settings.degrees) / 2)) //Calculate arc direction for turn
 							: placementInfo.yaw; //Simply use its yaw
 				Vec3d unit = new Vec3d(0, 0, 1).rotateYaw(yaw);
                 int shadowLength = (int) Math.round(placeOffset.dotProduct(unit));
