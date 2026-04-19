@@ -88,8 +88,10 @@ public abstract class EntityRidableRollingStock extends EntityBuildableRollingSt
 			return seat;
 		}
 
-		int wiggle = passenger.isVillager() ? 10 : 0;
-		off = off.add((Math.random()-0.5) * wiggle, 0, (Math.random()-0.5) * wiggle);
+		if (passenger.isVillager()) {
+			int wiggle = 10;
+			off = off.add((Math.random()-0.5) * wiggle, 0, (Math.random()-0.5) * wiggle);
+		}
 		off = this.getDefinition().correctPassengerBounds(gauge, off, shouldRiderSit(passenger));
 
 		return off;
@@ -149,7 +151,9 @@ public abstract class EntityRidableRollingStock extends EntityBuildableRollingSt
 
         movement = new Vec3d(movement.x, 0, movement.z).rotateYaw(this.getRotationYaw() - source.getRotationYawHead());
 
-        offset = offset.add(movement);
+		if (!getDefinition().hitsNavCollisionMesh(this.gauge, offset, movement)) {
+			offset = offset.add(movement);
+		}
 
         if (this instanceof EntityCoupleableRollingStock) {
 			EntityCoupleableRollingStock couplable = (EntityCoupleableRollingStock) this;
