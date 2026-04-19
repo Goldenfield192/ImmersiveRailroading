@@ -92,7 +92,7 @@ public abstract class EntityRidableRollingStock extends EntityBuildableRollingSt
 			int wiggle = 10;
 			off = off.add((Math.random()-0.5) * wiggle, 0, (Math.random()-0.5) * wiggle);
 		}
-		off = this.getDefinition().correctPassengerBounds(gauge, off, shouldRiderSit(passenger));
+		off = this.getDefinition().correctPassengerBounds(gauge, off, shouldRiderSit(passenger), Float.POSITIVE_INFINITY);
 
 		return off;
 	}
@@ -121,7 +121,13 @@ public abstract class EntityRidableRollingStock extends EntityBuildableRollingSt
 		if (seat != null) {
 			offset = seat;
 		} else {
-			offset = this.getDefinition().correctPassengerBounds(gauge, offset, shouldRiderSit(passenger));
+			for (float f : new float[]{0.5f, 5f, 10f}) {
+				Vec3d temp = this.getDefinition().correctPassengerBounds(gauge, offset, shouldRiderSit(passenger), f);
+				if (!temp.equals(offset)) {
+					offset = temp;
+					break;
+				}
+			}
 		}
 		offset = offset.add(0, Math.sin(Math.toRadians(this.getRotationPitch())) * offset.z, 0);
 
@@ -187,11 +193,19 @@ public abstract class EntityRidableRollingStock extends EntityBuildableRollingSt
 			}
         }
 
-        if (getDefinition().getModel().getDoors().stream().anyMatch(x -> x.isAtOpenDoor(source, this, Door.Types.EXTERNAL)) &&
-				getWorld().isServer &&
-				!this.getDefinition().correctPassengerBounds(gauge, offset, shouldRiderSit(source)).equals(offset)
-		) {
-        	this.removePassenger(source);
+		if (getWorld().isServer) {
+			for (Door<?> door : getDefinition().getModel().getDoors()) {
+				if (door.isAtOpenDoor(source, this, Door.Types.EXTERNAL)) {
+					Vec3d doorCenter = door.center(this);
+					Vec3d toDoor = doorCenter.subtract(offset).normalize();
+					//In order to prevent players mounted through doors get dismounted immediately
+					double dot = toDoor.dotProduct(movement.normalize());
+					if (dot > 0.5) {
+						this.removePassenger(source);
+						break;
+					}
+				}
+			}
 		}
 
 		return offset;

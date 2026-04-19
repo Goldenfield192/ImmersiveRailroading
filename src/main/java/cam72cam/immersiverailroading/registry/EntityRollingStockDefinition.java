@@ -624,51 +624,51 @@ public abstract class EntityRollingStockDefinition {
         return false;
     }
 
-    public Vec3d correctPassengerBounds(Gauge gauge, Vec3d passengerOffset, boolean shouldSit) {
+    public Vec3d correctPassengerBounds(Gauge gauge, Vec3d passengerOffset, boolean shouldSit, float searchRange) {
+        Vec3d orig = passengerOffset;
         // Flip coords
         passengerOffset = passengerOffset.rotateYaw(-90);
 
-        for (float searchRange : new float[]{0.5f, 5f, 10f}) {
-            IBoundingBox rayBox = IBoundingBox.from(
-                    passengerOffset.subtract(searchRange, searchRange, searchRange),
-                    passengerOffset.add(searchRange, searchRange, searchRange)
-            );
-            List<OBJFace> nearby = new ArrayList<>();
-            navMesh.queryBVH(navMesh.root, rayBox, nearby, gauge.scale());
-            if (nearby.isEmpty()) {
-                continue;
-            }
-
-            Vec3d closestPoint = null;
-            double closestDistanceSq = 0;
-            for (OBJFace face : nearby) {
-                Vec3d p0 = face.vertex0.pos;
-                Vec3d p1 = face.vertex1.pos;
-                Vec3d p2 = face.vertex2.pos;
-
-                Vec3d pointOnTri = MathUtil.closestPointOnTriangle(passengerOffset, p0, p1, p2);
-                double distSq = passengerOffset.subtract(pointOnTri).lengthSquared();
-
-                if (closestPoint == null || distSq < closestDistanceSq) {
-                    closestDistanceSq = distSq;
-                    closestPoint = pointOnTri;
-                }
-            }
-
+        IBoundingBox rayBox = searchRange == Float.POSITIVE_INFINITY
+                              ? IBoundingBox.INFINITE
+                              : IBoundingBox.from(
+                                      passengerOffset.subtract(searchRange, searchRange, searchRange),
+                                      passengerOffset.add(searchRange, searchRange, searchRange)
+                              );
+        List<OBJFace> nearby = new ArrayList<>();
+        navMesh.queryBVH(navMesh.root, rayBox, nearby, gauge.scale());
+        if (nearby.isEmpty()) {
             // flip coords
-            return closestPoint.rotateYaw(90);
+            return orig;
+        }
+
+        Vec3d closestPoint = null;
+        double closestDistanceSq = 0;
+        for (OBJFace face : nearby) {
+            Vec3d p0 = face.vertex0.pos;
+            Vec3d p1 = face.vertex1.pos;
+            Vec3d p2 = face.vertex2.pos;
+
+            Vec3d pointOnTri = MathUtil.closestPointOnTriangle(passengerOffset, p0, p1, p2);
+            Vec3d horizontal = new Vec3d(pointOnTri.x, passengerOffset.y, pointOnTri.z);
+            double distSq = passengerOffset.subtract(pointOnTri).lengthSquared();
+
+            if (closestPoint == null || distSq < closestDistanceSq) {
+                closestDistanceSq = distSq;
+                closestPoint = pointOnTri;
+            }
         }
 
         // flip coords
-        return passengerOffset.rotateYaw(90);
+        return closestPoint.rotateYaw(90);
     }
 
     public boolean isAtFront(Gauge gauge, Vec3d pos) {
-        return pos.z >= this.passengerCompartmentLength * gauge.scale();
+        return pos.z >= (-passengerCenter.x + this.passengerCompartmentLength) * gauge.scale();
     }
 
     public boolean isAtRear(Gauge gauge, Vec3d pos) {
-        return pos.z <= -this.passengerCompartmentLength * gauge.scale();
+        return pos.z <= (-passengerCenter.x - this.passengerCompartmentLength) * gauge.scale();
     }
 
     public List<ItemComponentType> getItemComponents() {
