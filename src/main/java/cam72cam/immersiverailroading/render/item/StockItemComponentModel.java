@@ -40,7 +40,7 @@ public class StockItemComponentModel implements ItemRender.IItemModel {
             if (comp == null || r == ModelComponentType.CARGO_FILL_X || r == ModelComponentType.CARGO_FILL_POS_X) {
                 continue;
             }
-            groups.addAll(comp.get(0).modelIDs);
+            groups.addAll(comp.getFirst().modelIDs);
         }
 
         if (groups.isEmpty()) {

@@ -103,7 +103,7 @@ public class TrackGui implements IScreen {
         this.lengthInput = new TextField(screen, xtop, ytop, width-1, height);
         this.lengthInput.setText("" + settings.length);
         this.lengthInput.setValidator(s -> {
-            if (s == null || s.length() == 0) {
+            if (s == null || s.isEmpty()) {
                 return true;
             }
             int val;

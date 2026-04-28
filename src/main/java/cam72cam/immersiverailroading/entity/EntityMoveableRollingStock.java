@@ -125,7 +125,7 @@ public abstract class EntityMoveableRollingStock extends EntityRidableRollingSto
      */
     public void handleTickPosPacket(List<TickPos> newPositions) {
 
-        if (newPositions.size() != 0) {
+        if (!newPositions.isEmpty()) {
             this.clearPositionCache();
 
             if (ChronoState.getState(getWorld()) == null) {
@@ -207,12 +207,10 @@ public abstract class EntityMoveableRollingStock extends EntityRidableRollingSto
 
     @Override
     protected float defaultControlPosition(Control<?> control) {
-        switch (control.part.type) {
-            case INDEPENDENT_BRAKE_X:
-                return getDefinition().isLinearBrakeControl() ? 0 : 0.5f;
-            default:
-                return super.defaultControlPosition(control);
-        }
+        return switch (control.part.type) {
+            case INDEPENDENT_BRAKE_X -> getDefinition().isLinearBrakeControl() ? 0 : 0.5f;
+            default -> super.defaultControlPosition(control);
+        };
     }
 
     @Override

@@ -44,21 +44,13 @@ public abstract class ValveGear {
         if (config == null) {
             return null;
         }
-        switch (config.type) {
-            case WALSCHAERTS:
-                return WalschaertsValveGear.get(wheels, provider, state, pos, angleOffset);
-            case STEPHENSON:
-                return StephensonValveGear.get(wheels, provider, state, pos, angleOffset);
-            case CONNECTING:
-                return ConnectingRodValveGear.get(wheels, provider, state, pos, angleOffset);
-            case CUSTOM:
-                return CustomValveGear.get(config, wheels, provider, state, pos);
-            case SHAY:
-            case CLIMAX:
-            case HIDDEN:
-            default:
-                return null;
-        }
+        return switch (config.type) {
+            case WALSCHAERTS -> WalschaertsValveGear.get(wheels, provider, state, pos, angleOffset);
+            case STEPHENSON -> StephensonValveGear.get(wheels, provider, state, pos, angleOffset);
+            case CONNECTING -> ConnectingRodValveGear.get(wheels, provider, state, pos, angleOffset);
+            case CUSTOM -> CustomValveGear.get(config, wheels, provider, state, pos);
+            default -> null;
+        };
     }
 
     void effects(EntityMoveableRollingStock stock) {
@@ -182,8 +174,7 @@ public abstract class ValveGear {
 
         public boolean isEndStroke(EntityMoveableRollingStock stock) {
             float delta = 0.03f;
-            if (stock instanceof LocomotiveSteam) {
-                LocomotiveSteam loco = (LocomotiveSteam) stock;
+            if (stock instanceof LocomotiveSteam loco) {
                 if (Math.abs(loco.getThrottle() * loco.getReverser()) <= 0.01) {
                     return false;
                 }

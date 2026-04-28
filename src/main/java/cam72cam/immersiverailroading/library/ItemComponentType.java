@@ -106,18 +106,11 @@ public enum ItemComponentType {
 	}
 	
 	public boolean isWheelPart() {
-		switch (this) {
-		case BOGEY_FRONT_WHEEL:
-		case BOGEY_FRONT:
-		case BOGEY_REAR_WHEEL:
-		case BOGEY_REAR:
-		case WHEEL_DRIVER:
-		case WHEEL_DRIVER_POS:
-		case FRAME_WHEEL:
-			return true;
-		default:
-			return false;
-		}
+        return switch (this) {
+            case BOGEY_FRONT_WHEEL, BOGEY_FRONT, BOGEY_REAR_WHEEL, BOGEY_REAR, WHEEL_DRIVER, WHEEL_DRIVER_POS,
+                 FRAME_WHEEL -> true;
+            default -> false;
+        };
 	}
 
 	public static ItemComponentType from(ModelComponentType renderComponent) {
@@ -141,7 +134,7 @@ public enum ItemComponentType {
 		for (ModelComponentType type : this.render) {
 			List<ModelComponent> components = def.getComponents(type);
 			if (components != null && !components.isEmpty()) {
-				return components.get(0);
+				return components.getFirst();
 			}
 		}
 		throw new RuntimeException(String.format("Something brok in IR for %s : %s", def, this));
@@ -174,16 +167,12 @@ public enum ItemComponentType {
 	}
 
 	public PlateType getPlateType() {
-		switch (this.crafting) {
-		case PLATE_LARGE:
-			return PlateType.LARGE;
-		case PLATE_MEDIUM:
-			return PlateType.MEDIUM;
-		case PLATE_SMALL:
-			return PlateType.SMALL;
-		default:
-			return null;
-		}
+        return switch (this.crafting) {
+            case PLATE_LARGE -> PlateType.LARGE;
+            case PLATE_MEDIUM -> PlateType.MEDIUM;
+            case PLATE_SMALL -> PlateType.SMALL;
+            default -> null;
+        };
 	}
 
 	// TODO average the component sizes instead of just looking at the first element

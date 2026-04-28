@@ -148,12 +148,12 @@ public class TrackModel extends OBJModel{
     }
 
     public boolean canRender(double gauge) {
-        switch (compare) {
-            case ">": return gauge > size;
-            case "<": return gauge < size;
-            case "=": return gauge == size;
-            default: return true;
-        }
+        return switch (compare) {
+            case ">" -> gauge > size;
+            case "<" -> gauge < size;
+            case "=" -> gauge == size;
+            default -> true;
+        };
     }
 
     public VBO getModel(RailInfo info, List<VecYPR> data) {

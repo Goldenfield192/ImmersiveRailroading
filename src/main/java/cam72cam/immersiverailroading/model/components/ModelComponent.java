@@ -108,12 +108,12 @@ public class ModelComponent {
     }
 
     public static Vec3d center(List<ModelComponent> components) {
-        double minX = components.get(0).min.x;
-        double minY = components.get(0).min.y;
-        double minZ = components.get(0).min.z;
-        double maxX = components.get(0).max.x;
-        double maxY = components.get(0).max.y;
-        double maxZ = components.get(0).max.z;
+        double minX = components.getFirst().min.x;
+        double minY = components.getFirst().min.y;
+        double minZ = components.getFirst().min.z;
+        double maxX = components.getFirst().max.x;
+        double maxY = components.getFirst().max.y;
+        double maxZ = components.getFirst().max.z;
 
         for (ModelComponent rc : components) {
             minX = Math.min(minX, rc.min.x);

@@ -42,27 +42,21 @@ public enum Stat {
             case SPEED:
                 if (stock instanceof EntityMoveableRollingStock) {
                     Speed speed = ((EntityMoveableRollingStock) stock).getCurrentSpeed();
-                    switch (ConfigGraphics.speedUnit) {
-                        case mph:
-                            return String.format(format, Math.abs(speed.imperial()));
-                        case ms:
-                            return String.format(format, Math.abs(speed.metersPerSecond()));
-                        case kmh:
-                            return String.format(format, Math.abs(speed.metric()));
-                    }
+                    return switch (ConfigGraphics.speedUnit) {
+                        case mph -> String.format(format, Math.abs(speed.imperial()));
+                        case ms -> String.format(format, Math.abs(speed.metersPerSecond()));
+                        case kmh -> String.format(format, Math.abs(speed.metric()));
+                    };
                 }
                 return "";
             case MAX_SPEED:
                 if (stock instanceof Locomotive) {
                     Speed speed = ((Locomotive)stock).getDefinition().getMaxSpeed(stock.gauge);
-                    switch (ConfigGraphics.speedUnit) {
-                        case mph:
-                            return String.format(format, Math.abs(speed.imperial()));
-                        case ms:
-                            return String.format(format, Math.abs(speed.metersPerSecond()));
-                        case kmh:
-                            return String.format(format, Math.abs(speed.metric()));
-                    }
+                    return switch (ConfigGraphics.speedUnit) {
+                        case mph -> String.format(format, Math.abs(speed.imperial()));
+                        case ms -> String.format(format, Math.abs(speed.metersPerSecond()));
+                        case kmh -> String.format(format, Math.abs(speed.metric()));
+                    };
                 }
                 return "";
             case UNITS_SPEED:
@@ -131,35 +125,18 @@ public enum Stat {
     }
 
     public boolean hasDecimalSetting() {
-        switch (this) {
-            case SPEED:
-            case MAX_SPEED:
-            case LIQUID:
-            case MAX_LIQUID:
-            case BOILER_PRESSURE:
-            case MAX_BOILER_PRESSURE:
-            case TEMPERATURE:
-            case MAX_TEMPERATURE:
-                return true;
-            default:
-                return false;
-        }
+        return switch (this) {
+            case SPEED, MAX_SPEED, LIQUID, MAX_LIQUID, BOILER_PRESSURE, MAX_BOILER_PRESSURE, TEMPERATURE,
+                 MAX_TEMPERATURE -> true;
+            default -> false;
+        };
     }
 
     private int getDefaultDecimal() {
-        switch (this) {
-            case LIQUID:
-            case MAX_LIQUID:
-            case BOILER_PRESSURE:
-            case MAX_BOILER_PRESSURE:
-            case TEMPERATURE:
-            case MAX_TEMPERATURE:
-                return 1;
-            case SPEED:
-            case MAX_SPEED:
-            default:
-                return 0;
-        }
+        return switch (this) {
+            case LIQUID, MAX_LIQUID, BOILER_PRESSURE, MAX_BOILER_PRESSURE, TEMPERATURE, MAX_TEMPERATURE -> 1;
+            default -> 0;
+        };
     }
 
     @Override

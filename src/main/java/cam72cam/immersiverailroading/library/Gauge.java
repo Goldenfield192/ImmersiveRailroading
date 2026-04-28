@@ -81,7 +81,7 @@ public class Gauge {
 	 * Returns the closest gauge
 	 */
 	public static Gauge from(double gauge) {
-		Gauge closest = gauges.get(0);
+		Gauge closest = gauges.getFirst();
 		for (Gauge g : gauges) {
 			if (g.gauge == gauge) {
 				return g;

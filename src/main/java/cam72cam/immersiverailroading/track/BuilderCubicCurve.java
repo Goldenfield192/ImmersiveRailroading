@@ -51,7 +51,7 @@ public class BuilderCubicCurve extends BuilderIterator {
 				if (!subBuilders.isEmpty()) {
 					for (TrackBase track : subBuilder.tracks) {
 						if (track instanceof TrackRail) {
-							track.overrideParent(subBuilders.get(0).getParentPos());
+							track.overrideParent(subBuilders.getFirst().getParentPos());
 						}
 					}
 				} else {
@@ -118,7 +118,7 @@ public class BuilderCubicCurve extends BuilderIterator {
 
 		// HACK for super long curves
 		// Skip the super long calculation since it'll be overridden anyways
-		curve = curve.subsplit(200).get(0);
+		curve = curve.subsplit(200).getFirst();
 
 		double length = curve.lengthWithCache(1000);
 		int count = (int) (length / targetStepSize);//Adapt the length
@@ -205,7 +205,7 @@ public class BuilderCubicCurve extends BuilderIterator {
 		if (subBuilders == null) {
 			super.setDrops(drops);
 		} else {
-			subBuilders.get(0).setDrops(drops);
+			subBuilders.getFirst().setDrops(drops);
 		}
 	}
 

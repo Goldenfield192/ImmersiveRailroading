@@ -181,26 +181,17 @@ public class RailInfo {
 		return builder;
 	}
 	private BuilderBase constructBuilder(World world, Vec3i pos) {
-		switch (settings.type) {
-		case STRAIGHT:
-			return new BuilderStraight(this, world, pos);
-		case CROSSING:
-			return new BuilderCrossing(this, world, pos);
-		case SLOPE:
-			return new BuilderSlope(this, world, pos);
-		case TURN:
-			return new BuilderTurn(this, world, pos);
-		case SWITCH:
-			return new BuilderSwitch(this, world, pos);
-		case TURNTABLE:
-			return new BuilderTurnTable(this, world, pos);
-		case TRANSFERTABLE:
-			return new BuilderTransferTable(this, world, pos);
-		case CUSTOM:
-			return new BuilderCubicCurve(this, world, pos);
-		}
-		return null;
-	}
+        return switch (settings.type) {
+            case STRAIGHT -> new BuilderStraight(this, world, pos);
+            case CROSSING -> new BuilderCrossing(this, world, pos);
+            case SLOPE -> new BuilderSlope(this, world, pos);
+            case TURN -> new BuilderTurn(this, world, pos);
+            case SWITCH -> new BuilderSwitch(this, world, pos);
+            case TURNTABLE -> new BuilderTurnTable(this, world, pos);
+            case TRANSFERTABLE -> new BuilderTransferTable(this, world, pos);
+            case CUSTOM -> new BuilderCubicCurve(this, world, pos);
+        };
+    }
 
 	public BuilderBase getBuilder(World world) {
 		return getBuilder(world, Vec3i.ZERO);

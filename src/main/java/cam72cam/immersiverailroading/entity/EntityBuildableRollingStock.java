@@ -116,7 +116,7 @@ public class EntityBuildableRollingStock extends EntityRollingStock implements I
 					toAdd.add(component);
 				}
 			}
-			if (toAdd.size() != 0) {
+			if (!toAdd.isEmpty()) {
 				break;
 			}
 		}

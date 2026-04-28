@@ -282,14 +282,11 @@ public abstract class EntityCoupleableRollingStock extends EntityMoveableRolling
 	}
 
 	public final UUID getCoupledUUID(CouplerType coupler) {
-		switch (coupler) {
-		case FRONT:
-			return coupledFront;
-		case BACK:
-			return coupledBack;
-		default:
-			return null;
-		}
+        return switch (coupler) {
+            case FRONT -> coupledFront;
+            case BACK -> coupledBack;
+            default -> null;
+        };
 	}
 	
 	public EntityCoupleableRollingStock getCoupled(CouplerType coupler) {
@@ -315,14 +312,11 @@ public abstract class EntityCoupleableRollingStock extends EntityMoveableRolling
 		if (coupler == null) {
 			return false;
 		}
-		switch (coupler) {
-		case FRONT:
-			return frontCouplerEngaged;
-		case BACK:
-			return backCouplerEngaged;
-		default:
-			return false;
-		}
+        return switch (coupler) {
+            case FRONT -> frontCouplerEngaged;
+            case BACK -> backCouplerEngaged;
+            default -> false;
+        };
 	}
 	
 	public void setCouplerEngaged(CouplerType coupler, boolean engaged) {

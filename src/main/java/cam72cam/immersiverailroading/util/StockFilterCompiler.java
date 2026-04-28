@@ -16,29 +16,18 @@ public class StockFilterCompiler {
     private static final String END_PAREN = ")";
 
     static {
-        prefixes.put("type", (stock, content) -> {
-            switch (content) {
-                case "locomotive":
-                    return stock instanceof LocomotiveDiesel
-                           || stock instanceof LocomotiveSteam
-                           || stock instanceof HandCar;
-                case "diesel":
-                    return stock instanceof LocomotiveDiesel;
-                case "steam":
-                    return stock instanceof LocomotiveSteam;
-                case "handcar":
-                    return stock instanceof HandCar;
-                case "passenger":
-                    return stock instanceof CarPassenger;
-                case "tender":
-                    return stock instanceof Tender;
-                case "tank":
-                    return stock instanceof CarTank;
-                case "freight":
-                    return stock instanceof CarFreight;
-                default:
-                    return false;
-            }
+        prefixes.put("type", (stock, content) -> switch (content) {
+            case "locomotive" -> stock instanceof LocomotiveDiesel
+                    || stock instanceof LocomotiveSteam
+                    || stock instanceof HandCar;
+            case "diesel" -> stock instanceof LocomotiveDiesel;
+            case "steam" -> stock instanceof LocomotiveSteam;
+            case "handcar" -> stock instanceof HandCar;
+            case "passenger" -> stock instanceof CarPassenger;
+            case "tender" -> stock instanceof Tender;
+            case "tank" -> stock instanceof CarTank;
+            case "freight" -> stock instanceof CarFreight;
+            default -> false;
         });
         prefixes.put("tag", (stock, content) -> DefinitionManager.isTaggedWith(stock.getDefinition(), content));
         prefixes.put("stock", (stock, content) -> {

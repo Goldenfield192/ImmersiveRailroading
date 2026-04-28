@@ -183,7 +183,7 @@ public class MovementTrack {
 			}
 			if (positions.size() == 1) {
 				// track with length == 1
-				VecYPR pos = positions.get(0);
+				VecYPR pos = positions.getFirst();
 				Vec3d offset = VecUtil.fromYaw(delta.length(), pos.getYaw());
 				Vec3d result = currentPosition.add(offset);
 				Vec3d resultOpposite = currentPosition.subtract(offset);

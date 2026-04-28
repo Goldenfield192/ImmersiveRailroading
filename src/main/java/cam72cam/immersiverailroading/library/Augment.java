@@ -21,30 +21,19 @@ public enum Augment {
 	;
 	
 	public Color color() {
-		switch (this) {
-		case DETECTOR:
-			return Color.RED;
-		case FLUID_LOADER:
-			return Color.BLUE;
-		case FLUID_UNLOADER:
-			return Color.LIGHT_BLUE;
-		case ITEM_LOADER:
-			return Color.GREEN;
-		case ITEM_UNLOADER:
-			return Color.LIME;
-		case LOCO_CONTROL:
-			return Color.BLACK;
-		case SPEED_RETARDER:
-			return Color.GRAY;
-		case WATER_TROUGH:
-			return Color.CYAN;
-		case COUPLER:
-			return Color.ORANGE;
-		case ACTUATOR:
-			return Color.SILVER;
-		}
-		return Color.WHITE;
-	}
+        return switch (this) {
+            case DETECTOR -> Color.RED;
+            case FLUID_LOADER -> Color.BLUE;
+            case FLUID_UNLOADER -> Color.LIGHT_BLUE;
+            case ITEM_LOADER -> Color.GREEN;
+            case ITEM_UNLOADER -> Color.LIME;
+            case LOCO_CONTROL -> Color.BLACK;
+            case SPEED_RETARDER -> Color.GRAY;
+            case WATER_TROUGH -> Color.CYAN;
+            case COUPLER -> Color.ORANGE;
+            case ACTUATOR -> Color.SILVER;
+        };
+    }
 
 	@Override
 	public String toString() {

@@ -650,10 +650,9 @@ public class GuiBuilder {
                 return ;
             }
             Entity riding = MinecraftClient.getPlayer().getRiding();
-            if (!(riding instanceof EntityRollingStock)) {
+            if (!(riding instanceof EntityRollingStock stock)) {
                 return ;
             }
-            EntityRollingStock stock = (EntityRollingStock) riding;
             float value = target.invert ? target.getValue(stock) : 1 - target.getValue(stock);
             new ControlChangePacket(stock, target.readout, target.control, target.global, target.texture_variant, value).sendToServer();
         }

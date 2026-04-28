@@ -53,7 +53,7 @@ public class CAML {
 
         String spaces = null;
         while (!lines.isEmpty()) {
-            String line = lines.get(0);
+            String line = lines.getFirst();
             Matcher m = base.matcher(line);
             if (!m.matches()) {
                 throw new ParseException(String.format("Invalid Block line '%s'", line));
@@ -80,7 +80,7 @@ public class CAML {
                 throw new ParseException(String.format("Invalid Block line '%s' invalid indentation '%s' vs '%s'", line, spaces, pre));
             }
 
-            lines.remove(0);
+            lines.removeFirst();
 
             String trimmed = val.trim();
             if (trimmed.startsWith("\"") && trimmed.endsWith("\"")) {

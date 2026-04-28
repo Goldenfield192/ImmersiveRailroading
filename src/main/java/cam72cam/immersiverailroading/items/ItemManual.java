@@ -114,7 +114,7 @@ public class ItemManual extends CustomItem {
 			super(stack);
 
 			if (multiblock == null) {
-				multiblock = MultiblockRegistry.registered().isEmpty() ? null : MultiblockRegistry.registered().get(0);
+				multiblock = MultiblockRegistry.registered().isEmpty() ? null : MultiblockRegistry.registered().getFirst();
 			}
 		}
 	}

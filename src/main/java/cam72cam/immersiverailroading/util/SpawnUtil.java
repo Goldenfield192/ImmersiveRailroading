@@ -1,13 +1,9 @@
 package cam72cam.immersiverailroading.util;
 
-import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
-import cam72cam.immersiverailroading.entity.EntityCoupleableRollingStock;
 import cam72cam.immersiverailroading.entity.EntityMoveableRollingStock;
 import cam72cam.immersiverailroading.entity.EntityRollingStock;
-import cam72cam.immersiverailroading.entity.physics.SimulationState;
 import cam72cam.immersiverailroading.items.ItemRollingStock;
 import cam72cam.immersiverailroading.library.ChatText;
 import cam72cam.immersiverailroading.library.Gauge;
@@ -43,7 +39,7 @@ public class SpawnUtil {
 		}
 		
 		double offset = def.getCouplerPosition(CouplerType.BACK, gauge) - ConfigDebug.couplerRange;
-		float yaw = player.getYawHead();
+		float yaw = player.getRotationYawHead();
 
 		if (worldIn.isServer) {
 			EntityRollingStock stock = def.spawn(worldIn, new Vec3d(pos).add(0.5, 0.1, 0.5), yaw, gauge, data.texture);
@@ -54,9 +50,8 @@ public class SpawnUtil {
 			center = initte.getNextPosition(center, VecUtil.fromWrongYaw(offset, yaw));
 			stock.setPosition(center);
 
-			if (stock instanceof EntityMoveableRollingStock) {
-				EntityMoveableRollingStock moveable = (EntityMoveableRollingStock)stock;
-				ITrack centerte = ITrack.get(worldIn, center, true);
+			if (stock instanceof EntityMoveableRollingStock moveable) {
+                ITrack centerte = ITrack.get(worldIn, center, true);
 				if (centerte != null) {
 					float frontDistance = moveable.getDefinition().getBogeyFront(gauge);
 					float rearDistance = moveable.getDefinition().getBogeyRear(gauge);

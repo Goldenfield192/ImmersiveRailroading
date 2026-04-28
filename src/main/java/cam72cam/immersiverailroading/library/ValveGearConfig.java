@@ -26,16 +26,11 @@ public class ValveGearConfig {
 			if (valveGear == null) {
 				return null;
 			}
-			switch (valveGear) {
-				case "TRI_WALSCHAERTS":
-				case "GARRAT":
-				case "MALLET_WALSCHAERTS":
-					return WALSCHAERTS;
-				case "T1":
-					return STEPHENSON;
-				default:
-					return ValveGearType.valueOf(valveGear);
-			}
+            return switch (valveGear) {
+                case "TRI_WALSCHAERTS", "GARRAT", "MALLET_WALSCHAERTS" -> WALSCHAERTS;
+                case "T1" -> STEPHENSON;
+                default -> ValveGearType.valueOf(valveGear);
+            };
 		}
 	}
 

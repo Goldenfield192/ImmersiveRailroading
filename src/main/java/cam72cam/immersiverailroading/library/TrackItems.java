@@ -26,55 +26,38 @@ public enum TrackItems {
 	}
 
 	public boolean hasQuarters() {
-		switch (this) {
-			case TURN:
-			case SWITCH:
-				return true;
-			default:
-				return false;
-		}
+        return switch (this) {
+            case TURN, SWITCH -> true;
+            default -> false;
+        };
 	}
 
 	public boolean hasCurvosity() {
-		switch (this) {
-			case SWITCH:
-			case CUSTOM:
-				return true;
-			default:
-				return false;
-		}
+        return switch (this) {
+            case SWITCH, CUSTOM -> true;
+            default -> false;
+        };
 	}
 
 	public boolean hasSmoothing() {
-		switch (this) {
-			case SLOPE:
-			case TURN:
-			case SWITCH:
-			case CUSTOM:
-				return true;
-			default:
-				return false;
-		}
+        return switch (this) {
+            case SLOPE, TURN, SWITCH, CUSTOM -> true;
+            default -> false;
+        };
 	}
 
 	public boolean hasDirection() {
-		switch (this) {
-			case TURN:
-			case SWITCH:
-				return true;
-			default:
-				return false;
-		}
+        return switch (this) {
+            case TURN, SWITCH -> true;
+            default -> false;
+        };
 	}
 
 	public boolean isTable() {
-		switch (this){
-			case TURNTABLE:
-			case TRANSFERTABLE:
-				return true;
-			default:
-				return false;
-		}
+        return switch (this) {
+            case TURNTABLE, TRANSFERTABLE -> true;
+            default -> false;
+        };
 	}
 
 	public int getOrder() {

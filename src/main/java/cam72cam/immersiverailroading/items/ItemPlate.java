@@ -69,7 +69,7 @@ public class ItemPlate extends CustomItem {
 		Data data = new Data(stack);
 		if (data.type == PlateType.BOILER) {
 			if (data.def != null) {
-				return TextColor.RESET.wrap(data.type.toString() + " " + data.def.name());
+				return TextColor.RESET.wrap(data.type + " " + data.def.name());
 			}
 		} else {
 			return TextColor.RESET.wrap(data.type.toString());

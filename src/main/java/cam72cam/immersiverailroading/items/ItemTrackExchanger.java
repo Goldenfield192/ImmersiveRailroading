@@ -58,7 +58,7 @@ public class ItemTrackExchanger extends CustomItem {
 		public Data(ItemStack stack) {
 			super(stack);
 			if (track == null) {
-				track = DefinitionManager.getTracks().get(0).name;
+				track = DefinitionManager.getTracks().getFirst().name;
 			}
 			if (railBed == null) {
 				railBed = ItemStack.EMPTY;

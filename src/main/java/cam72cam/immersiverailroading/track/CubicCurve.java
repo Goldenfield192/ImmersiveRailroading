@@ -223,30 +223,26 @@ public class CubicCurve {
         double lengthGuess = start + middle + end;
         double height = p2.y - p1.y;
 
-        switch (smoothing) {
-            case NEITHER:
-                return new CubicCurve(
-                        p1,
-                        ctrl1.add(0, (start / lengthGuess) * height, 0),
-                        ctrl2.add(0, -(end / lengthGuess) * height, 0),
-                        p2
-                );
-            case NEAR:
-                return new CubicCurve(
-                        p1,
-                        ctrl1,
-                        ctrl2.add(0, -(end / (middle + end)) * height, 0),
-                        p2
-                );
-            case FAR:
-                return new CubicCurve(
-                        p1,
-                        ctrl1.add(0, (start / (start + middle)) * height, 0),
-                        ctrl2,
-                        p2
-                );
-            case BOTH: default:
-                return this;
-        }
+        return switch (smoothing) {
+            case NEITHER -> new CubicCurve(
+                    p1,
+                    ctrl1.add(0, (start / lengthGuess) * height, 0),
+                    ctrl2.add(0, -(end / lengthGuess) * height, 0),
+                    p2
+            );
+            case NEAR -> new CubicCurve(
+                    p1,
+                    ctrl1,
+                    ctrl2.add(0, -(end / (middle + end)) * height, 0),
+                    p2
+            );
+            case FAR -> new CubicCurve(
+                    p1,
+                    ctrl1.add(0, (start / (start + middle)) * height, 0),
+                    ctrl2,
+                    p2
+            );
+            default -> this;
+        };
     }
 }

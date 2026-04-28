@@ -33,6 +33,6 @@ public class WheelSet {
     }
 
     public float angle(double distance) {
-        return wheels.get(0).angle(distance) + angleOffset;
+        return wheels.getFirst().angle(distance) + angleOffset;
     }
 }

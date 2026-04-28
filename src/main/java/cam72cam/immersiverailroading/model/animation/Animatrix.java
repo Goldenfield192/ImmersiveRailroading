@@ -79,10 +79,10 @@ public class Animatrix {
         }
         if (!looping) {
             if (percent >= (frames.size()-1f)/frames.size()) {
-                return frames.get(frames.size()-1).copy();
+                return frames.getLast().copy();
             }
             if (percent <= 0){
-                return frames.get(0).copy();
+                return frames.getFirst().copy();
             }
         }
 

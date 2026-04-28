@@ -181,8 +181,8 @@ public class PlateRollerMultiblock extends Multiblock {
 				// Try to start crafting
 				if (IRFuzzy.steelBlockOrFallback().matches(input) && output.isEmpty() && !craftingTe.getCraftItem().isEmpty()) {
 					input.setCount(input.getCount() - 1);
-					inputTe.getContainer().set(0, input);;
-					progress = 100;
+					inputTe.getContainer().set(0, input);
+                    progress = 100;
 					craftingTe.setCraftProgress(100);
 				}
 			}

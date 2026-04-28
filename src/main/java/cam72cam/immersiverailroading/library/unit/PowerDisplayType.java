@@ -13,30 +13,20 @@ public enum PowerDisplayType {
     public static final float wToPS = 0.00135962f;
 
     public float convertFromWatt(float value) {
-        switch (this) {
-            default:
-            case kw:
-                return value / 1000f;
-            case w:
-                return value;
-            case horsepower:
-                return value * wToHp;
-            case ps:
-                return value * wToPS;
-        }
+        return switch (this) {
+            case w -> value;
+            case horsepower -> value * wToHp;
+            case ps -> value * wToPS;
+            default -> value / 1000f;
+        };
     }
 
     public String toUnitString() {
-        switch (this) {
-            case w:
-                return "W";
-            case kw:
-                return "kW";
-            case ps:
-                return "PS";
-            case horsepower:
-            default:
-                return "hp";
-        }
+        return switch (this) {
+            case w -> "W";
+            case kw -> "kW";
+            case ps -> "PS";
+            default -> "hp";
+        };
     }
 }

@@ -74,7 +74,7 @@ public class TrackDefinition {
             }
         }
         ImmersiveRailroading.warn("Bad track gauge def for %s - %s", trackID, gauge);
-        return models.get(0);
+        return models.getFirst();
     }
 
     public static class ItemType {

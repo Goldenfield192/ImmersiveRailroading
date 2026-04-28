@@ -33,15 +33,14 @@ public class DefinitionManager {
         stockLoaders = new LinkedHashMap<>();
         stockLoaders.put("locomotives", (String defID, DataBlock data) -> {
             String era = data.getValue("era").asString();
-            switch (era) {
-                case "steam":
-                    return new LocomotiveSteamDefinition(defID, data);
-                case "diesel":
-                    return new LocomotiveDieselDefinition(defID, data);
-                default:
+            return switch (era) {
+                case "steam" -> new LocomotiveSteamDefinition(defID, data);
+                case "diesel" -> new LocomotiveDieselDefinition(defID, data);
+                default -> {
                     ImmersiveRailroading.warn("Invalid era %s in %s", era, defID);
-                    return null;
-            }
+                    yield null;
+                }
+            };
         });
 
         stockLoaders.put("tender", TenderDefinition::new);

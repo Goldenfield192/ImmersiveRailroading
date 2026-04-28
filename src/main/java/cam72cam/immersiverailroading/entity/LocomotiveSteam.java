@@ -182,10 +182,9 @@ public class LocomotiveSteam extends Locomotive {
 
 		EntityCoupleableRollingStock stock = this;
 		CouplerType coupler = getDefinition().cab_forward ? CouplerType.FRONT : CouplerType.BACK;
-		while (coupler != null && stock.getCoupled(coupler) instanceof Tender) {
-			Tender tender = (Tender) stock.getCoupled(coupler);
+		while (coupler != null && stock.getCoupled(coupler) instanceof Tender tender) {
 
-			// Only drain 10mb at a time from the tender
+            // Only drain 10mb at a time from the tender
 			int desiredDrain = 10;
 			if (getTankCapacity().MilliBuckets() - getServerLiquidAmount() >= 10) {
 				theTank.drain(tender.theTank, desiredDrain, false);

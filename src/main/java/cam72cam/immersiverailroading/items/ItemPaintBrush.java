@@ -143,7 +143,7 @@ public class ItemPaintBrush extends CustomItem {
 			}
 
 			if (mode != PaintBrushMode.RANDOM_COUPLED) {
-				if (stock.getDefinition().textureNames.size() == 0) {
+				if (stock.getDefinition().textureNames.isEmpty()) {
 					getPlayer().sendMessage(ChatText.BRUSH_NO_VARIANTS.getMessage());
 				} else if (Config.ConfigDebug.debugPaintBrush) {
 					//This is a debug log so use the untranslated Mode name

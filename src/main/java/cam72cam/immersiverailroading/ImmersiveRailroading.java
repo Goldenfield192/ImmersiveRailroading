@@ -198,11 +198,10 @@ public class ImmersiveRailroading extends ModCore.Mod {
 
 				GlobalRender.registerOverlay((state, pt) -> {
 					Entity riding = MinecraftClient.getPlayer().getRiding();
-					if (!(riding instanceof EntityRollingStock)) {
+					if (!(riding instanceof EntityRollingStock stock)) {
 						return;
 					}
-					EntityRollingStock stock = (EntityRollingStock) riding;
-					if (stock.getDefinition().getOverlay() != null) {
+                    if (stock.getDefinition().getOverlay() != null) {
 						stock.getDefinition().getOverlay().render(state, stock);
 					}
 				});
@@ -212,11 +211,10 @@ public class ImmersiveRailroading extends ModCore.Mod {
 						return true;
 					}
 					Entity riding = MinecraftClient.getPlayer().getRiding();
-					if (!(riding instanceof EntityRollingStock)) {
+					if (!(riding instanceof EntityRollingStock stock)) {
 						return true;
 					}
-					EntityRollingStock stock = (EntityRollingStock) riding;
-					if (stock.getDefinition().getOverlay() != null) {
+                    if (stock.getDefinition().getOverlay() != null) {
 						return stock.getDefinition().getOverlay().click(evt, stock);
 					}
 					return true;

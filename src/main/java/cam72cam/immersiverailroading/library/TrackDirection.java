@@ -15,14 +15,10 @@ public enum TrackDirection {
 	}
 
 	public float toYaw() {
-		switch (this) {
-			case LEFT:
-				return 180;
-			case RIGHT:
-				return 0;
-			case NONE:
-			default:
-				return 0;
-		}
+        return switch (this) {
+            case LEFT -> 180;
+            case RIGHT -> 0;
+            default -> 0;
+        };
 	}
 }

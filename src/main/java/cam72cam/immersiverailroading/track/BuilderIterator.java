@@ -55,8 +55,8 @@ public abstract class BuilderIterator extends BuilderBase implements IIterableTr
 		float heightOffset = (float) ((info.placementInfo.placementPosition.y) % 1);
 
 		List<VecYPR> path = getPath(0.25);
-		VecYPR start = path.get(0);
-		VecYPR end = path.get(path.size()-1);
+		VecYPR start = path.getFirst();
+		VecYPR end = path.getLast();
 
 		Vec3d placeOff = new Vec3d(
 				Math.abs(MathUtil.trueModulus(info.placementInfo.placementPosition.x, 1)),

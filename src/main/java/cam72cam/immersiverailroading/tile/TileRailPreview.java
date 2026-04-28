@@ -85,23 +85,18 @@ public class TileRailPreview extends BlockEntityTickable {
 							: placementInfo.yaw; //Simply use its yaw
 				Vec3d unit = new Vec3d(0, 0, 1).rotateYaw(yaw);
                 int shadowLength = (int) Math.round(placeOffset.dotProduct(unit));
-				int length;
+				int length = switch (settings.type) {
+                    case TURN -> {
+                        //Transform it back to radius
+                        double sin = Math.sin(Math.toRadians(settings.degrees / 2));
+                        yield sin != 0d
+                              ? Math.max(1, (int) ((shadowLength / 2d) / sin)) + 1
+                              : 2;
+                    }
+                    default -> Math.max(0, shadowLength) + 1;
+                };
 
-				switch (settings.type) {
-					case TURN:
-						//Transform it back to radius
-						double sin = Math.sin(Math.toRadians(settings.degrees / 2));
-						length = sin != 0d
-								 ? Math.max(1, (int) ((shadowLength / 2d) / sin)) + 1
-								 : 2;
-						break;
-					case STRAIGHT:
-					case SLOPE:
-					default:
-						length = Math.max(0, shadowLength) + 1;
-						break;
-				}
-				settings = settings.with(b -> b.length = length);
+                settings = settings.with(b -> b.length = length);
 			}
 
 			settings.write(item);

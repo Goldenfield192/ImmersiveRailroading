@@ -319,7 +319,7 @@ public abstract class EntityRollingStockDefinition {
         this.renderComponents = new HashMap<>();
         for (ModelComponent component : model.allComponents) {
             renderComponents.computeIfAbsent(component.type, v -> new ArrayList<>())
-                    .add(0, component);
+                    .addFirst(component);
         }
 
         itemComponents = model.allComponents.stream()
@@ -624,26 +624,20 @@ public abstract class EntityRollingStockDefinition {
     }
 
     public double getCouplerPosition(CouplerType coupler, Gauge gauge) {
-        switch (coupler) {
-            default:
-            case FRONT:
-                return gauge.scale() * (this.frontBounds + couplerOffsetFront);
-            case BACK:
-                return gauge.scale() * (this.rearBounds + couplerOffsetRear);
-        }
+        return switch (coupler) {
+            default -> gauge.scale() * (this.frontBounds + couplerOffsetFront);
+            case BACK -> gauge.scale() * (this.rearBounds + couplerOffsetRear);
+        };
     }
 
     public double getCouplerSlack(CouplerType coupler, Gauge gauge) {
         if (!Config.ImmersionConfig.slackEnabled) {
             return 0;
         }
-        switch (coupler) {
-            default:
-            case FRONT:
-                return gauge.scale() * (this.couplerSlackFront);
-            case BACK:
-                return gauge.scale() * (this.couplerSlackRear);
-        }
+        return switch (coupler) {
+            default -> gauge.scale() * (this.couplerSlackFront);
+            case BACK -> gauge.scale() * (this.couplerSlackRear);
+        };
     }
 
 
