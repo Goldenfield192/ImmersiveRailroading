@@ -49,10 +49,10 @@ public class Gauge {
 	}
 
 
-	private static List<Gauge> gauges = new ArrayList<Gauge>();
+	private static List<Gauge> gauges = new ArrayList<>();
 	
 	public static void reset() {
-		gauges = new ArrayList<Gauge>();
+		gauges = new ArrayList<>();
 	}
 	
 	public static void register(double gauge, String name) {
@@ -60,12 +60,12 @@ public class Gauge {
 		
 		gauges.add(new Gauge(gauge, name));
 
-		gauges.sort(new Comparator<Gauge>() {
-			@Override
-			public int compare(Gauge arg0, Gauge arg1) {
-				return Double.compare(arg1.gauge, arg0.gauge);
-			}
-		});
+		gauges.sort(new Comparator<>() {
+            @Override
+            public int compare(Gauge arg0, Gauge arg1) {
+                return Double.compare(arg1.gauge, arg0.gauge);
+            }
+        });
 	}
 	
 	public static void remove(double gauge) {

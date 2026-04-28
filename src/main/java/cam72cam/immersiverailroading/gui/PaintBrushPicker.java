@@ -47,11 +47,11 @@ public class PaintBrushPicker implements IScreen {
         int width = 200;
         int height = 20;
 
-        new ListSelector<String>(screen, 0, width, height, variant,
-                stock.getDefinition().textureNames.entrySet().stream()
-                        .collect(Collectors.toMap(
-                                Map.Entry::getValue, Map.Entry::getKey,
-                                (u, v) -> u, LinkedHashMap::new))
+        new ListSelector<>(screen, 0, width, height, variant,
+                           stock.getDefinition().textureNames.entrySet().stream()
+                                                             .collect(Collectors.toMap(
+                                                                     Map.Entry::getValue, Map.Entry::getKey,
+                                                                     (u, v) -> u, LinkedHashMap::new))
         ) {
             @Override
             public void onClick(String option) {

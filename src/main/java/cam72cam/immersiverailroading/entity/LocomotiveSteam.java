@@ -121,10 +121,8 @@ public class LocomotiveSteam extends Locomotive {
 		super.onDissassemble();
 		this.setBoilerTemperature(ambientTemperature());
 		this.setBoilerPressure(0);
-		
-		for (Integer slot : burnTime.keySet()) {
-			burnTime.put(slot, 0);
-		}
+
+        burnTime.replaceAll((s, v) -> 0);
 	}
 
 	@Override

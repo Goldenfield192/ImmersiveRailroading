@@ -145,23 +145,23 @@ public class ImmersiveRailroading extends ModCore.Mod {
 				ItemRender.register(IRItems.ITEM_MANUAL, new Identifier(MODID, "items/engineerslexicon"));
 				ItemRender.register(IRItems.ITEM_TRACK_EXCHANGER, new TrackExchangerModel());
 
-				IEntityRender<EntityMoveableRollingStock> stockRender = new IEntityRender<EntityMoveableRollingStock>() {
-					@Override
-					public void render(EntityMoveableRollingStock entity, RenderState state, float partialTicks) {
-						StockModel<?, ?> renderer = entity.getDefinition().getModel();
-						if (renderer != null) {
-							renderer.renderEntity(entity, state, partialTicks);
-						}
-					}
+				IEntityRender<EntityMoveableRollingStock> stockRender = new IEntityRender<>() {
+                    @Override
+                    public void render(EntityMoveableRollingStock entity, RenderState state, float partialTicks) {
+                        StockModel<?, ?> renderer = entity.getDefinition().getModel();
+                        if (renderer != null) {
+                            renderer.renderEntity(entity, state, partialTicks);
+                        }
+                    }
 
-					@Override
-					public void postRender(EntityMoveableRollingStock entity, RenderState state, float partialTicks) {
-						StockModel<?, ?> renderer = entity.getDefinition().getModel();
-						if (renderer != null) {
-							renderer.postRenderEntity(entity, state, partialTicks);
-						}
-					}
-				};
+                    @Override
+                    public void postRender(EntityMoveableRollingStock entity, RenderState state, float partialTicks) {
+                        StockModel<?, ?> renderer = entity.getDefinition().getModel();
+                        if (renderer != null) {
+                            renderer.postRenderEntity(entity, state, partialTicks);
+                        }
+                    }
+                };
 				EntityRenderer.register(LocomotiveSteam.class, stockRender);
 				EntityRenderer.register(LocomotiveDiesel.class, stockRender);
 				EntityRenderer.register(CarPassenger.class, stockRender);

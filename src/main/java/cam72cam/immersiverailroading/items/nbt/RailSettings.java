@@ -74,10 +74,10 @@ public class RailSettings {
     private static class DegreesMapper implements TagMapper<Float> {
         @Override
         public TagAccessor<Float> apply(Class<Float> type, String fieldName, TagField tag) {
-            return new TagAccessor<Float>(
+            return new TagAccessor<>(
                     (d, o) -> d.setFloat(fieldName, o),
                     d -> d.hasKey(fieldName) ? d.getFloat(fieldName) :
-                            d.hasKey("quarters") ? d.getInteger("quarters") /4F * 90 : 90
+                         d.hasKey("quarters") ? d.getInteger("quarters") / 4F * 90 : 90
             ) {
                 @Override
                 public boolean applyIfMissing() {
@@ -90,14 +90,14 @@ public class RailSettings {
     private static class SmoothingMapper implements TagMapper<TrackSmoothing> {
         @Override
         public TagAccessor<TrackSmoothing> apply(Class<TrackSmoothing> type, String fieldName, TagField tag) {
-            return new TagAccessor<TrackSmoothing>(
+            return new TagAccessor<>(
                     (d, o) -> d.setEnum(fieldName, o),
                     nbt -> {
                         if (nbt.hasKey(fieldName)) {
                             return nbt.getEnum(fieldName, type);
                         }
                         return nbt.getEnum("type", TrackItems.class) == TrackItems.SLOPE ?
-                                TrackSmoothing.NEITHER : TrackSmoothing.BOTH;
+                               TrackSmoothing.NEITHER : TrackSmoothing.BOTH;
                     }
             ) {
                 @Override

@@ -378,7 +378,7 @@ public abstract class EntityCoupleableRollingStock extends EntityMoveableRolling
 	
 
 	public final List<EntityCoupleableRollingStock> getTrain(boolean followDisengaged) {
-		List<EntityCoupleableRollingStock> train = new ArrayList<EntityCoupleableRollingStock>();
+		List<EntityCoupleableRollingStock> train = new ArrayList<>();
 		this.mapTrain(this, followDisengaged, train::add);
 		return train;
 	}
@@ -407,8 +407,8 @@ public abstract class EntityCoupleableRollingStock extends EntityMoveableRolling
 	}
 	
 	public Collection<DirectionalStock> getDirectionalTrain(boolean followDisengaged) {
-		HashSet<UUID> trainMap = new HashSet<UUID>();
-		List<DirectionalStock> trainList = new ArrayList<DirectionalStock>();
+		HashSet<UUID> trainMap = new HashSet<>();
+		List<DirectionalStock> trainList = new ArrayList<>();
 		
 		Function<DirectionalStock, DirectionalStock> next = (DirectionalStock current) -> {
 			for (CouplerType coupler : CouplerType.values()) {

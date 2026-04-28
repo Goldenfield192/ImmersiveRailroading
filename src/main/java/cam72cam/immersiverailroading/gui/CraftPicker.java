@@ -43,7 +43,7 @@ public class CraftPicker {
         stock.addAll(IRItems.ITEM_ROLLING_STOCK.getItemVariants(ItemTabs.PASSENGER_TAB));
         stock.addAll(IRItems.ITEM_ROLLING_STOCK.getItemVariants(ItemTabs.STOCK_TAB));
 
-		List<ItemStack> toRemove = new ArrayList<ItemStack>();
+		List<ItemStack> toRemove = new ArrayList<>();
 		for (ItemStack item : items) {
 			ItemRollingStockComponent.Data data = new ItemRollingStockComponent.Data(item);
 			ItemComponentType comp = data.componentType;

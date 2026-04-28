@@ -108,7 +108,7 @@ public class EntityBuildableRollingStock extends EntityRollingStock implements I
 			return;
 		}
 		
-		List<ItemComponentType> toAdd = new ArrayList<ItemComponentType>();
+		List<ItemComponentType> toAdd = new ArrayList<>();
 		
 		for (AssemblyStep step : AssemblyStep.values()) {
 			for (ItemComponentType component : this.getMissingItemComponents()) {
@@ -241,7 +241,7 @@ public class EntityBuildableRollingStock extends EntityRollingStock implements I
 			return;
 		}
 		
-		Map<ItemComponentType, Integer> addMap = new HashMap<ItemComponentType, Integer>();
+		Map<ItemComponentType, Integer> addMap = new HashMap<>();
 		for (ItemComponentType component : toAdd) {
 			if (!addMap.containsKey(component)) {
 				addMap.put(component, 0);
@@ -257,7 +257,7 @@ public class EntityBuildableRollingStock extends EntityRollingStock implements I
 				case CASTING:
 				case CASTING_HAMMER:
 				case PLATE_BOILER:
-					str += String.format(" (%s)", component.crafting.toString());
+					str += String.format(" (%s)", component.crafting);
 					break;
 				case PLATE_LARGE:
 				case PLATE_MEDIUM:
@@ -268,7 +268,7 @@ public class EntityBuildableRollingStock extends EntityRollingStock implements I
 					break;
 				}
 			} else {
-				str += String.format(" (%d x %s)", component.getWoodCost(gauge, getDefinition()), ChatText.WOOD_PLANKS.toString());
+				str += String.format(" (%d x %s)", component.getWoodCost(gauge, getDefinition()), ChatText.WOOD_PLANKS);
 			}
 			player.sendMessage(PlayerMessage.direct(str));
 		}
