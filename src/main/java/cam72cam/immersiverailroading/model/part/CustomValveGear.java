@@ -51,7 +51,7 @@ public class CustomValveGear extends ValveGear {
         super(wheels, state, 0);
 
         try {
-            animation = new AnimatrixSet(custom.custom, internal_model_scale);
+            animation = new AnimatrixSet(custom.custom(), internal_model_scale);
         } catch (IOException e) {
             throw new RuntimeException(e);
         }

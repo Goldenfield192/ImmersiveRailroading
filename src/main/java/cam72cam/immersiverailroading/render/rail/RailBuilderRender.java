@@ -15,7 +15,7 @@ public class RailBuilderRender {
     private static final ExpireableMap<String, VBO> cache = new ExpireableMap<>((k, v) -> v.free());
 
     public static void renderRailBuilder(RailInfo info, List<VecYPR> renderData, RenderState state) {
-        TrackModel model = DefinitionManager.getTrack(info.settings.track, info.settings.gauge.value());
+        TrackModel model = DefinitionManager.getTrack(info.settings.track(), info.settings.gauge().value());
         if (model == null) {
             return;
         }
@@ -27,7 +27,7 @@ public class RailBuilderRender {
         }
 
         MinecraftClient.startProfiler("irTrackModel");
-        try (VBO.Binding vbo = cached.bind(state, info.settings.type.isTable())) {
+        try (VBO.Binding vbo = cached.bind(state, info.settings.type().isTable())) {
             vbo.draw();
         }
         MinecraftClient.endProfiler();

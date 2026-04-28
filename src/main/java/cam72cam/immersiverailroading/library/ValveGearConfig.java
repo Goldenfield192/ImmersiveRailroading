@@ -7,10 +7,7 @@ import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
 
-public class ValveGearConfig {
-	public final ValveGearType type;
-	public final Map<Float, Identifier> custom;
-
+public record ValveGearConfig(ValveGearType type, Map<Float, Identifier> custom) {
 	public enum ValveGearType {
 		CONNECTING,
 		STEPHENSON,
@@ -26,17 +23,12 @@ public class ValveGearConfig {
 			if (valveGear == null) {
 				return null;
 			}
-            return switch (valveGear) {
-                case "TRI_WALSCHAERTS", "GARRAT", "MALLET_WALSCHAERTS" -> WALSCHAERTS;
-                case "T1" -> STEPHENSON;
-                default -> ValveGearType.valueOf(valveGear);
-            };
+			return switch (valveGear) {
+				case "TRI_WALSCHAERTS", "GARRAT", "MALLET_WALSCHAERTS" -> WALSCHAERTS;
+				case "T1" -> STEPHENSON;
+				default -> ValveGearType.valueOf(valveGear);
+			};
 		}
-	}
-
-	public ValveGearConfig(ValveGearType type, Map<Float, Identifier> custom) {
-		this.type = type;
-		this.custom = custom;
 	}
 
 	public static ValveGearConfig get(DataBlock def, String key) {
@@ -44,7 +36,8 @@ public class ValveGearConfig {
 		if (block != null) {
 			DataBlock animatrix = block.getBlock("animatrix");
 			Map<Float, Identifier> custom = new HashMap<>();
-			animatrix.getValueMap().forEach((percent, anim) -> custom.put(Float.parseFloat(percent), anim.asIdentifier()));
+			animatrix.getValueMap().forEach(
+					(percent, anim) -> custom.put(Float.parseFloat(percent), anim.asIdentifier()));
 			return new ValveGearConfig(ValveGearType.CUSTOM, custom);
 		}
 		String name = def.getValue(key).asString();

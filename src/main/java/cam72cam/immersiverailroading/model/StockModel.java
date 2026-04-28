@@ -142,8 +142,10 @@ public class StockModel<ENTITY extends EntityMoveableRollingStock, DEFINITION ex
         rocking.include(remaining);
         this.allComponents = provider.components();
 
-        frontTrackers = new TrackFollowers(s -> new TrackFollower(s, bogeyFront != null ? bogeyFront.bogey : null, bogeyFront != null ? bogeyFront.wheels : null, true));
-        rearTrackers = new TrackFollowers(s -> new TrackFollower(s, bogeyRear != null ? bogeyRear.bogey : null,  bogeyRear != null ? bogeyRear.wheels : null, false));
+        frontTrackers = new TrackFollowers(s -> new TrackFollower(s, bogeyFront != null ? bogeyFront.bogey() : null, bogeyFront != null ? bogeyFront.wheels()
+                                                                                                                                        : null, true));
+        rearTrackers = new TrackFollowers(s -> new TrackFollower(s, bogeyRear != null ? bogeyRear.bogey() : null, bogeyRear != null ? bogeyRear.wheels()
+                                                                                                                                    : null, false));
 
         sndRand = (float) Math.random() / 10;
         wheel_sound = new PartSound(new SoundDefinition(def.wheel_sound), true, 40, ConfigSound.SoundCategories.RollingStock::wheel);
@@ -223,8 +225,8 @@ public class StockModel<ENTITY extends EntityMoveableRollingStock, DEFINITION ex
 
         drivingWheels = DrivingAssembly.get(def.getValveGear(), provider, base, 0,
                 frame != null ? frame.wheels : null,
-                bogeyFront != null ? bogeyFront.wheels : null,
-                bogeyRear != null ? bogeyRear.wheels : null
+                                            bogeyFront != null ? bogeyFront.wheels() : null,
+                                            bogeyRear != null ? bogeyRear.wheels() : null
         );
 
         this.shell = provider.parse(ModelComponentType.SHELL);

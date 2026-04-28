@@ -8,40 +8,10 @@ import cam72cam.mod.serialization.*;
 import java.util.function.Consumer;
 
 @TagMapped(RailSettings.Mapper.class)
-public class RailSettings {
-    public final Gauge gauge;
-    public final TrackItems type;
-    public final int length;
-    public final float degrees;
-    public final float curvosity;
-    public final TrackPositionType posType;
-    public final TrackSmoothing smoothing;
-    public final TrackDirection direction;
-    public final ItemStack railBed;
-    public final ItemStack railBedFill;
-    public final boolean isPreview;
-    public final boolean isGradeCrossing;
-    public final String track;
-    public final int transfertableEntryCount;
-    public final int transfertableEntrySpacing;
-
-    public RailSettings(Gauge gauge, String track, TrackItems type, int length, float degrees, float curvosity, TrackPositionType posType, TrackSmoothing smoothing, TrackDirection direction, ItemStack railBed, ItemStack railBedFill, boolean isPreview, boolean isGradeCrossing, int count, int spacing) {
-        this.gauge = gauge;
-        this.track = track;
-        this.type = type;
-        this.length = length;
-        this.degrees = degrees;
-        this.posType = posType;
-        this.smoothing = smoothing;
-        this.direction = direction;
-        this.railBed = railBed;
-        this.railBedFill = railBedFill;
-        this.isPreview = isPreview;
-        this.isGradeCrossing = isGradeCrossing;
-        this.curvosity = curvosity;
-        this.transfertableEntryCount = count;
-        this.transfertableEntrySpacing = spacing;
-    }
+public record RailSettings(Gauge gauge, String track, TrackItems type, int length, float degrees, float curvosity,
+                           TrackPositionType posType, TrackSmoothing smoothing, TrackDirection direction,
+                           ItemStack railBed, ItemStack railBedFill, boolean isPreview, boolean isGradeCrossing,
+                           int transfertableEntryCount, int transfertableEntrySpacing) {
 
     public void write(ItemStack stack) {
         TagCompound data = new TagCompound();

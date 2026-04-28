@@ -45,7 +45,7 @@ public class RailInfo {
 		if (customInfo == null) {
 			customInfo = placementInfo;
 			//#1566: Use customInfo to adjust slope height
-			if (settings.type == TrackItems.SLOPE) {
+			if (settings.type() == TrackItems.SLOPE) {
 				customInfo = customInfo.offset(new Vec3i(0,1,0));
 			}
 		}
@@ -61,15 +61,15 @@ public class RailInfo {
 	}
 	private String generateID() {
 		Object[] props = new Object [] {
-				this.settings.type,
-				this.settings.length,
-				this.settings.degrees,
-				this.settings.curvosity,
-				this.settings.railBed,
-				this.settings.gauge,
-				this.settings.track,
-				this.settings.smoothing,
-				this.settings.isGradeCrossing,
+				this.settings.type(),
+				this.settings.length(),
+				this.settings.degrees(),
+				this.settings.curvosity(),
+				this.settings.railBed(),
+				this.settings.gauge(),
+				this.settings.track(),
+				this.settings.smoothing(),
+				this.settings.isGradeCrossing(),
 				this.switchState,
 				this.switchForced,
 				this.tablePos,
@@ -79,7 +79,7 @@ public class RailInfo {
 				this.customInfo.direction
 		};
 		String id = Arrays.toString(props);
-		if (!placementInfo.placementPosition.equals(customInfo.placementPosition) || this.settings.posType != TrackPositionType.FIXED) {
+		if (!placementInfo.placementPosition.equals(customInfo.placementPosition) || this.settings.posType() != TrackPositionType.FIXED) {
 			id += placementInfo.placementPosition.subtract(customInfo.placementPosition);
 		}
 		if (placementInfo.control != null) {
@@ -88,14 +88,14 @@ public class RailInfo {
 		if (customInfo.control != null) {
 			id += customInfo.control;
 		}
-		if (settings.type == TrackItems.TURNTABLE) {
+		if (settings.type() == TrackItems.TURNTABLE) {
 			id += Config.ConfigBalance.AnglePlacementSegmentation;
 		}
-		if (settings.type == TrackItems.TRANSFERTABLE) {
-			id += this.settings.transfertableEntryCount;
-			id += this.settings.transfertableEntrySpacing;
+		if (settings.type() == TrackItems.TRANSFERTABLE) {
+			id += this.settings.transfertableEntryCount();
+			id += this.settings.transfertableEntrySpacing();
 		}
-		if (settings.type.isTable()) {
+		if (settings.type().isTable()) {
 			id += this.itemHeld;
 		}
 		return id;
@@ -181,7 +181,7 @@ public class RailInfo {
 		return builder;
 	}
 	private BuilderBase constructBuilder(World world, Vec3i pos) {
-        return switch (settings.type) {
+        return switch (settings.type()) {
             case STRAIGHT -> new BuilderStraight(this, world, pos);
             case CROSSING -> new BuilderCrossing(this, world, pos);
             case SLOPE -> new BuilderSlope(this, world, pos);
@@ -218,7 +218,7 @@ public class RailInfo {
 			int found = 0;
 			for (int i = 0; i < player.getInventory().getSlotCount(); i++) {
 				ItemStack stack = player.getInventory().get(i);
-				if (material.apply(stack) && (!stack.is(IRItems.ITEM_RAIL) || new ItemRail.Data(stack).gauge == settings.gauge)) {
+				if (material.apply(stack) && (!stack.is(IRItems.ITEM_RAIL) || new ItemRail.Data(stack).gauge == settings.gauge())) {
 					found += stack.getCount();
 				}
 			}
@@ -239,7 +239,7 @@ public class RailInfo {
 			int required = this.count;
 			for (int i = 0; i < player.getInventory().getSlotCount(); i++) {
 				ItemStack stack = player.getInventory().get(i);
-				if (material.apply(stack) && (!stack.is(IRItems.ITEM_RAIL) || new ItemRail.Data(stack).gauge == settings.gauge)) {
+				if (material.apply(stack) && (!stack.is(IRItems.ITEM_RAIL) || new ItemRail.Data(stack).gauge == settings.gauge())) {
 					if (required > stack.getCount()) {
 						required -= stack.getCount();
 						ItemStack copy = stack.copy();
@@ -291,11 +291,13 @@ public class RailInfo {
 
 				List<MaterialManager> materials = new ArrayList<>();
 
-				if (!settings.railBed.isEmpty()) {
-					materials.add(new MaterialManager(true, builder.costBed(), settings.railBed::is, settings.railBed));
+				if (!settings.railBed().isEmpty()) {
+					materials.add(new MaterialManager(true, builder.costBed(), settings.railBed()::is,
+													  settings.railBed()));
 				}
-				if (!settings.railBedFill.isEmpty()) {
-					materials.add(new MaterialManager(false, builder.costFill(), settings.railBedFill::is, settings.railBedFill));
+				if (!settings.railBedFill().isEmpty()) {
+					materials.add(new MaterialManager(false, builder.costFill(), settings.railBedFill()::is,
+													  settings.railBedFill()));
 				}
 
 				List<TrackDefinition.TrackMaterial> tieParts = def.materials.get(TrackComponent.TIE);
@@ -304,17 +306,20 @@ public class RailInfo {
 
 				if (tieParts != null) {
 					for (TrackDefinition.TrackMaterial tiePart : tieParts) {
-						materials.add(new MaterialManager((int) Math.ceil(builder.costTies() * tiePart.cost), tiePart::matches, tiePart.examples(settings.gauge)));
+						materials.add(new MaterialManager((int) Math.ceil(builder.costTies() * tiePart.cost), tiePart::matches, tiePart.examples(
+								settings.gauge())));
 					}
 				}
 				if (railParts != null) {
 					for (TrackDefinition.TrackMaterial railPart : railParts) {
-						materials.add(new MaterialManager((int) Math.ceil(builder.costRails() * railPart.cost), railPart::matches, railPart.examples(settings.gauge)));
+						materials.add(new MaterialManager((int) Math.ceil(builder.costRails() * railPart.cost), railPart::matches, railPart.examples(
+								settings.gauge())));
 					}
 				}
 				if (bedParts != null) {
 					for (TrackDefinition.TrackMaterial bedPart : bedParts) {
-						materials.add(new MaterialManager((int) Math.ceil(builder.costBed() * bedPart.cost), bedPart::matches, bedPart.examples(settings.gauge)));
+						materials.add(new MaterialManager((int) Math.ceil(builder.costBed() * bedPart.cost), bedPart::matches, bedPart.examples(
+								settings.gauge())));
 					}
 				}
 
@@ -341,11 +346,11 @@ public class RailInfo {
 	}
 
 	public TrackDefinition getDefinition() {
-		return DefinitionManager.getTrack(settings.track);
+		return DefinitionManager.getTrack(settings.track());
 	}
 
 	public TrackModel getTrackModel() {
-		return DefinitionManager.getTrack(settings.track, settings.gauge.value());
+		return DefinitionManager.getTrack(settings.track(), settings.gauge().value());
 	}
 
 	private double trackHeight = -1;

@@ -15,17 +15,18 @@ import java.util.List;
 
 public class BuilderTransferTable extends BuilderBase {
     public BuilderTransferTable(RailInfo info, World world, Vec3i pos) {
-        super(info.withSettings(b -> b.length = Math.min(info.settings.length, BuilderTransferTable.maxLength(info.settings.gauge))), world, pos);
+        super(info.withSettings(b -> b.length = Math.min(info.settings.length(), BuilderTransferTable.maxLength(
+                info.settings.gauge()))), world, pos);
 
-        int vertMin = -info.settings.length / 2;
-        int vertMax = info.settings.length % 2 == 0
-                      ? info.settings.length/2
-                      : info.settings.length/2 + 1;
+        int vertMin = -info.settings.length() / 2;
+        int vertMax = info.settings.length() % 2 == 0
+                      ? info.settings.length() /2
+                      : info.settings.length() /2 + 1;
 
-        int halfGauge = (int) Math.floor((info.settings.gauge.value() * 1.1 + 0.5) / 2);
-        int width = info.settings.transfertableEntrySpacing * (info.settings.transfertableEntryCount - 1) + halfGauge + 2;
+        int halfGauge = (int) Math.floor((info.settings.gauge().value() * 1.1 + 0.5) / 2);
+        int width = info.settings.transfertableEntrySpacing() * (info.settings.transfertableEntryCount() - 1) + halfGauge + 2;
 
-        Vec3i mainOffset = new Vec3i(-width / 2, 1, info.settings.length / 2);
+        Vec3i mainOffset = new Vec3i(-width / 2, 1, info.settings.length() / 2);
         mainOffset = mainOffset.rotate(Rotation.from(info.placementInfo.facing()));
 
         this.setParentPos(mainOffset.down());
@@ -69,29 +70,30 @@ public class BuilderTransferTable extends BuilderBase {
         List<VecYPR> list = new ArrayList<>();
 
         if (info.itemHeld) {
-            for (int i = 0; i < info.settings.transfertableEntryCount; i++) {
-                Vec3i head = new Vec3i(-i * info.settings.transfertableEntrySpacing, 1, 0)
+            for (int i = 0; i < info.settings.transfertableEntryCount(); i++) {
+                Vec3i head = new Vec3i(-i * info.settings.transfertableEntrySpacing(), 1, 0)
                         .rotate(Rotation.from(info.placementInfo.facing()));
                 list.add(new VecYPR(head.x, head.y, head.z, info.placementInfo.facing().getAngle()));
 
-                Vec3i tail = new Vec3i(-i * info.settings.transfertableEntrySpacing, 1, info.settings.length - 1)
+                Vec3i tail = new Vec3i(-i * info.settings.transfertableEntrySpacing(), 1, info.settings.length() - 1)
                         .rotate(Rotation.from(info.placementInfo.facing()));
                 list.add(new VecYPR(tail.x, tail.y, tail.z, info.placementInfo.facing().getAngle()));
             }
         }
 
-        Vec3d center = new Vec3d(-info.tablePos, 1, info.settings.length / 2d - 0.5).rotateYaw(-info.placementInfo.facing().getAngle() + 180);
-        list.add(new VecYPR(center.x, center.y, center.z, info.placementInfo.facing().getAngle(), 0, 0, info.settings.length,
+        Vec3d center = new Vec3d(-info.tablePos, 1, info.settings.length() / 2d - 0.5).rotateYaw(-info.placementInfo.facing().getAngle() + 180);
+        list.add(new VecYPR(center.x, center.y, center.z, info.placementInfo.facing().getAngle(), 0, 0,
+                            info.settings.length(),
                             TrackModelPart.RAIL_LEFT, TrackModelPart.RAIL_RIGHT, TrackModelPart.TABLE));
         return list;
     }
 
     public int costTies() {
-        return (int)Math.ceil(this.info.settings.length * Config.ConfigBalance.TieCostMultiplier);
+        return (int)Math.ceil(this.info.settings.length() * Config.ConfigBalance.TieCostMultiplier);
     }
 
     public int costRails() {
-        return (int)Math.ceil(this.info.settings.length + 8*2/3 * Config.ConfigBalance.RailCostMultiplier);
+        return (int)Math.ceil(this.info.settings.length() + 8*2/3 * Config.ConfigBalance.RailCostMultiplier);
     }
 
     public int costBed() {
@@ -108,7 +110,7 @@ public class BuilderTransferTable extends BuilderBase {
                 fillCount += 1;
             }
         }
-        return (int)Math.ceil(!this.info.settings.railBedFill.isEmpty() ? fillCount : 0);
+        return (int)Math.ceil(!this.info.settings.railBedFill().isEmpty() ? fillCount : 0);
     }
 
     public static int maxLength(Gauge gauge){

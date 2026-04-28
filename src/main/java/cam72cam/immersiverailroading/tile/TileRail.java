@@ -40,13 +40,13 @@ public class TileRail extends TileRailBase {
 			return IBoundingBox.ORIGIN;
 		}
 		if (boundingBox == null) {
-			int length = info.settings.length;
-			if (info.settings.type == TrackItems.CUSTOM && !info.customInfo.placementPosition.equals(info.placementInfo.placementPosition)) {
+			int length = info.settings.length();
+			if (info.settings.type() == TrackItems.CUSTOM && !info.customInfo.placementPosition.equals(info.placementInfo.placementPosition)) {
 				length = (int) info.customInfo.placementPosition.distanceTo(info.placementInfo.placementPosition);
 			}
-			if (info.settings.type == TrackItems.TRANSFERTABLE) {
+			if (info.settings.type() == TrackItems.TRANSFERTABLE) {
 				//It is rectangular and length&width may differ a lot
-				length = Math.max(info.settings.length, info.settings.transfertableEntrySpacing * info.settings.transfertableEntryCount);
+				length = Math.max(info.settings.length(), info.settings.transfertableEntrySpacing() * info.settings.transfertableEntryCount());
 			}
 			boundingBox = IBoundingBox.ORIGIN.grow(new Vec3d(length, length, length));
 		}
@@ -93,23 +93,23 @@ public class TileRail extends TileRailBase {
 	}
 
 	public void clickOnTransferTable(TileRail parent, Vec3i pos){
-		int halfGauge = (int) Math.floor((parent.info.settings.gauge.value() * 1.1 + 0.5) / 2);
-		int width = parent.info.settings.transfertableEntrySpacing * (parent.info.settings.transfertableEntryCount - 1) + halfGauge + 2;
-		Vec3i mainOffset = new Vec3i(-width / 2, 1, parent.info.settings.length/2)
+		int halfGauge = (int) Math.floor((parent.info.settings.gauge().value() * 1.1 + 0.5) / 2);
+		int width = parent.info.settings.transfertableEntrySpacing() * (parent.info.settings.transfertableEntryCount() - 1) + halfGauge + 2;
+		Vec3i mainOffset = new Vec3i(-width / 2, 1, parent.info.settings.length() /2)
 				             .rotate(Rotation.from(parent.info.placementInfo.facing()));
 
 		Vec3i offset = pos.subtract(parent.getPos().subtract(mainOffset)).rotate(Rotation.from(parent.info.placementInfo.facing().getOpposite()));
 
-		this.tableIndex = MathUtil.clamp(Math.round(Math.abs((float) offset.x) / this.info.settings.transfertableEntrySpacing), 0, info.settings.transfertableEntryCount - 1);
+		this.tableIndex = MathUtil.clamp(Math.round(Math.abs((float) offset.x) / this.info.settings.transfertableEntrySpacing()), 0, info.settings.transfertableEntryCount() - 1);
 	}
 
 	@Override
 	public void update() {
 		super.update();
 
-		if(getWorld().isServer && info != null && info.settings.type.isTable()){
+		if(getWorld().isServer && info != null && info.settings.type().isTable()){
 			boolean shouldUpdate = false;
-			if (info.settings.type == TrackItems.TURNTABLE) {
+			if (info.settings.type() == TrackItems.TURNTABLE) {
 				int slotsPerCircle = Config.ConfigBalance.AnglePlacementSegmentation * 4;
 				float desiredPosition = (360f / slotsPerCircle) * tableIndex;
 				double speed = Config.ConfigBalance.TurnTableSpeed;
@@ -129,7 +129,7 @@ public class TileRail extends TileRailBase {
 				}
 			} else {
 				//Must be transfer table
-				float desiredPosition = tableIndex * info.settings.transfertableEntrySpacing;
+				float desiredPosition = tableIndex * info.settings.transfertableEntrySpacing();
 				double speed = Config.ConfigBalance.TransferTableSpeed;
 				if (desiredPosition != info.tablePos) {
 					if (Math.abs(desiredPosition - info.tablePos) < speed * 2) {
@@ -143,7 +143,7 @@ public class TileRail extends TileRailBase {
 			}
 			if(shouldUpdate){
 				this.markDirty();
-				int maxRange = Math.max(info.settings.length, info.settings.transfertableEntrySpacing * info.settings.transfertableEntryCount);
+				int maxRange = Math.max(info.settings.length(), info.settings.transfertableEntrySpacing() * info.settings.transfertableEntryCount());
 				List<EntityCoupleableRollingStock> ents = getWorld().getEntities((EntityCoupleableRollingStock stock) -> stock.getPosition().distanceTo(new Vec3d(getPos())) < maxRange, EntityCoupleableRollingStock.class);
 				for(EntityCoupleableRollingStock stock : ents) {
 					stock.states.forEach(state -> state.dirty = true);
@@ -214,10 +214,10 @@ public class TileRail extends TileRailBase {
 		}
 
 		if (tracks == null) {
-			tracks = (info.settings.type == TrackItems.SWITCH ? info.withSettings(b -> b.type = TrackItems.STRAIGHT) : info).getBuilder(getWorld(), new Vec3i(info.placementInfo.placementPosition).add(getPos())).getTracksForFloating();
+			tracks = (info.settings.type() == TrackItems.SWITCH ? info.withSettings(b -> b.type = TrackItems.STRAIGHT) : info).getBuilder(getWorld(), new Vec3i(info.placementInfo.placementPosition).add(getPos())).getTracksForFloating();
 			// This is just terrible
 			Vec3i offset = getPos().subtract(tracks.getFirst().getPos());
-			tracks = (info.settings.type == TrackItems.SWITCH ? info.withSettings(b -> b.type = TrackItems.STRAIGHT) : info).getBuilder(getWorld(), new Vec3i(info.placementInfo.placementPosition).add(getPos().add(offset))).getTracksForFloating();
+			tracks = (info.settings.type() == TrackItems.SWITCH ? info.withSettings(b -> b.type = TrackItems.STRAIGHT) : info).getBuilder(getWorld(), new Vec3i(info.placementInfo.placementPosition).add(getPos().add(offset))).getTracksForFloating();
 		}
 
 
@@ -245,8 +245,8 @@ public class TileRail extends TileRailBase {
 			Vec3i tpos = track.getPos();
 			TileRailBase be = getWorld().getBlockEntity(tpos, TileRailBase.class);
 			if (be != null) {
-				be.railBedCache = info.settings.railBed;
-				be.cachedGauge = info.settings.gauge.value();
+				be.railBedCache = info.settings.railBed();
+				be.cachedGauge = info.settings.gauge().value();
 				be.markDirty();
 			}
 		}
@@ -257,7 +257,7 @@ public class TileRail extends TileRailBase {
 		if (info == null) {
 			return 0;
 		}
-		return info.settings.gauge.value();
+		return info.settings.gauge().value();
 	}
 
 
@@ -272,7 +272,7 @@ public class TileRail extends TileRailBase {
 		if (info == null) {
 			return false;
 		}
-		return DefinitionManager.getTrack(info.settings.track).clack;
+		return DefinitionManager.getTrack(info.settings.track()).clack;
     }
 
 	@Override
@@ -280,7 +280,7 @@ public class TileRail extends TileRailBase {
 		if (info == null) {
 			return 1;
 		}
-		return DefinitionManager.getTrack(info.settings.track).bumpiness;
+		return DefinitionManager.getTrack(info.settings.track()).bumpiness;
 	}
 
 	@Override
@@ -288,7 +288,7 @@ public class TileRail extends TileRailBase {
 		if (info == null) {
 			return false;
 		}
-		return DefinitionManager.getTrack(info.settings.track).cog;
+		return DefinitionManager.getTrack(info.settings.track()).cog;
 	}
 
 	@Override
@@ -296,6 +296,6 @@ public class TileRail extends TileRailBase {
 		if (info == null) {
 			return null;
 		}
-		return info.settings.railBed;
+		return info.settings.railBed();
 	}
 }

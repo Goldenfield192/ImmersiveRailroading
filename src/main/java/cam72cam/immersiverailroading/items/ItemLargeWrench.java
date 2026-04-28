@@ -67,13 +67,13 @@ public class ItemLargeWrench extends CustomItem {
 					while (te != null) {
 						TileRail parent = te.getParentTile();
 						if (parent != null) {
-							if (parent.info.settings.type == TrackItems.TURNTABLE) {
+							if (parent.info.settings.type() == TrackItems.TURNTABLE) {
 								// Odd shaped turntables don't work
 								parent.setTurnTablePosition(VecUtil.toWrongYaw(
 										new Vec3d(parent.getPos()).add(0.5, 0, 0.5).subtract(
 												hit.add(pos))) + parent.info.placementInfo.yaw);
 								break;
-							} else if (parent.info.settings.type == TrackItems.TRANSFERTABLE){
+							} else if (parent.info.settings.type() == TrackItems.TRANSFERTABLE){
 								parent.clickOnTransferTable(parent, pos);
 								break;
 							}

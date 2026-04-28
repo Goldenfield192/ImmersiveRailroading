@@ -116,13 +116,13 @@ public class Simulation {
                 // Keep it loaded
                 world.keepLoaded(new Vec3i(state.position));
 
-                if (state.consist.positions == null) {
+                if (state.consist.positions() == null) {
                     continue;
                 }
 
                 // Load interacting stock locations
                 // We could in the future do a HashSet<Consist> and reduce the calls to the world.
-                for (Vec3i pos : state.consist.positions) {
+                for (Vec3i pos : state.consist.positions()) {
                     if (!world.isBlockLoaded(pos)) {
                         ImmersiveRailroading.debug("Loading chunk at position %s", pos);
                         // Load the chunk, entities should be directly injected into the world
@@ -142,7 +142,7 @@ public class Simulation {
         Set<UUID> dirty = new HashSet<>();
         for (SimulationState state : nextStateMap.values()) { // I don't remember why this is the next map
             if (state.dirty) {
-                dirty.addAll(state.consist.ids);
+                dirty.addAll(state.consist.ids());
             }
         }
         for (UUID uuid : dirty) {

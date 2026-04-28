@@ -44,14 +44,14 @@ public abstract class BuilderIterator extends BuilderBase implements IIterableTr
 		HashMap<Pair<Integer, Integer>, Integer> yOffset = new HashMap<>();
 		HashSet<Pair<Integer, Integer>> flexPositions = new HashSet<>();
 		
-		double horiz = info.settings.gauge.scale() * 1.1;
-		if (Config.ConfigDebug.oldNarrowWidth && info.settings.gauge.value() < 1) {
+		double horiz = info.settings.gauge().scale() * 1.1;
+		if (Config.ConfigDebug.oldNarrowWidth && info.settings.gauge().value() < 1) {
 			horiz = horiz/2;
 		}
-		if (info.settings.isGradeCrossing) {
-			horiz += 2f * info.settings.gauge.scale();
+		if (info.settings.isGradeCrossing()) {
+			horiz += 2f * info.settings.gauge().scale();
 		}
-		double clamp = 0.17 * info.settings.gauge.scale();
+		double clamp = 0.17 * info.settings.gauge().scale();
 		float heightOffset = (float) ((info.placementInfo.placementPosition.y) % 1);
 
 		List<VecYPR> path = getPath(0.25);
@@ -65,7 +65,7 @@ public abstract class BuilderIterator extends BuilderBase implements IIterableTr
 		);
 		int mainX = (int) Math.floor(path.get(path.size()/2).x+placeOff.x);
 		int mainZ = (int) Math.floor(path.get(path.size()/2).z+placeOff.z);
-		int flexDist = (int) Math.max(1, 3 * (0.5 + info.settings.gauge.scale()/2));
+		int flexDist = (int) Math.max(1, 3 * (0.5 + info.settings.gauge().scale()/2));
 
 		for (VecYPR cur : path) {
 			Vec3d gagPos = cur;
@@ -79,9 +79,9 @@ public abstract class BuilderIterator extends BuilderBase implements IIterableTr
 				int posX = (int)Math.floor(gagPos.x+nextUp.x+placeOff.x);
 				int posZ = (int)Math.floor(gagPos.z+nextUp.z+placeOff.z);
 				double height = 0;
-				if (info.settings.isGradeCrossing) {
+				if (info.settings.isGradeCrossing()) {
 					height = 0.306 - Math.abs(Math.round(q))/(3 * horiz);
-					height *= info.settings.gauge.scale();
+					height *= info.settings.gauge().scale();
 					height = Math.min(height, clamp);
 				}
 
@@ -97,7 +97,7 @@ public abstract class BuilderIterator extends BuilderBase implements IIterableTr
                     railHeights.put(gag, (float) relHeight);
 					yOffset.put(gag, (int) (gagPos.y - relHeight));
 				}
-				if (isFlex || Math.abs(q) > info.settings.gauge.value()) {
+				if (isFlex || Math.abs(q) > info.settings.gauge().value()) {
 					flexPositions.add(gag);
 				}
 			}
@@ -170,7 +170,7 @@ public abstract class BuilderIterator extends BuilderBase implements IIterableTr
 	public List<VecYPR> getRenderData() {
 		List<VecYPR> data = new ArrayList<>();
 
-		double scale = info.settings.gauge.scale();
+		double scale = info.settings.gauge().scale();
 		Pair<Double, List<VecYPR>> pair = getPathForRender(scale * info.getTrackModel().spacing);
 		List<VecYPR> points = pair.getRight();
         float renderScale = (float) (pair.getLeft() / info.getTrackModel().spacing);

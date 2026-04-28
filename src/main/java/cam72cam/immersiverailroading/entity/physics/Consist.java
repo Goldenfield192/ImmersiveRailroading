@@ -13,13 +13,15 @@ import java.util.stream.Collectors;
 
 /**
  * 1d dynamics simulator
- *
+ * <p>
  * It's a touch special since it applies forces to groups of
  * particles when they are interfering with each other via slacked linkages
  * It is not technically correct, but I believe it will produce the most reasonable simulation
  *
- * */
-public class Consist {
+ * @param ids       For dirty propagation
+ * @param positions For chunk loading
+ */
+public record Consist(List<UUID> ids, List<Vec3i> positions) {
     static boolean debug = false;
 
     public static class Particle {
@@ -46,7 +48,7 @@ public class Consist {
 
             this.mass_Kg = state.config.massKg;
             this.position_M = this.initial_position_M = 0; // Updated by Linkage
-            this.velocity_M_S = Speed.fromMinecraft(state.velocity).metric()/3.6 * direction;
+            this.velocity_M_S = Speed.fromMinecraft(state.velocity).metric() / 3.6 * direction;
             this.force_KgM_S_S = state.forcesNewtons() * direction;
             this.friction_KgM_S_S = state.frictionNewtons();
         }
@@ -80,13 +82,16 @@ public class Consist {
             double resistedForce_KgM_S_S = 0;
             // Friction only applies to the resisted force if it's in the same direction
             if (Math.copySign(1, netForce_KgM_S_S) == Math.copySign(1, velocity_M_S)) {
-                resistedForce_KgM_S_S = Math.copySign(Math.min(Math.abs(netForce_KgM_S_S), totalFriction_KgM_S_S), netForce_KgM_S_S);
+                resistedForce_KgM_S_S = Math.copySign(Math.min(Math.abs(netForce_KgM_S_S), totalFriction_KgM_S_S),
+                                                      netForce_KgM_S_S);
                 netForce_KgM_S_S = netForce_KgM_S_S - resistedForce_KgM_S_S;
             }
 
             double dv_M_S = netForce_KgM_S_S * dt_S / netMass_Kg;
             if (debug) {
-                ImmersiveRailroading.info("Accelerating %d particles by %.7f M/S with force of %.7f KgM/S/S from starting force of %.7f KgM/S/S and friction %.7f KgM/S/S%n", particles.size(), dv_M_S, netForce_KgM_S_S, force_KgM_S_S, totalFriction_KgM_S_S);
+                ImmersiveRailroading.info(
+                        "Accelerating %d particles by %.7f M/S with force of %.7f KgM/S/S from starting force of %.7f KgM/S/S and friction %.7f KgM/S/S%n",
+                        particles.size(), dv_M_S, netForce_KgM_S_S, force_KgM_S_S, totalFriction_KgM_S_S);
             }
             for (Particle particle : particles) {
                 if (Math.abs(dv_M_S) > 0) {
@@ -94,7 +99,8 @@ public class Consist {
                 }
                 if (totalFriction_KgM_S_S > 0 && Math.abs(resistedForce_KgM_S_S) > 0) {
                     // Proportional to available friction
-                    particle.remainingFriction_KgM_S_S = particle.remainingFriction_KgM_S_S - (Math.abs(resistedForce_KgM_S_S) * particle.remainingFriction_KgM_S_S / totalFriction_KgM_S_S);
+                    particle.remainingFriction_KgM_S_S = particle.remainingFriction_KgM_S_S - (Math.abs(
+                            resistedForce_KgM_S_S) * particle.remainingFriction_KgM_S_S / totalFriction_KgM_S_S);
                 }
             }
         }
@@ -115,16 +121,21 @@ public class Consist {
 
             double availableResistance_M_S = remainingFriction_KgM_S_S / totalMass_Kg * dt_S;
 
-            double resistedVelocity_M_S = Math.copySign(Math.min(Math.abs(totalVelocity_M_S), availableResistance_M_S), totalVelocity_M_S);
+            double resistedVelocity_M_S = Math.copySign(Math.min(Math.abs(totalVelocity_M_S), availableResistance_M_S),
+                                                        totalVelocity_M_S);
 
             if (debug && Math.abs(resistedVelocity_M_S) > 0.00001) {
-                ImmersiveRailroading.info("DeltaV of %d particles totals %.7f M/S (%.7f M/S avg) from a starting velocity of %.7f M/S and resistance of %.7f M/S%n", particles.size(), resistedVelocity_M_S, (resistedVelocity_M_S / particles.size()), totalVelocity_M_S, availableResistance_M_S);
+                ImmersiveRailroading.info(
+                        "DeltaV of %d particles totals %.7f M/S (%.7f M/S avg) from a starting velocity of %.7f M/S and resistance of %.7f M/S%n",
+                        particles.size(), resistedVelocity_M_S, (resistedVelocity_M_S / particles.size()),
+                        totalVelocity_M_S, availableResistance_M_S);
             }
             for (Particle particle : particles) {
                 particle.velocity_M_S = particle.velocity_M_S - resistedVelocity_M_S;
             }
 
-            remainingFriction_KgM_S_S = (availableResistance_M_S - Math.abs(resistedVelocity_M_S)) * totalMass_Kg / dt_S;
+            remainingFriction_KgM_S_S = (availableResistance_M_S - Math.abs(
+                    resistedVelocity_M_S)) * totalMass_Kg / dt_S;
         }
 
         public void computePosition(double dt) {
@@ -141,12 +152,14 @@ public class Consist {
             particles.add(this);
             // Positive: We are moving away from the previous particle
             // Negative: We are moving toward the previous particle
-            for (Linkage link = prevLink; link != null && (positive ? link.canPull : link.canPush); link = link.prevParticle.prevLink) {
+            for (Linkage link = prevLink; link != null && (positive ? link.canPull
+                                                                    : link.canPush); link = link.prevParticle.prevLink) {
                 particles.add(link.prevParticle);
             }
             // Positive: We are moving toward the next particle
             // Negative: We are moving away from the next particle
-            for (Linkage link = nextLink; link != null && (positive ? link.canPush : link.canPull); link = link.nextParticle.nextLink) {
+            for (Linkage link = nextLink; link != null && (positive ? link.canPush
+                                                                    : link.canPull); link = link.nextParticle.nextLink) {
                 particles.add(link.nextParticle);
             }
             return particles;
@@ -171,7 +184,8 @@ public class Consist {
             }
 
             // TODO this falls apart at low speeds?
-            double relativeDifference = Math.abs(a.velocity_M_S + b.velocity_M_S) < 0.01 ? 0 : Math.abs((a.velocity_M_S - b.velocity_M_S)/(a.velocity_M_S + b.velocity_M_S));
+            double relativeDifference = Math.abs(a.velocity_M_S + b.velocity_M_S) < 0.01 ? 0 : Math.abs(
+                    (a.velocity_M_S - b.velocity_M_S) / (a.velocity_M_S + b.velocity_M_S));
             if (relativeDifference < 0.00001) {
                 // Negligible
                 return;
@@ -195,7 +209,8 @@ public class Consist {
                 double cr = 0.25;
 
                 if (debug) {
-                    ImmersiveRailroading.info("Collision %s between %s and %s: %s and %s %n", relativeDifference, a.state.config.id, b.state.config.id, a.velocity_M_S, b.velocity_M_S);
+                    ImmersiveRailroading.info("Collision %s between %s and %s: %s and %s %n", relativeDifference,
+                                              a.state.config.id, b.state.config.id, a.velocity_M_S, b.velocity_M_S);
                 }
 
                 a.velocity_M_S = (b_dj_KgM_s * cr + total_j_KgM_S) / total_m_Kg;
@@ -207,13 +222,12 @@ public class Consist {
             } else {
                 // Smaller deltas should be treated as negligible w/ perfect restitution
                 if (debug) {
-                    ImmersiveRailroading.info("Merge %s between %s and %s: %s and %s%n", relativeDifference, a.state.config.id, b.state.config.id, a.velocity_M_S, b.velocity_M_S);
+                    ImmersiveRailroading.info("Merge %s between %s and %s: %s and %s%n", relativeDifference,
+                                              a.state.config.id, b.state.config.id, a.velocity_M_S, b.velocity_M_S);
                 }
                 a.velocity_M_S = b.velocity_M_S = total_j_KgM_S / total_m_Kg;
             }
         }
-
-
 
 
         public SimulationState applyToState(List<Vec3i> blocksAlreadyBroken) {
@@ -222,7 +236,8 @@ public class Consist {
             // Calculate the applied velocity from this particle.  This should not include the coupler adjustment speed/distance below
             state.velocity = velocityMPT * direction;
 
-            SimulationState future =  this.state.next((position_M - initial_position_M) * direction, blocksAlreadyBroken);
+            SimulationState future = this.state.next((position_M - initial_position_M) * direction,
+                                                     blocksAlreadyBroken);
 
             //ImmersiveRailroading.info("Moving: %s", position_M - initial_position_M);
 
@@ -282,22 +297,25 @@ public class Consist {
             boolean prevCouplerFront = next.state.config.id.equals(prev.state.interactingFront);
             boolean nextCouplerFront = prev.state.config.id.equals(next.state.interactingFront);
 
-            double maxCouplerDistance = (prevCouplerFront ? prev.state.config.couplerSlackFront : prev.state.config.couplerSlackRear) +
+            double maxCouplerDistance = (prevCouplerFront ? prev.state.config.couplerSlackFront
+                                                          : prev.state.config.couplerSlackRear) +
                     (nextCouplerFront ? next.state.config.couplerSlackFront : next.state.config.couplerSlackRear);
             //maxCouplerDistance = 0.21;
             //maxCouplerDistance = 0;
 
             boolean prevEngaged = prevCouplerFront ?
-                    prev.state.config.couplerEngagedFront :
-                    prev.state.config.couplerEngagedRear;
+                                  prev.state.config.couplerEngagedFront :
+                                  prev.state.config.couplerEngagedRear;
             boolean nextEngaged = nextCouplerFront ?
-                    next.state.config.couplerEngagedFront :
-                    next.state.config.couplerEngagedRear;
+                                  next.state.config.couplerEngagedFront :
+                                  next.state.config.couplerEngagedRear;
 
             Vec3d prevPos = prev.state.position;
             Vec3d nextPos = next.state.position;
-            Vec3d prevCoupler = prevCouplerFront ? prevParticle.state.couplerPositionFront : prevParticle.state.couplerPositionRear;
-            Vec3d nextCoupler = nextCouplerFront ? nextParticle.state.couplerPositionFront : nextParticle.state.couplerPositionRear;
+            Vec3d prevCoupler =
+                    prevCouplerFront ? prevParticle.state.couplerPositionFront : prevParticle.state.couplerPositionRear;
+            Vec3d nextCoupler =
+                    nextCouplerFront ? nextParticle.state.couplerPositionFront : nextParticle.state.couplerPositionRear;
 
             // These two distanceTos could be replaced with definitions
             double prevLength = prevCoupler.distanceTo(prevPos);
@@ -305,7 +323,8 @@ public class Consist {
             //double couplerDistance = prevCoupler.distanceTo(nextCoupler);
 
             //boolean isOverlapping = prevPos.distanceToSquared(prevCoupler) > prevPos.distanceToSquared(nextCoupler);
-            double couplerDistance = (prevPos.distanceTo(nextCoupler) - prevPos.distanceTo(prevCoupler) + (nextPos.distanceTo(prevCoupler) - nextPos.distanceTo(nextCoupler)))/2;
+            double couplerDistance = (prevPos.distanceTo(nextCoupler) - prevPos.distanceTo(
+                    prevCoupler) + (nextPos.distanceTo(prevCoupler) - nextPos.distanceTo(nextCoupler))) / 2;
             double totalLength = prevLength + nextLength + couplerDistance;
 
             // Setup nextParticle position based on prevParticle
@@ -323,14 +342,22 @@ public class Consist {
                 if (nextCouplerFront ? next.state.frontPushing : next.state.rearPushing) {
                     double delta = nextParticle.position_M - (prevParticle.position_M + minDistance_M);
                     if (Math.abs(delta) > 0.01 && debug) {
-                        ImmersiveRailroading.info("DELTA PUSH %s : %s + %s + %s = %s vs %s :: %s vs %s ?? %s %s", delta, prevLength, nextLength, couplerDistance, totalLength, minDistance_M, prevCoupler, nextCoupler, prevPos.distanceTo(prevCoupler) - prevPos.distanceTo(nextCoupler), nextPos.distanceTo(prevCoupler) - nextPos.distanceTo(nextCoupler));
+                        ImmersiveRailroading.info("DELTA PUSH %s : %s + %s + %s = %s vs %s :: %s vs %s ?? %s %s", delta,
+                                                  prevLength, nextLength, couplerDistance, totalLength, minDistance_M,
+                                                  prevCoupler, nextCoupler,
+                                                  prevPos.distanceTo(prevCoupler) - prevPos.distanceTo(nextCoupler),
+                                                  nextPos.distanceTo(prevCoupler) - nextPos.distanceTo(nextCoupler));
                     }
                     nextParticle.position_M = prevParticle.position_M + minDistance_M;
                     //nextParticle.position_M -= Math.copySign(Math.min(Math.abs(delta), maxCouplerDistance), isOverlapping ? -1 : 1);
                 } else if (nextCouplerFront ? next.state.frontPulling : next.state.rearPulling) {
                     double delta = nextParticle.position_M - (prevParticle.position_M + maxDistance_M);
                     if (Math.abs(delta) > 0.01 && debug) {
-                        ImmersiveRailroading.info("DELTA PULL %s : %s + %s + %s = %s vs %s :: %s vs %s ?? %s %s", delta, prevLength, nextLength, couplerDistance, totalLength, maxDistance_M, prevCoupler, nextCoupler, prevPos.distanceTo(prevCoupler) - prevPos.distanceTo(nextCoupler), nextPos.distanceTo(prevCoupler) - nextPos.distanceTo(nextCoupler));
+                        ImmersiveRailroading.info("DELTA PULL %s : %s + %s + %s = %s vs %s :: %s vs %s ?? %s %s", delta,
+                                                  prevLength, nextLength, couplerDistance, totalLength, maxDistance_M,
+                                                  prevCoupler, nextCoupler,
+                                                  prevPos.distanceTo(prevCoupler) - prevPos.distanceTo(nextCoupler),
+                                                  nextPos.distanceTo(prevCoupler) - nextPos.distanceTo(nextCoupler));
 
                     }
                     nextParticle.position_M = prevParticle.position_M + maxDistance_M;
@@ -361,7 +388,8 @@ public class Consist {
             if (currentDistance_M - minDistance_M < -0.001) {
                 // Recompute position
                 if (debug) {
-                    ImmersiveRailroading.info("CORRECTION %s %s%n", nextParticle.hashCode(), currentDistance_M - minDistance_M);
+                    ImmersiveRailroading.info("CORRECTION %s %s%n", nextParticle.hashCode(),
+                                              currentDistance_M - minDistance_M);
                 }
                 nextParticle.position_M = prevParticle.position_M + (minDistance_M);
                 if (nextParticle.velocity_M_S < prevParticle.velocity_M_S) {
@@ -373,7 +401,8 @@ public class Consist {
             if (currentDistance_M - maxDistance_M > 0.001 && coupled) {
                 // Recompute position
                 if (debug) {
-                    ImmersiveRailroading.info("CORRECTION %s %s%n", nextParticle.hashCode(), currentDistance_M - maxDistance_M);
+                    ImmersiveRailroading.info("CORRECTION %s %s%n", nextParticle.hashCode(),
+                                              currentDistance_M - maxDistance_M);
                 }
                 nextParticle.position_M = prevParticle.position_M + (maxDistance_M);
                 if (nextParticle.velocity_M_S > prevParticle.velocity_M_S) {
@@ -383,7 +412,8 @@ public class Consist {
         }
 
         public double slackPercent() {
-            return (maxDistance_M - minDistance_M) > 0 ? (currentDistance_M - minDistance_M) / (maxDistance_M - minDistance_M) : 0;
+            return (maxDistance_M - minDistance_M) > 0
+                   ? (currentDistance_M - minDistance_M) / (maxDistance_M - minDistance_M) : 0;
         }
     }
 
@@ -492,14 +522,16 @@ public class Consist {
                     // Spread brake pressure
 
                     float desiredBrakePressure = (float) linked.stream()
-                            .filter(s -> s.config.desiredBrakePressure != null)
-                            .mapToDouble(s -> s.config.desiredBrakePressure)
-                            .max().orElse(0);
+                                                               .filter(s -> s.config.desiredBrakePressure != null)
+                                                               .mapToDouble(s -> s.config.desiredBrakePressure)
+                                                               .max().orElse(0);
 
-                    boolean needsBrakeEqualization = linked.stream().anyMatch(s -> s.config.hasPressureBrake && Math.abs(s.brakePressure - desiredBrakePressure) > 0.01);
+                    boolean needsBrakeEqualization = linked.stream().anyMatch(
+                            s -> s.config.hasPressureBrake && Math.abs(s.brakePressure - desiredBrakePressure) > 0.01);
 
                     if (needsBrakeEqualization) {
-                        double brakePressureDelta = 0.1 / linked.stream().filter(s -> s.config.hasPressureBrake).count();
+                        double brakePressureDelta = 0.1 / linked.stream().filter(
+                                s -> s.config.hasPressureBrake).count();
                         linked.forEach(p -> {
                             if (p.config.hasPressureBrake) {
                                 if (Config.ImmersionConfig.instantBrakePressure) {
@@ -520,8 +552,6 @@ public class Consist {
                     linked.clear();
                 }
             }
-
-
 
 
             // Propagate dirty flag
@@ -571,7 +601,6 @@ public class Consist {
         double dt_S = (1 / (ticksPerSecond * stepsPerTick));
 
 
-
         // Spread forces
         for (int i = 0; i < stepsPerTick; i++) {
             particles.forEach(Particle::setup);
@@ -613,26 +642,18 @@ public class Consist {
             }
         } catch (Exception ex) {
             for (SimulationState state : states.values()) {
-                ImmersiveRailroading.debug("State: %s (%s, %s)", state.config.id, state.interactingFront, state.interactingRear);
+                ImmersiveRailroading.debug("State: %s (%s, %s)", state.config.id, state.interactingFront,
+                                           state.interactingRear);
             }
             for (Particle particle : particles) {
-                ImmersiveRailroading.debug("Particle: %s (%s, %s)", particle.state.config.id, particle.state.interactingFront, particle.state.interactingRear);
+                ImmersiveRailroading.debug("Particle: %s (%s, %s)", particle.state.config.id,
+                                           particle.state.interactingFront, particle.state.interactingRear);
             }
 
             throw ex;
         }
     }
 
-
-    // For dirty propagation
-    public final List<UUID> ids;
-    // For chunk loading
-    public final List<Vec3i> positions;
-
-    public Consist(List<UUID> consistIDs, List<Vec3i> consistPositions) {
-        this.ids = consistIDs;
-        this.positions = consistPositions;
-    }
 
     public static class TagMapper implements cam72cam.mod.serialization.TagMapper<Consist> {
         @Override

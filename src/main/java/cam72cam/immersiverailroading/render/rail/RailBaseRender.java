@@ -13,14 +13,14 @@ import java.util.List;
 public class RailBaseRender {
 	private static StandardModel getModel(RailInfo info, List<TrackBase> tracks) {
 		StandardModel model = new StandardModel();
-		if (!info.settings.railBed.isEmpty()) {
+		if (!info.settings.railBed().isEmpty()) {
 			for (TrackBase base : tracks) {
 				Vec3i basePos = base.getPos();
 				float height = base.getBedHeight();
 				if (base.isScaleModel()) {
-					height += 0.1f * (float) info.settings.gauge.scale();
+					height += 0.1f * (float) info.settings.gauge().scale();
 				}
-				model.addItemBlock(info.settings.railBed, new Matrix4()
+				model.addItemBlock(info.settings.railBed(), new Matrix4()
 						.translate(basePos.x, basePos.y, basePos.z)
 						.scale(1, height, 1)
 				);

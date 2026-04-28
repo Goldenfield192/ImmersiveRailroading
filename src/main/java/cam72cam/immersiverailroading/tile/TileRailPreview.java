@@ -47,11 +47,11 @@ public class TileRailPreview extends BlockEntityTickable {
 		this.item = stack.copy();
 		RailSettings settings = RailSettings.from(item);
 
-		if (settings.direction != TrackDirection.NONE) {
-			this.placementInfo = this.placementInfo.withDirection(settings.direction);
+		if (settings.direction() != TrackDirection.NONE) {
+			this.placementInfo = this.placementInfo.withDirection(settings.direction());
 		}
 
-		if (!settings.isPreview) {
+		if (!settings.isPreview()) {
 			if (this.getRailRenderInfo() != null && this.getRailRenderInfo().build(player, isAboveRails() ? getPos().down() : getPos())) {
 				new PreviewRenderPacket(this.getWorld(), this.getPos()).sendToAll();
 				if (isAboveRails()) {
@@ -72,23 +72,24 @@ public class TileRailPreview extends BlockEntityTickable {
 		this.customInfo = info;
 		if (customInfo != null) {
 			RailSettings settings = RailSettings.from(item);
-			if(settings.type ==TrackItems.TURN
-				|| settings.type == TrackItems.STRAIGHT
-				|| settings.type == TrackItems.SLOPE){
+			if(settings.type() ==TrackItems.TURN
+				|| settings.type() == TrackItems.STRAIGHT
+				|| settings.type() == TrackItems.SLOPE){
 				Vec3d placeOffset = new Vec3d(
 						customInfo.placementPosition.x - placementInfo.placementPosition.x,
 						0,
 						customInfo.placementPosition.z - placementInfo.placementPosition.z
 				);
-				float yaw = settings.type == TrackItems.TURN
-							? placementInfo.yaw + ((settings.direction == TrackDirection.LEFT ? -1 : 1) * (Math.abs(settings.degrees) / 2)) //Calculate arc direction for turn
+				float yaw = settings.type() == TrackItems.TURN
+							? placementInfo.yaw + ((settings.direction() == TrackDirection.LEFT ? -1 : 1) * (Math.abs(
+						settings.degrees()) / 2)) //Calculate arc direction for turn
 							: placementInfo.yaw; //Simply use its yaw
 				Vec3d unit = new Vec3d(0, 0, 1).rotateYaw(yaw);
                 int shadowLength = (int) Math.round(placeOffset.dotProduct(unit));
-				int length = switch (settings.type) {
+				int length = switch (settings.type()) {
                     case TURN -> {
                         //Transform it back to radius
-                        double sin = Math.sin(Math.toRadians(settings.degrees / 2));
+                        double sin = Math.sin(Math.toRadians(settings.degrees() / 2));
                         yield sin != 0d
                               ? Math.max(1, (int) ((shadowLength / 2d) / sin)) + 1
                               : 2;

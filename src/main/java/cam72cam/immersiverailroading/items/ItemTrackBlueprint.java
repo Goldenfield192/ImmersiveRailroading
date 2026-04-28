@@ -76,7 +76,7 @@ public class ItemTrackBlueprint extends CustomItem {
 			}
 		}
 
-		if (stackInfo.isPreview) {
+		if (stackInfo.isPreview()) {
 			if (!BlockUtil.canBeReplaced(world, pos, false)) {
 				pos = pos.up();
 			}
@@ -99,20 +99,21 @@ public class ItemTrackBlueprint extends CustomItem {
 	public List<String> getTooltip(ItemStack stack) {
 		List<String> tooltip = new ArrayList<>();
         RailSettings settings = RailSettings.from(stack);
-		TrackDefinition track = DefinitionManager.getTrack(settings.track);
+		TrackDefinition track = DefinitionManager.getTrack(settings.track());
 
 		String indented = "    - %s";
 
 		tooltip.add(GuiText.TRACK_TYPE.toString(""));
-		tooltip.add(String.format(indented, GuiText.TRACK_TYPE.toString(settings.type)));
-		tooltip.add(String.format(indented, GuiText.TRACK_LENGTH.toString(settings.length)));
-		tooltip.add(String.format(indented, GuiText.TRACK_GAUGE.toString(settings.gauge)));
+		tooltip.add(String.format(indented, GuiText.TRACK_TYPE.toString(settings.type())));
+		tooltip.add(String.format(indented, GuiText.TRACK_LENGTH.toString(settings.length())));
+		tooltip.add(String.format(indented, GuiText.TRACK_GAUGE.toString(settings.gauge())));
 		// TODO move checks for if applicable to enum
-		if (settings.type.hasQuarters()) {
-			tooltip.add(String.format(indented, GuiText.TRACK_QUARTERS.toString(settings.degrees)));
+		if (settings.type().hasQuarters()) {
+			tooltip.add(String.format(indented, GuiText.TRACK_QUARTERS.toString(settings.degrees())));
 		}
-		if (settings.type.hasCurvosity()) {
-			tooltip.add(String.format(indented, GuiText.TRACK_CURVOSITY.toString(String.format("%.2f", settings.curvosity))));
+		if (settings.type().hasCurvosity()) {
+			tooltip.add(String.format(indented, GuiText.TRACK_CURVOSITY.toString(String.format("%.2f",
+																							   settings.curvosity()))));
 		}
 
 		tooltip.add(GuiText.SELECTOR_TRACK.toString(""));
@@ -123,23 +124,23 @@ public class ItemTrackBlueprint extends CustomItem {
 		if (track.packName != null) {
 			tooltip.add("    " + String.format(indented, track.packName));
 		}
-		if (!settings.railBed.isEmpty()) {
-			tooltip.add(String.format(indented, GuiText.TRACK_RAIL_BED.toString(settings.railBed.getDisplayName())));
+		if (!settings.railBed().isEmpty()) {
+			tooltip.add(String.format(indented, GuiText.TRACK_RAIL_BED.toString(settings.railBed().getDisplayName())));
 		}
-		if (!settings.railBedFill.isEmpty()) {
-			tooltip.add(String.format(indented, GuiText.TRACK_RAIL_BED_FILL.toString(settings.railBedFill.getDisplayName())));
+		if (!settings.railBedFill().isEmpty()) {
+			tooltip.add(String.format(indented, GuiText.TRACK_RAIL_BED_FILL.toString(settings.railBedFill().getDisplayName())));
 		}
 
 		tooltip.add(GuiText.TRACK_POSITION.toString(""));
-		tooltip.add(String.format(indented, settings.posType));
-		if (settings.type.hasSmoothing()) {
-			tooltip.add(String.format(indented, GuiText.TRACK_SMOOTHING.toString(settings.smoothing)));
+		tooltip.add(String.format(indented, settings.posType()));
+		if (settings.type().hasSmoothing()) {
+			tooltip.add(String.format(indented, GuiText.TRACK_SMOOTHING.toString(settings.smoothing())));
 		}
-		if (settings.type.hasDirection()) {
-			tooltip.add(String.format(indented, GuiText.TRACK_DIRECTION.toString(settings.direction)));
+		if (settings.type().hasDirection()) {
+			tooltip.add(String.format(indented, GuiText.TRACK_DIRECTION.toString(settings.direction())));
 		}
 
-		if (settings.isPreview) {
+		if (settings.isPreview()) {
 			tooltip.add(GuiText.TRACK_PLACE_BLUEPRINT_TRUE.toString());
 		}
 

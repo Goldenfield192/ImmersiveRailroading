@@ -28,8 +28,8 @@ public class TrackBlueprintItemModel implements ItemRender.IItemModel {
 		state.cull_face(false);
 		state.lighting(false);
 
-		if (info.settings.type == TrackItems.TURN || info.settings.type == TrackItems.SWITCH) {
-			state.translate(0, 0, -0.1 * (info.settings.degrees / 90 * 4));
+		if (info.settings.type() == TrackItems.TURN || info.settings.type() == TrackItems.SWITCH) {
+			state.translate(0, 0, -0.1 * (info.settings.degrees() / 90 * 4));
 		}
 
 		state.translate(0.5, 0, 0.5);
@@ -37,11 +37,11 @@ public class TrackBlueprintItemModel implements ItemRender.IItemModel {
 		state.rotate(-90, 1, 0, 0);
 
 
-		double scale = 0.95 / info.settings.length;
-		if (info.settings.type == TrackItems.CROSSING) {
+		double scale = 0.95 / info.settings.length();
+		if (info.settings.type() == TrackItems.CROSSING) {
 			scale = 0.95 / 3;
 		}
-		if (info.settings.type.isTable()) {
+		if (info.settings.type().isTable()) {
 			scale *= 0.25;
 		}
 		state.scale(-scale, -scale * 2, scale);

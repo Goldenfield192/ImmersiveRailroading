@@ -157,7 +157,7 @@ public class TrackModel extends OBJModel{
     }
 
     public VBO getModel(RailInfo info, List<VecYPR> data) {
-        if(info.settings.type.isTable()){
+        if(info.settings.type().isTable()){
             return renderTable(info, data);
         }
 
@@ -193,7 +193,7 @@ public class TrackModel extends OBJModel{
         matrix.rotate(Math.toRadians(piece.getPitch()), 1, 0, 0);
         matrix.rotate(Math.toRadians(-90), 0, 1, 0);
 
-        double scale = info.settings.gauge.scale();
+        double scale = info.settings.gauge().scale();
         matrix.scale(scale, scale, scale);
 
         List<String> tables = groupNames.get(TrackModelPart.TABLE);
@@ -203,7 +203,7 @@ public class TrackModel extends OBJModel{
         }
 
         if (piece.getLength() != -1) {
-            matrix.scale(piece.getLength() / info.settings.gauge.scale(), 1, 1);
+            matrix.scale(piece.getLength() / info.settings.gauge().scale(), 1, 1);
         }
 
         List<String> groups = new ArrayList<>();

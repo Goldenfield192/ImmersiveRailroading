@@ -109,12 +109,12 @@ public class TileRailBase extends BlockEntityTrackTickable implements IRedstoneP
 		double gauge = 0;
 		TileRail parent = this.getParentTile();
 		if (parent != null && parent.info != null) {
-			gauge = parent.info.settings.gauge.value();
+			gauge = parent.info.settings.gauge().value();
 		}
 		if (this.getParentReplaced() != null && getWorld() != null) {
 			parent = getWorld().getBlockEntity(this.getParentReplaced(), TileRail.class);
             if (parent != null && parent.info != null) {
-                gauge = Math.min(gauge, parent.info.settings.gauge.value());
+                gauge = Math.min(gauge, parent.info.settings.gauge().value());
             }
 		}
 		return gauge;
@@ -143,7 +143,7 @@ public class TileRailBase extends BlockEntityTrackTickable implements IRedstoneP
 															   true,
 															   StockDetectorMode.SIMPLE);
 		if (getParentTile() != null) {
-			augmentGauge = getParentTile().info.settings.gauge;
+			augmentGauge = getParentTile().info.settings.gauge();
 			if (ConfigDebug.defaultAugmentComputer && augment != null) {
 				switch (augment) {
 					case DETECTOR:
@@ -248,7 +248,7 @@ public class TileRailBase extends BlockEntityTrackTickable implements IRedstoneP
 		if (railBedCache == null && getParent() != null && getWorld().isBlockLoaded(getParent())) {
 			TileRail pt = this.getParentTile();
 			if (pt != null) {
-				railBedCache = pt.info.settings.railBed;
+				railBedCache = pt.info.settings.railBed();
 			}
 		}
 		return railBedCache;
@@ -286,7 +286,7 @@ public class TileRailBase extends BlockEntityTrackTickable implements IRedstoneP
 			}
 		case 4:
 			if (this instanceof TileRail tr) {
-                if (tr.info.settings.type == TrackItems.SLOPE && tr.info.customInfo != null && tr.info.customInfo.placementPosition != null) {
+                if (tr.info.settings.type() == TrackItems.SLOPE && tr.info.customInfo != null && tr.info.customInfo.placementPosition != null) {
 					// Force to 1 block offset
 					tr.info = tr.info.with(mod -> {
 						Vec3d placement = mod.customInfo.placementPosition;
@@ -416,7 +416,7 @@ public class TileRailBase extends BlockEntityTrackTickable implements IRedstoneP
 		if (cachedGauge == null && getParent() != null) {
 			TileRail parent = this.getParentTile();
 			if (parent != null) {
-				cachedGauge = parent.info.settings.gauge.value();
+				cachedGauge = parent.info.settings.gauge().value();
 			}
 		}
 		return cachedGauge != null ? cachedGauge : 0;
@@ -614,7 +614,7 @@ public class TileRailBase extends BlockEntityTrackTickable implements IRedstoneP
 				}
 				return;
 			} else {
-				augmentGauge = getParentTile().info.settings.gauge;
+				augmentGauge = getParentTile().info.settings.gauge();
 			}
 			
 			if (Config.ConfigDamage.requireSolidBlocks && this instanceof TileRail && getWorld().isBlock(getPos(), IRBlocks.BLOCK_RAIL)) {
@@ -930,7 +930,7 @@ public class TileRailBase extends BlockEntityTrackTickable implements IRedstoneP
 		}
 
 		if (cur instanceof TileRail curTR) {
-            if (curTR.info.settings.type.equals(TrackItems.SWITCH)) {
+            if (curTR.info.settings.type().equals(TrackItems.SWITCH)) {
 				return curTR;
 			}
 		}
@@ -989,7 +989,8 @@ public class TileRailBase extends BlockEntityTrackTickable implements IRedstoneP
 			String track = stackData.track;
 			ItemStack railBed = stackData.railBed;
 			Gauge gauge = stackData.gauge;
-			if (!track.equals(tileRail.info.settings.track) || !railBed.equals(tileRail.info.settings.railBed) || !gauge.equals(tileRail.info.settings.gauge)) {
+			if (!track.equals(tileRail.info.settings.track()) || !railBed.equals(
+					tileRail.info.settings.railBed()) || !gauge.equals(tileRail.info.settings.gauge())) {
 				RailInfo info = tileRail.info.withSettings(b -> {
 					b.track = track;
 					b.railBed = railBed;

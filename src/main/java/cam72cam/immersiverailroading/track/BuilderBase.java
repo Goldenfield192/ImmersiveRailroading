@@ -111,7 +111,7 @@ public abstract class BuilderBase {
 				fillCount += 1;
 			}
 		}
-		return (int) Math.ceil(!this.info.settings.railBedFill.isEmpty() ? fillCount : 0);
+		return (int) Math.ceil(!this.info.settings.railBedFill().isEmpty() ? fillCount : 0);
 	}
 
 	public void setDrops(List<ItemStack> drops) {
@@ -120,12 +120,12 @@ public abstract class BuilderBase {
 
 	public void clearArea() { // Clear 6-block tall right-of-way ignoring snow UNLESS the snow directly intersects with the location of a future track tile.
 		for (TrackBase track : tracks) {
-			for (int i = 0; i < 6 * info.settings.gauge.scale(); i++) {
+			for (int i = 0; i < 6 * info.settings.gauge().scale(); i++) {
 				Vec3i main = track.getPos().up(i);
 				if (!ITrack.isRail(world, main) && (i == 0 || !world.isSnow(main))) {
 					world.setToAir(main);
 				}
-				if (info.settings.gauge.isModel() && ConfigDamage.enableSideBlockClearing && info.settings.type != TrackItems.SLOPE && !info.settings.type.isTable()) {
+				if (info.settings.gauge().isModel() && ConfigDamage.enableSideBlockClearing && info.settings.type() != TrackItems.SLOPE && !info.settings.type().isTable()) {
 					for (Facing facing : Facing.HORIZONTALS) {
 						Vec3i pos = main.offset(facing);
 						if (!ITrack.isRail(world, pos)) {

@@ -34,7 +34,7 @@ public class PlacementInfo {
 		this.yaw = ((int)((yawHead + 90/(segmentation() * 2f)) * segmentation())) / 90 * 90 / (segmentation() * 1f);
 
 		RailSettings settings = RailSettings.from(stack);
-		TrackDirection direction = settings.direction;
+		TrackDirection direction = settings.direction();
 		if (direction == TrackDirection.NONE) {
 			direction = (yawHead % 90 < 45) ? TrackDirection.RIGHT : TrackDirection.LEFT;
 		}
@@ -45,7 +45,7 @@ public class PlacementInfo {
 		double hitX = hit.x % 1;
 		double hitZ = hit.z % 1;
 
-		switch (settings.posType) {
+		switch (settings.posType()) {
 			case FIXED:
 				hitX = 0.5f;
 				hitZ = 0.5f;

@@ -386,18 +386,10 @@ public abstract class EntityCoupleableRollingStock extends EntityMoveableRolling
 			fn.accept(stock.stock, stock.direction);
 		}
 	}
-	
 
-	public static class DirectionalStock {
-		public final EntityCoupleableRollingStock prev;
-		public final EntityCoupleableRollingStock stock;
-		public final boolean direction;
 
-		public DirectionalStock(EntityCoupleableRollingStock prev, EntityCoupleableRollingStock stock, boolean direction) {
-			this.prev = prev;
-			this.stock = stock;
-			this.direction = direction;
-		}
+	public record DirectionalStock(EntityCoupleableRollingStock prev, EntityCoupleableRollingStock stock,
+								   boolean direction) {
 	}
 	
 	public Collection<DirectionalStock> getDirectionalTrain(boolean followDisengaged) {
