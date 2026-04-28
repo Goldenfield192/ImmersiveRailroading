@@ -75,10 +75,10 @@ public abstract class EntityRollingStockDefinition {
     private float couplerSlackFront;
     private float couplerSlackRear;
     private boolean scalePitch;
-    private double frontBounds;
-    private double rearBounds;
-    private double heightBounds;
-    private double widthBounds;
+    private final double frontBounds;
+    private final double rearBounds;
+    private final double heightBounds;
+    private final double widthBounds;
     private double passengerCompartmentLength;
     private double passengerCompartmentWidth;
     private double weight;

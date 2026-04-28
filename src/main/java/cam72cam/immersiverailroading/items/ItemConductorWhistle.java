@@ -22,7 +22,7 @@ import java.util.List;
 import java.util.UUID;
 
 public class ItemConductorWhistle extends CustomItem {
-	private static HashMap<UUID, Integer> cooldown = new HashMap<>();
+	private static final HashMap<UUID, Integer> cooldown = new HashMap<>();
 
 	public ItemConductorWhistle() {
 		super(ImmersiveRailroading.MODID, "item_conductor_whistle");

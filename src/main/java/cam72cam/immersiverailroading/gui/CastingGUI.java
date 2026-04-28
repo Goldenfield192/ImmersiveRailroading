@@ -38,7 +38,7 @@ public class CastingGUI implements IScreen {
 	private Button singleCastButton;
 	private Button repeatCastButton;
 	
-	private TileMultiblock tile;
+	private final TileMultiblock tile;
 	private ItemStack currentItem;
 	
 	public CastingGUI(TileMultiblock te) {

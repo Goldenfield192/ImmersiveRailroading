@@ -23,7 +23,7 @@ import java.util.Set;
 
 public abstract class Freight extends EntityCoupleableRollingStock {
 	@TagField("items")
-	public FilteredStackHandler cargoItems = new FilteredStackHandler(0);
+	public final FilteredStackHandler cargoItems = new FilteredStackHandler(0);
 
 	@TagSync
 	@TagField("CARGO_ITEMS")

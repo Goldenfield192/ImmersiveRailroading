@@ -53,7 +53,7 @@ public class TrackBlueprintItemModel implements ItemRender.IItemModel {
 		RailRender.get(info).renderRailBase(state);
 	}
 
-	private static ExpireableMap<String, RailInfo> infoCache = new ExpireableMap<>();
+	private static final ExpireableMap<String, RailInfo> infoCache = new ExpireableMap<>();
 	public static void renderMouseover(Player player, ItemStack stack, Vec3i pos, Vec3d vec, RenderState state, float partialTicks) {
 		Vec3d hit = vec.subtract(pos);
 		World world = player.getWorld();

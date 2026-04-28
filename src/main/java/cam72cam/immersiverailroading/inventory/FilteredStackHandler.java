@@ -9,7 +9,7 @@ import cam72cam.mod.serialization.TagMapped;
 
 @TagMapped(ItemStackHandler.TagMapper.class)
 public class FilteredStackHandler extends ItemStackHandler {
-	public Map<Integer, SlotFilter> filter = new HashMap<>();
+	public final Map<Integer, SlotFilter> filter = new HashMap<>();
 	public SlotFilter defaultFilter = SlotFilter.ANY;
 
 	private FilteredStackHandler() {

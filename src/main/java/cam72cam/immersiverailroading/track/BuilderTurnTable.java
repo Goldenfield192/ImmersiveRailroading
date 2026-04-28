@@ -16,7 +16,7 @@ import org.apache.commons.lang3.tuple.Pair;
 import cam72cam.immersiverailroading.Config.ConfigBalance;
 
 public class BuilderTurnTable extends BuilderBase {
-	protected HashSet<Pair<Integer, Integer>> positions;
+	protected final HashSet<Pair<Integer, Integer>> positions;
 	private Vec3i offset;
 
 	public BuilderTurnTable(RailInfo infoIn, World world, Vec3i pos) {

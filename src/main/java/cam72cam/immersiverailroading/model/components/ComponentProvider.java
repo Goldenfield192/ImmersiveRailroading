@@ -13,9 +13,9 @@ import java.util.stream.Collectors;
 public class ComponentProvider {
     public final StockModel<?, ?> model;
     private final Set<String> groups;
-    public Map<String, DataBlock> widgetConfig;
+    public final Map<String, DataBlock> widgetConfig;
     private final List<ModelComponent> components;
-    public double internal_model_scale;
+    public final double internal_model_scale;
 
     public ComponentProvider(StockModel<?, ?> model, double internal_model_scale, Map<String, DataBlock> widgetConfig) {
         this.model = model;

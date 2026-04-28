@@ -32,7 +32,7 @@ public class TrackExchangerGui implements IScreen {
 	private ItemStack railBed;
 	private Gauge gauge;
 
-	List<ItemStack> oreDict;
+	final List<ItemStack> oreDict;
 
 	public TrackExchangerGui () {
 		Player player = MinecraftClient.getPlayer();

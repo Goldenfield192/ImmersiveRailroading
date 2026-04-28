@@ -23,22 +23,22 @@ public class Consist {
     static boolean debug = false;
 
     public static class Particle {
-        public SimulationState state;
+        public final SimulationState state;
 
-        public double mass_Kg;
+        public final double mass_Kg;
         public double position_M;
         public double velocity_M_S;
 
         public double remainingFriction_KgM_S_S;
 
         public double initial_position_M;
-        public double force_KgM_S_S;
-        public double friction_KgM_S_S;
+        public final double force_KgM_S_S;
+        public final double friction_KgM_S_S;
 
         public Linkage nextLink;
         public Linkage prevLink;
 
-        public int direction;
+        public final int direction;
 
         public Particle(SimulationState state, boolean same) {
             this.state = state;
@@ -625,9 +625,9 @@ public class Consist {
 
 
     // For dirty propagation
-    public List<UUID> ids;
+    public final List<UUID> ids;
     // For chunk loading
-    public List<Vec3i> positions;
+    public final List<Vec3i> positions;
 
     public Consist(List<UUID> consistIDs, List<Vec3i> consistPositions) {
         this.ids = consistIDs;

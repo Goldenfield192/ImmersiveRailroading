@@ -23,7 +23,7 @@ public abstract class BuilderBase {
 	protected final World world;
 	protected ArrayList<TrackBase> tracks = new ArrayList<>();
 	
-	public RailInfo info;
+	public final RailInfo info;
 
 	public final Vec3i pos;
 	private Vec3i parent_pos;

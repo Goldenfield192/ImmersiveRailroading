@@ -171,7 +171,7 @@ public class RailInfo {
 	}
 
 
-	public ExpireableMap<Vec3i, BuilderBase> builders = new ExpireableMap<>();
+	public final ExpireableMap<Vec3i, BuilderBase> builders = new ExpireableMap<>();
 	public BuilderBase getBuilder(World world, Vec3i pos) {
 		BuilderBase builder = builders.get(pos);
 		if (builder == null) {

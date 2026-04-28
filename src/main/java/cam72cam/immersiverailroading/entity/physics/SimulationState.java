@@ -72,40 +72,40 @@ public class SimulationState {
     public float slackRearPercent;
 
     public static class Configuration {
-        public UUID id;
-        public Gauge gauge;
-        public World world;
+        public final UUID id;
+        public final Gauge gauge;
+        public final World world;
 
-        public double width;
-        public double length;
-        public double height;
-        public Function<SimulationState, IBoundingBox> bounds;
+        public final double width;
+        public final double length;
+        public final double height;
+        public final Function<SimulationState, IBoundingBox> bounds;
 
-        public float offsetFront;
-        public float offsetRear;
+        public final float offsetFront;
+        public final float offsetRear;
 
-        public boolean couplerEngagedFront;
-        public boolean couplerEngagedRear;
-        public double couplerDistanceFront;
-        public double couplerDistanceRear;
-        public double couplerSlackFront;
-        public double couplerSlackRear;
+        public final boolean couplerEngagedFront;
+        public final boolean couplerEngagedRear;
+        public final double couplerDistanceFront;
+        public final double couplerDistanceRear;
+        public final double couplerSlackFront;
+        public final double couplerSlackRear;
 
-        public double massKg;
+        public final double massKg;
 
-        public double maximumAdhesionNewtons;
-        public double designAdhesionNewtons;
-        public double rollingResistanceCoefficient;
+        public final double maximumAdhesionNewtons;
+        public final double designAdhesionNewtons;
+        public final double rollingResistanceCoefficient;
         private final Function<List<Vec3i>, Double> directResistanceNewtons;
 
         // We don't actually want to use this value, it's only for dirty checking
-        private double tractiveEffortFactors;
-        private Function<Speed, Double> tractiveEffortNewtons;
+        private final double tractiveEffortFactors;
+        private final Function<Speed, Double> tractiveEffortNewtons;
 
-        public Double desiredBrakePressure;
-        public double independentBrakePosition;
+        public final Double desiredBrakePressure;
+        public final double independentBrakePosition;
 
-        public boolean hasPressureBrake;
+        public final boolean hasPressureBrake;
 
         public Configuration(EntityCoupleableRollingStock stock) {
             id = stock.getUUID();

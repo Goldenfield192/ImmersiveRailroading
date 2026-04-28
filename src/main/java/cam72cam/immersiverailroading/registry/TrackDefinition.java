@@ -119,7 +119,7 @@ public class TrackDefinition {
     }
 
     public static class TrackMaterial {
-        private List<ItemType> items;
+        private final List<ItemType> items;
         public final float cost;
         TrackMaterial(String item, float cost) {
             this.items = Arrays.stream(item.split(",")).map(String::trim).map(ItemType::new).collect(Collectors.toList());

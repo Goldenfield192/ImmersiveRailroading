@@ -13,9 +13,9 @@ import java.util.List;
 
 public class BuilderSwitch extends BuilderBase implements IIterableTrack {
 
-	private BuilderIterator turnBuilder;
+	private final BuilderIterator turnBuilder;
 	private BuilderStraight straightBuilder;
-	private BuilderStraight realStraightBuilder;
+	private final BuilderStraight realStraightBuilder;
 	private final BuilderStraight straightBuilderReal;
 
 	public BuilderSwitch(RailInfo info, World world, Vec3i pos) {

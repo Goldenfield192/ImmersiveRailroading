@@ -15,7 +15,7 @@ import cam72cam.mod.world.World;
 import org.apache.commons.lang3.tuple.Pair;
 
 public class MultiPreviewRender {
-    private static ExpireableMap<Pair<World, Vec3i>, TileRailPreview> previews = new ExpireableMap<>();
+    private static final ExpireableMap<Pair<World, Vec3i>, TileRailPreview> previews = new ExpireableMap<>();
 
     static {
         GlobalRender.registerRender(MultiPreviewRender::render);

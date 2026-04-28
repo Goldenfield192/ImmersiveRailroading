@@ -23,7 +23,7 @@ import cam72cam.immersiverailroading.util.RailInfo;
 import cam72cam.immersiverailroading.util.VecUtil;
 
 public abstract class BuilderIterator extends BuilderBase implements IIterableTrack {
-	protected HashSet<Pair<Integer, Integer>> positions;
+	protected final HashSet<Pair<Integer, Integer>> positions;
 	
 	public BuilderIterator(RailInfo info, World world, Vec3i pos) {
 		this(info, world, pos, false);

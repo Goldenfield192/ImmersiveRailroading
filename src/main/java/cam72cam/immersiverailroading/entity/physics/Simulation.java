@@ -22,11 +22,11 @@ public class Simulation {
     public static int restStates;
     public static int keptStates;
 
-    double maxCouplerDist = 4;
+    final double maxCouplerDist = 4;
 
     private final World world;
     private final int startTickID;
-    List<Map<UUID, SimulationState>> stateMaps;
+    final List<Map<UUID, SimulationState>> stateMaps;
     private final List<Vec3i> blocksAlreadyBroken;
     List<EntityCoupleableRollingStock> loaded;
 

@@ -14,20 +14,20 @@ import java.util.stream.Collectors;
 import static cam72cam.immersiverailroading.gui.components.GuiUtils.fitString;
 
 public abstract class ListSelector<T> {
-    int width;
+    final int width;
     T currentValue;
-    Map<String, T> rawOptions;
+    final Map<String, T> rawOptions;
     int page;
-    int pageSize;
+    final int pageSize;
     boolean visible;
 
-    TextField search;
-    Button pagination;
-    List<Button> options;
+    final TextField search;
+    final Button pagination;
+    final List<Button> options;
 
     Map<Button, T> usableButtons;
-    Map<Button, Integer> buttonsX;
-    Map<Button, Integer> buttonsY;
+    final Map<Button, Integer> buttonsX;
+    final Map<Button, Integer> buttonsY;
 
     public ListSelector(IScreenBuilder screen, int xOff, int width, int height, T currentValue, Map<String, T> rawOptions) {
         this.width = width;

@@ -29,7 +29,7 @@ public class PlateRollerGUI implements IScreen {
 
 	private Button pickerButton;
 
-	private TileMultiblock tile;
+	private final TileMultiblock tile;
 	private ItemStack currentItem;
 	
 	public PlateRollerGUI(TileMultiblock te) {

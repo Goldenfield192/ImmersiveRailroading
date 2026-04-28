@@ -59,7 +59,7 @@ public class TrackGui implements IScreen {
 
 	private final List<ItemStack> oreDict;
 
-	private RailSettings.Mutable settings;
+	private final RailSettings.Mutable settings;
 
 	private ListSelector<Gauge> gaugeSelector;
 	private ListSelector<TrackItems> typeSelector;

@@ -27,11 +27,11 @@ public abstract class EntityRidableRollingStock extends EntityBuildableRollingSt
 	}
 
 	@TagField(value = "payingPassengerPositions", mapper = PassengerMapper.class)
-	private Map<UUID, Vec3d> payingPassengerPositions = new HashMap<>();
+	private final Map<UUID, Vec3d> payingPassengerPositions = new HashMap<>();
 
 	@TagField(value = "seatedPassengers", mapper = SeatedMapper.class)
 	@TagSync
-	private Map<String, UUID> seatedPassengers = new HashMap<>();
+	private final Map<String, UUID> seatedPassengers = new HashMap<>();
 
 	// Hack to remount players if they were seated
 	private final Map<UUID, Vec3d> remount = new HashMap<>();

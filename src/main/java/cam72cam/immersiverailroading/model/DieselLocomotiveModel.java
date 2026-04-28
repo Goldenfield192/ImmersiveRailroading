@@ -22,7 +22,7 @@ public class DieselLocomotiveModel extends LocomotiveModel<LocomotiveDiesel, Loc
     private final PartSound idle;
     private final PartSound running;
 
-    private Map<UUID, Float> runningFade = new HashMap<>();
+    private final Map<UUID, Float> runningFade = new HashMap<>();
 
     public DieselLocomotiveModel(LocomotiveDieselDefinition def) throws Exception {
         super(def);

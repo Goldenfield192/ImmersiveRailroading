@@ -68,7 +68,7 @@ public class TileRailBase extends BlockEntityTrackTickable implements IRedstoneP
 	private boolean willBeReplaced = false;
 	@TagField("replaced")
 	private TagCompound replaced;
-	private boolean skipNextRefresh = false;
+	private final boolean skipNextRefresh = false;
 	public ItemStack railBedCache = null;
 	private final FluidTank emptyTank = new FluidTank(null, 0);
 	private final IInventory emptyInventory = new ItemStackHandler(0);

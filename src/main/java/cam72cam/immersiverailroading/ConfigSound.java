@@ -11,31 +11,31 @@ import cam72cam.mod.config.ConfigFile.Range;
 public class ConfigSound {
 	@Comment("Sound Distance Multiplier")
 	@Range(min = 0.25, max = 10)
-	public static double soundDistanceScale = 1;
+	public static final double soundDistanceScale = 1;
 
 	@Comment("Scales sound emitted by rolling stock to the gauge they are on.  Requres restart.")
-	public static boolean scaleSoundToGauge = true;
+	public static final boolean scaleSoundToGauge = true;
 
 	//@RequiresMcRestart
 	@Comment("Re-configure the sound system to use more audo channels (fixes audio cutting out at high speed).  Disabled with a value less than 32")
-	public static int customAudioChannels = 128;
+	public static final int customAudioChannels = 128;
 
 	@Name("Categories")
 	public static class SoundCategories {
 		@Name("Immersive Railroading")
 		@Range(min = 0, max = 100)
-		public static int immersive_railroading = 100;
+		public static final int immersive_railroading = 100;
 
 		@Name("Controls")
 		@Range(min = 0, max = 100)
-		public static int controls = 100;
+		public static final int controls = 100;
 
 		@Name("Animations")
 		@Range(min = 0, max = 100)
-		public static int animations = 100;
+		public static final int animations = 100;
 		@Name("Villager Whistle")
 		@Range(min = 0, max = 100)
-		public static int passenger_whistle = 100;
+		public static final int passenger_whistle = 100;
 
 		public static float controls() { return immersive_railroading / 100f * controls / 100f; }
 		public static float animations() { return immersive_railroading / 100f * animations / 100f; }
@@ -45,26 +45,26 @@ public class ConfigSound {
 		public static class RollingStock {
 			@Name("Category Rolling Stock")
 			@Range(min = 0, max = 100)
-			public static int category = 100;
+			public static final int category = 100;
 
 			@Name("Wheel")
 			@Range(min = 0, max = 100)
-			public static int wheel = 100;
+			public static final int wheel = 100;
 			@Name("Sliding")
 			@Range(min = 0, max = 100)
-			public static int sliding = 100;
+			public static final int sliding = 100;
 			@Name("Flange")
 			@Range(min = 0, max = 100)
-			public static int flange = 100;
+			public static final int flange = 100;
 			@Name("Clack")
 			@Range(min = 0, max = 100)
-			public static int clack = 100;
+			public static final int clack = 100;
 			@Name("Couple")
 			@Range(min = 0, max = 100)
-			public static int couple = 100;
+			public static final int couple = 100;
 			@Name("Collision")
 			@Range(min = 0, max = 100)
-			public static int collision = 100;
+			public static final int collision = 100;
 
 			public static float wheel() { return immersive_railroading / 100f * category / 100f * wheel / 100f; }
 			public static float sliding() { return immersive_railroading / 100f * category / 100f * sliding / 100f; }
@@ -77,11 +77,11 @@ public class ConfigSound {
 		public static class Locomotive {
 			@Name("Category Locomotive")
 			@Range(min = 0, max = 100)
-			public static int category = 100;
+			public static final int category = 100;
 
 			@Name("Bell")
 			@Range(min = 0, max = 100)
-			public static int bell = 100;
+			public static final int bell = 100;
 
 			public static float bell() { return immersive_railroading / 100f * category / 100f * bell / 100f; }
 
@@ -89,22 +89,22 @@ public class ConfigSound {
 			public static class Steam {
 				@Name("Category Steam Locomotive")
 				@Range(min = 0, max = 100)
-				public static int steam_category = 100;
+				public static final int steam_category = 100;
 				@Name("Idle")
 				@Range(min = 0, max = 100)
-				public static int idle = 100;
+				public static final int idle = 100;
 				@Name("Pressure Valve")
 				@Range(min = 0, max = 100)
-				public static int pressureValve = 100;
+				public static final int pressureValve = 100;
 				@Name("Chuff")
 				@Range(min = 0, max = 100)
-				public static int chuff = 100;
+				public static final int chuff = 100;
 				@Name("Cylinder Drain")
 				@Range(min = 0, max = 100)
-				public static int cylinder_drain = 100;
+				public static final int cylinder_drain = 100;
 				@Name("Whistle")
 				@Range(min = 0, max = 100)
-				public static int whistle = 100;
+				public static final int whistle = 100;
 
 				public static float idle() { return immersive_railroading / 100f * category / 100f * steam_category / 100f * idle / 100f; }
 				public static float pressureValve() { return immersive_railroading / 100f * category / 100f * steam_category / 100f * pressureValve / 100f; }
@@ -115,16 +115,16 @@ public class ConfigSound {
 			public static class Diesel {
 				@Name("Category Diesel Locomotive")
 				@Range(min = 0, max = 100)
-				public static int diesel_category = 100;
+				public static final int diesel_category = 100;
 				@Name("Idle")
 				@Range(min = 0, max = 100)
-				public static int idle = 100;
+				public static final int idle = 100;
 				@Name("Horn")
 				@Range(min = 0, max = 100)
-				public static int horn = 100;
+				public static final int horn = 100;
 				@Name("Running")
 				@Range(min = 0, max = 100)
-				public static int running = 100;
+				public static final int running = 100;
 
 				public static float idle() { return immersive_railroading / 100f * category / 100f * diesel_category / 100f * idle / 100f; }
 				public static float horn() { return immersive_railroading / 100f * category / 100f * diesel_category / 100f * horn / 100f; }
@@ -135,7 +135,7 @@ public class ConfigSound {
 		public static class Machines {
 			@Name("Category Machines")
 			@Range(min = 0, max = 100)
-			public static int machine_category = 100;
+			public static final int machine_category = 100;
 			public static float category() { return immersive_railroading / 100f * machine_category / 100f; }
 		}
 	}

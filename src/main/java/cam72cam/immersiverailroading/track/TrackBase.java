@@ -12,15 +12,15 @@ import cam72cam.mod.serialization.TagCompound;
 import cam72cam.mod.util.SingleCache;
 
 public abstract class TrackBase {
-	public BuilderBase builder;
+	public final BuilderBase builder;
 
-	protected Vec3i rel;
+	protected final Vec3i rel;
 	private float bedHeight;
 	private float railHeight;
 	//Override default value
 	private boolean scaleModel = true;
 
-	protected BlockRailBase block;
+	protected final BlockRailBase block;
 
 	private boolean flexible = false;
 

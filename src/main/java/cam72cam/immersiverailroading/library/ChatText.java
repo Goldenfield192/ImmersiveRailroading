@@ -40,7 +40,7 @@ public enum ChatText {
 	MULTIBLOCK_SELECTING("multiblock.select"),
 	;
 	
-	private String value;
+	private final String value;
 	ChatText(String value) {
 		this.value = value;
 	}

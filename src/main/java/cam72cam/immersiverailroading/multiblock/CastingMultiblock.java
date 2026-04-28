@@ -24,8 +24,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class CastingMultiblock extends Multiblock {
-	private static FuzzyProvider STONE = () -> Fuzzy.STONE_BRICK;
-	private static FuzzyProvider SAND = () -> Fuzzy.SAND;
+	private static final FuzzyProvider STONE = () -> Fuzzy.STONE_BRICK;
+	private static final FuzzyProvider SAND = () -> Fuzzy.SAND;
 	public static final String NAME = "CASTING";
 	private static final Vec3i render = new Vec3i(3,3,7);
 	private static final Vec3i fluid = new Vec3i(3,3,3);

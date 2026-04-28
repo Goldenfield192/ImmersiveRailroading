@@ -4,7 +4,7 @@ import cam72cam.immersiverailroading.entity.Freight;
 import cam72cam.mod.gui.container.IContainerBuilder;
 
 public class FreightContainer extends BaseContainer {
-    public Freight stock;
+    public final Freight stock;
 
     public FreightContainer(Freight stock) {
         this.stock = stock;

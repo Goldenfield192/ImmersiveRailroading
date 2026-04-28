@@ -10,7 +10,7 @@ import java.util.Map;
 public class AnimatrixSet {
     private final float min;
     private final float max;
-    Map<Float, Animatrix> steps;
+    final Map<Float, Animatrix> steps;
     public AnimatrixSet(Map<Float, Identifier> input, double internal_model_scale) throws IOException {
         steps = new HashMap<>();
         for (Map.Entry<Float, Identifier> entry : input.entrySet()) {

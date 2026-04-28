@@ -41,7 +41,7 @@ public class StockModel<ENTITY extends EntityMoveableRollingStock, DEFINITION ex
     protected Bogey bogeyRear;
     protected DrivingAssembly drivingWheels;
     private ModelComponent shell;
-    private ModelComponent remaining;
+    private final ModelComponent remaining;
     protected final List<Door<ENTITY>> doors;
     protected final List<Control<ENTITY>> controls;
     protected final List<Readout<ENTITY>> gauges;

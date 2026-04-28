@@ -43,10 +43,10 @@ public class LocomotiveSteam extends Locomotive {
 	// Map<Slot, TicksToBurn>
 	@TagSync
 	@TagField(value = "burn_time", mapper = LocomotiveSteam.SlotTagMapper.class)
-	private Map<Integer, Integer> burnTime = new HashMap<>();
+	private final Map<Integer, Integer> burnTime = new HashMap<>();
 	@TagSync
 	@TagField(value = "burn_max", mapper = LocomotiveSteam.SlotTagMapper.class)
-	private Map<Integer, Integer> burnMax = new HashMap<>();
+	private final Map<Integer, Integer> burnMax = new HashMap<>();
 
 	private float drainRemainder;
 	

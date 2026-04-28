@@ -20,10 +20,10 @@ import java.util.function.Consumer;
 
 public class CraftPicker {
 	private final boolean enableItemPicker;
-	private ItemPickerGUI stockSelector;
-	private ItemPickerGUI itemSelector;
-	private List<ItemStack> items;
-	private Consumer<ItemStack> onChoose;
+	private final ItemPickerGUI stockSelector;
+	private final ItemPickerGUI itemSelector;
+	private final List<ItemStack> items;
+	private final Consumer<ItemStack> onChoose;
 
 	public static void showCraftPicker(IScreenBuilder screen, ItemStack current, CraftingType craftType, Consumer<ItemStack> onChoose) {
 		new CraftPicker(screen, current, craftType, onChoose);

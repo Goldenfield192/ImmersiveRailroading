@@ -7,7 +7,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class Quilling {
-    public List<Chime> chimes = new ArrayList<>();
+    public final List<Chime> chimes = new ArrayList<>();
     public double maxPull;
 
     Quilling(List<DataBlock> quilling) {

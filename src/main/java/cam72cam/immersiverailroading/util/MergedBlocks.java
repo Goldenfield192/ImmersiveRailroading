@@ -6,10 +6,10 @@ import java.util.List;
 import java.util.Map;
 
 public class MergedBlocks implements DataBlock {
-    Map<String, DataBlock.Value> primitives;
-    Map<String, List<DataBlock.Value>> primitiveSets;
-    Map<String, DataBlock> blocks;
-    Map<String, List<DataBlock>> blockSets;
+    final Map<String, DataBlock.Value> primitives;
+    final Map<String, List<DataBlock.Value>> primitiveSets;
+    final Map<String, DataBlock> blocks;
+    final Map<String, List<DataBlock>> blockSets;
 
     public MergedBlocks(DataBlock base, DataBlock override) {
         this.primitives = new LinkedHashMap<>(base.getValueMap());

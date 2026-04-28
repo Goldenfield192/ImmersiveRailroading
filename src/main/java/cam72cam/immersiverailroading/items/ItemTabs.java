@@ -9,10 +9,10 @@ import java.util.List;
 
 public class ItemTabs {
 
-	public static CreativeTab MAIN_TAB;
-	public static CreativeTab LOCOMOTIVE_TAB;
-	public static CreativeTab STOCK_TAB;
-    public static CreativeTab PASSENGER_TAB;
+	public static final CreativeTab MAIN_TAB;
+	public static final CreativeTab LOCOMOTIVE_TAB;
+	public static final CreativeTab STOCK_TAB;
+    public static final CreativeTab PASSENGER_TAB;
 	//public static CreativeTab COMPONENT_TAB;
 
 	static {
