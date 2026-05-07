@@ -163,7 +163,106 @@ public class RealBB implements IBoundingBox {
 	public RealBB offset(Vec3d val) {
 		return new RealBB(front, rear, width, height, yaw, centerX+val.x, centerY+val.y, centerZ+val.z, heightMap);
 	}
-	
+	@Override
+	public Vec3d adjustMovement(IBoundingBox other, Vec3d movement) {
+		// 获取 A 的当前边界框（世界坐标）
+		Vec3d aMin = other.min();
+		Vec3d aMax = other.max();
+		double aHeight = aMax.y - aMin.y;
+
+		// 最终累计的移动向量（世界坐标）
+		Vec3d totalMove = Vec3d.ZERO;
+
+		// ---------- 1. 处理 Y 轴移动（垂直） ----------
+		double moveY = movement.y;
+		if (moveY != 0) {
+			Vec3d newMin = new Vec3d(aMin.x, aMin.y + moveY, aMin.z);
+			Vec3d newMax = new Vec3d(aMax.x, aMax.y + moveY, aMax.z);
+			Pair<Boolean, Double> yCheck = intersectsAt(newMin, newMax, true);
+			if (yCheck.getLeft()) {
+//				// 发生碰撞，需要调整移动量
+//				if (moveY < 0) {
+//					// 向下移动：A 的底部应贴合 B 的顶部（返回的 Y 值）
+//					double newBottom = yCheck.getRight();
+//					moveY = newBottom - aMin.y;
+//				} else {
+//					// 向上移动：A 的顶部应贴合 B 的底部（centerY）
+//					double newTop = this.centerY; // B 的底部 Y 坐标
+//					moveY = newTop - aMax.y;
+//				}
+			}
+			totalMove = totalMove.add(0, moveY, 0);
+			// 更新 A 的边界框（仅 Y 变化）
+			aMin = aMin.add(0, moveY, 0);
+			aMax = aMax.add(0, moveY, 0);
+		}
+
+		// 标记 A 是否站在 B 的顶部（用于水平移动后重新调整 Y）
+		boolean onGround = false;
+		// 检查当前 A 的底部是否正好接触 B 的顶部（允许微小误差）
+		Pair<Boolean, Double> groundCheck = intersectsAt(aMin, aMax, true);
+		if (groundCheck.getLeft()) {
+			double bTop = groundCheck.getRight();
+			if (Math.abs(aMin.y - bTop) < 1e-4) {
+				onGround = true;
+			}
+		}
+
+		// ---------- 2. 处理水平移动（在 B 的局部坐标系中分解） ----------
+		// 计算 B 的局部 X 轴（向前）和 Z 轴（向右）的世界方向
+		double yawRad = Math.toRadians(this.yaw);
+		Vec3d localX = new Vec3d(Math.sin(yawRad), 0, Math.cos(yawRad)); // 注意：与原代码中 fromWrongYaw 行为一致
+		Vec3d localZ = new Vec3d(Math.cos(yawRad), 0, -Math.sin(yawRad)); // yaw+90 方向
+
+		// 将水平速度分解到 B 的局部坐标系
+		Vec3d horizMove = new Vec3d(movement.x, 0, movement.z);
+		double vx_local = horizMove.dotProduct(localX);
+		double vz_local = horizMove.dotProduct(localZ);
+
+		// 分别处理局部 X 和局部 Z 轴移动
+		double[] locals = {vx_local, vz_local};
+		Vec3d[] axes = {localX, localZ};
+
+		for (int i = 0; i < 2; i++) {
+			double v = locals[i];
+			if (v == 0) continue;
+
+			Vec3d axis = axes[i];
+			Vec3d delta = axis.scale(v);
+			Vec3d newMin = aMin.add(delta);
+			Vec3d newMax = aMax.add(delta);
+
+			if (intersectsAt(newMin, newMax, true).getLeft()) {
+				// 该方向碰撞，取消此分量移动
+				continue;
+			}
+
+			// 无碰撞，接受移动
+			totalMove = totalMove.add(delta);
+			aMin = newMin;
+			aMax = newMax;
+
+			// 如果 A 站在 B 上，水平移动后需要重新贴合地形高度
+			if (onGround) {
+				Pair<Boolean, Double> terrain = intersectsAt(aMin, aMax, true);
+				if (terrain.getLeft()) {
+					double newBottom = terrain.getRight();
+					double deltaY = newBottom - aMin.y;
+					if (deltaY != 0) {
+						totalMove = totalMove.add(0, deltaY, 0);
+						aMin = aMin.add(0, deltaY, 0);
+						aMax = aMax.add(0, deltaY, 0);
+					}
+				} else {
+					// 水平移动后不再与 B 重叠，失去地面接触
+					onGround = false;
+				}
+			}
+		}
+
+		return totalMove;
+	}
+
 	@Override
 	public double calculateXOffset(IBoundingBox other, double offsetX) {
 		return 0;
