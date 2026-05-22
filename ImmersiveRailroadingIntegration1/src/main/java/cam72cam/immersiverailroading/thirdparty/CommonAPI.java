@@ -1,5 +1,6 @@
 package cam72cam.immersiverailroading.thirdparty;
 
+import cam72cam.immersiverailroading.entity.*;
 import cam72cam.immersiverailroading.registry.EntityRollingStockDefinition;
 import cam72cam.immersiverailroading.registry.LocomotiveDefinition;
 import cam72cam.immersiverailroading.tile.TileRailBase;
@@ -11,6 +12,8 @@ import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fluids.FluidStack;
+
+import java.util.*;
 
 public class CommonAPI {
     private final EntityRollingStock stock;
