@@ -122,7 +122,7 @@ dependencies {
     modImplementation "curse.maven:spark-361579:3542217"
 }
 
-apply from: 'ImmersiveRailroadingIntegration1/dependencies.gradle'
+//apply from: 'ImmersiveRailroadingIntegration1/dependencies.gradle'
 
 jar {
     enabled = false

@@ -5,7 +5,7 @@ import cam72cam.immersiverailroading.library.ChatText;
 import cam72cam.immersiverailroading.library.GuiText;
 import cam72cam.immersiverailroading.multiblock.Multiblock;
 import cam72cam.immersiverailroading.multiblock.MultiblockRegistry;
-import cam72cam.immersiverailroading.thirdparty.CompatLoader;
+//import cam72cam.immersiverailroading.thirdparty.CompatLoader;
 import cam72cam.immersiverailroading.util.IRFuzzy;
 import cam72cam.mod.entity.Player;
 import cam72cam.mod.item.*;
@@ -66,9 +66,9 @@ public class ItemManual extends CustomItem {
 			}
 		} else {
 			if (world.isClient) {
-				if (!CompatLoader.openWiki()) {
+//				if (!CompatLoader.openWiki()) {
 					player.sendMessage(PlayerMessage.url("https://github.com/cam72cam/ImmersiveRailroading/wiki"));
-				}
+//				}
 			}
 		}
 	}

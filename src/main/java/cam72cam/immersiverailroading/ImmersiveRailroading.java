@@ -17,7 +17,7 @@ import cam72cam.immersiverailroading.render.item.*;
 import cam72cam.immersiverailroading.render.multiblock.MBBlueprintRender;
 import cam72cam.immersiverailroading.render.multiblock.TileMultiblockRender;
 import cam72cam.immersiverailroading.render.rail.RailPreviewRender;
-import cam72cam.immersiverailroading.thirdparty.CompatLoader;
+//import cam72cam.immersiverailroading.thirdparty.CompatLoader;
 import cam72cam.immersiverailroading.tile.TileMultiblock;
 import cam72cam.immersiverailroading.tile.TileRail;
 import cam72cam.immersiverailroading.tile.TileRailGag;
@@ -60,7 +60,7 @@ public class ImmersiveRailroading extends ModCore.Mod {
 
 	@Override
 	public void commonEvent(ModEvent event) {
-		CompatLoader.common(event);
+//		CompatLoader.common(event);
 
 		switch (event) {
 			case CONSTRUCT:
