@@ -117,12 +117,12 @@ repositories {
 
 dependencies {
     compileOnly "net.minecrell:terminalconsoleappender:1.3.0"
-    modImplementation ":UniversalModCore-1.12.2-forge-1.2.3-96333ab:"
+    modImplementation "cam72cam.universalmodcore:UniversalModCore:1.12.2-forge-1.2.3-96333ab:"
 //    compileOnly files("D:\\JavaStudy\\UniversalModCore\\UMC-1.12.2\\build\\libs\\UniversalModCore-1.12.2-forge-1.2.3-96333ab.jar")
     modImplementation "curse.maven:spark-361579:3542217"
 }
 
-apply from: 'ImmersiveRailroadingIntegration/dependencies.gradle'
+apply from: 'ImmersiveRailroadingIntegration1/dependencies.gradle'
 
 jar {
     enabled = false
