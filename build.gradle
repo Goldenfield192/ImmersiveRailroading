@@ -1,0 +1,205 @@
+//buildscript {
+//    repositories {
+//        gradlePluginPortal()
+//        maven { url = "https://maven.minecraftforge.net/" }
+//        maven { url "https://plugins.gradle.org/" }
+//        maven {
+//            url = "https://maven.wagyourtail.xyz/releases"
+//        }
+//        maven {
+//            url = "https://maven.wagyourtail.xyz/snapshots"
+//        }
+//    }
+//    dependencies {
+////        classpath 'net.minecraftforge.gradle:ForgeGradle:2.3-SNAPSHOT'
+//        classpath "com.gradleup.shadow:com.gradleup.shadow.gradle.plugin:8.3.10"
+//        classpath 'xyz.wagyourtail.unimined:unimined:1.3.15'
+//    }
+//}
+
+plugins {
+    id 'java'
+    id 'xyz.wagyourtail.unimined' version "1.4.1"
+    id 'com.gradleup.shadow' version "8.3.10"
+    id "maven-publish"
+    id 'xyz.wagyourtail.jvmdowngrader' version '1.3.6'
+}
+
+configurations {
+    umcShadow
+    compile.extendsFrom umcShadow
+
+    umcImplementation
+    implementation.extendsFrom umcImplementation
+
+    umcCompileOnly
+    compile.extendsFrom umcCompileOnly
+
+    umcRuntimeOnly
+    runtime.extendsFrom umcRuntimeOnly
+}
+unimined.useGlobalCache = false
+
+//apply plugin: 'net.minecraftforge.gradle.forge'
+//apply plugin: 'maven-publish'
+//apply plugin: 'xyz.wagyourtail.unimined'
+//apply plugin: 'com.gradleup.shadow'
+
+
+version = '1.12.2-forge-1.10.0'
+if (!"release".equalsIgnoreCase(System.getProperty("target"))) {
+    try {
+        version += "-" + 'git rev-parse --verify --short=7 HEAD'.execute().text.trim()
+    } catch (Exception ex) {
+        version += "-unknown"
+    }
+}
+group = "cam72cam.immersiverailroading"
+base.archivesName = "ImmersiveRailroading"
+String minecraftVersion = "1.12.2"
+
+java {
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(25)
+    }
+}
+
+tasks.withType(JavaCompile).configureEach {
+    options.release = 25
+}
+sourceSets {
+    forge {
+        compileClasspath += sourceSets.main.output
+        runtimeClasspath += sourceSets.main.output
+    }
+}
+configurations {
+//    implementation.extendsFrom modImplementation
+}
+
+repositories {
+    maven {
+        name = "wagyourtail releases"
+        url = "https://maven.wagyourtail.xyz/releases"
+    }
+    maven {
+        name = "sponge"
+        url = "https://repo.spongepowered.org/maven"
+    }
+    mavenCentral()
+}
+
+
+unimined.minecraft {
+    version minecraftVersion
+
+    mappings {
+        searge()
+        mcp("stable", "39-1.12")
+    }
+
+    minecraftForge {
+        loader "14.23.5.2860"
+    }
+
+    defaultRemapJar = true
+}
+
+repositories {
+    maven { url = "https://teamopenindustry.cc/maven" }
+    maven {
+        url "https://cursemaven.com"
+    }
+    flatDir {
+        dirs "libs"
+    }
+}
+
+dependencies {
+    compileOnly "net.minecrell:terminalconsoleappender:1.3.0"
+    modImplementation ":UniversalModCore-1.12.2-forge-1.2.3-96333ab:"
+//    compileOnly files("D:\\JavaStudy\\UniversalModCore\\UMC-1.12.2\\build\\libs\\UniversalModCore-1.12.2-forge-1.2.3-96333ab.jar")
+    modImplementation "curse.maven:spark-361579:3542217"
+}
+
+apply from: 'ImmersiveRailroadingIntegration/dependencies.gradle'
+
+jar {
+    enabled = false
+    archiveClassifier = 'slim'
+//    finalizedBy('reobfJar')
+}
+
+jvmdg {
+    quiet = false
+    multiReleaseOriginal = true
+    multiReleaseVersions = [JavaVersion.VERSION_1_8, JavaVersion.VERSION_17, JavaVersion.VERSION_21, JavaVersion.VERSION_25].toSet()
+}
+
+shadowJar {
+    archiveClassifier = ''
+    configurations = [project.configurations.umcShadow]
+    duplicatesStrategy = DuplicatesStrategy.EXCLUDE
+    mergeServiceFiles()
+//    finalizedBy 'reobfShadowJar'
+}
+
+downgradeJar
+
+tasks.named("assemble") {
+    dependsOn(tasks.named("shadeDowngradedApi"))
+}
+
+shadeDowngradedApi
+
+remapJar {
+    inputFile = tasks.shadeDowngradedApi.archiveFile
+    dependsOn(tasks.named("shadowJar"))
+    archiveClassifier = ''
+}
+
+//reobf {
+//    shadowJar {}
+//}
+
+processForgeResources  {
+    inputs.property "version", project.version
+    inputs.property "mcversion", minecraftVersion
+    from(sourceSets.main.resources.srcDirs) {
+        include 'mcmod.info'
+        expand 'version':project.version, 'mcversion':minecraftVersion
+    }
+    from(sourceSets.main.resources.srcDirs) {
+        exclude 'mcmod.info'
+    }
+}
+
+publishing {
+    publications {
+        mavenJava(MavenPublication) {
+            artifact jar
+        }
+    }
+    repositories {
+        maven {
+            url "sftp://teamopenindustry.cc:22/var/www/html/maven/"
+            credentials {
+                username = "mavenci"
+                password = System.getenv("MAVENCI_PASS")
+            }
+        }
+    }
+}
+
+task ('showBuildInfo') {
+    doLast {
+        String minecraftString = "1.12.2"
+        String minecraftLoader = "forge"
+        String umcVersionString = "1.12.2-forge-1.2.2-f4d371b"
+        System.out.println("Build for MC 1.12.2 (forge)")
+        System.out.println("https://teamopenindustry.cc/maven/cam72cam/immersiverailroading/ImmersiveRailroading/${version}/ImmersiveRailroading-${version}.jar")
+        System.out.println("https://teamopenindustry.cc/maven/cam72cam/universalmodcore/UniversalModCore/${umcVersionString}/UniversalModCore-${umcVersionString}.jar")
+    }
+}
+
+publish.finalizedBy showBuildInfo

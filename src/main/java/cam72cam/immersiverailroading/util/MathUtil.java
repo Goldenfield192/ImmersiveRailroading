@@ -47,18 +47,18 @@ public class MathUtil {
 
 	//Enough for now
 	public static int clamp(int val, int min, int max) {
-		return Math.max(min, Math.min(max, val));
+		return Math.clamp(val, min, max);
 	}
 
 	public static long clamp(long val, long min, long max) {
-		return Math.max(min, Math.min(max, val));
+		return Math.clamp(val, min, max);
 	}
 
 	public static float clamp(float val, float min, float max) {
-		return Math.max(min, Math.min(max, val));
+		return Math.clamp(val, min, max);
 	}
 
 	public static double clamp(double val, double min, double max) {
-		return Math.max(min, Math.min(max, val));
+		return Math.clamp(val, min, max);
 	}
 }
