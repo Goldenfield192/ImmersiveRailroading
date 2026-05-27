@@ -80,7 +80,7 @@ public class ItemRollingStockComponent extends BaseItemRollingStock {
 			return ClickResult.REJECTED;
 		}
 		
-		return tryPlaceStock(player, world, pos, hand, Collections.singletonList(ItemComponentType.FRAME));
+		return tryPlaceStock(player, world, pos, hand, List.of(ItemComponentType.FRAME));
 	}
 
 	public static class Data extends BaseItemRollingStock.Data {

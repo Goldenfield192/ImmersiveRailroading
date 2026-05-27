@@ -441,7 +441,7 @@ public class TileRailBase extends BlockEntityTrackTickable implements IRedstoneP
 			if (tile == null) {
 				return currentPosition;
 			}
-			//tiles = Collections.singletonList(tile);
+			//tiles = List.of(tile);
 			// Optimized version of the below looping when no overlapping occurs
 
 			SwitchState state = SwitchUtil.getSwitchState(tile, currentPosition);

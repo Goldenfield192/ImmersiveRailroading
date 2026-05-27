@@ -42,7 +42,7 @@ public class ItemTrackBlueprint extends CustomItem {
 
 	@Override
 	public List<CreativeTab> getCreativeTabs() {
-		return Collections.singletonList(ItemTabs.MAIN_TAB);
+		return List.of(ItemTabs.MAIN_TAB);
 	}
 
 	@Override

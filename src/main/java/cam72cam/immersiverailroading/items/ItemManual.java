@@ -39,7 +39,7 @@ public class ItemManual extends CustomItem {
 
 	@Override
 	public List<CreativeTab> getCreativeTabs() {
-		return Collections.singletonList(ItemTabs.MAIN_TAB);
+		return List.of(ItemTabs.MAIN_TAB);
 	}
 
 
@@ -49,7 +49,7 @@ public class ItemManual extends CustomItem {
 		if (mb == null) {
 			return super.getTooltip(stack);
 		}
-		return Collections.singletonList(GuiText.SELECTOR_TYPE.toString(mb.getTranslatedName()));
+		return List.of(GuiText.SELECTOR_TYPE.toString(mb.getTranslatedName()));
 	}
 
 	@Override

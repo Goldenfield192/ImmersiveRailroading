@@ -23,13 +23,13 @@ public class ItemCastRail extends CustomItem {
 
     @Override
     public List<CreativeTab> getCreativeTabs() {
-        return Collections.singletonList(ItemTabs.MAIN_TAB);
+        return List.of(ItemTabs.MAIN_TAB);
     }
 
     @Override
     public List<String> getTooltip(ItemStack stack)
     {
-        return Collections.singletonList(GuiText.GAUGE_TOOLTIP.toString(new Data(stack).gauge));
+        return List.of(GuiText.GAUGE_TOOLTIP.toString(new Data(stack).gauge));
     }
 
     public static class Data extends ItemDataSerializer {

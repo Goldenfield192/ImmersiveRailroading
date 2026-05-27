@@ -86,7 +86,7 @@ public class CastingGUI implements IScreen {
 				if(!currentItem.isEmpty()) {
 					EntityRollingStockDefinition def = new ItemRollingStockComponent.Data(currentItem).def;
 					if (def != null && ConfigBalance.DesignGaugeLock) {
-						List<Gauge> validGauges = Collections.singletonList(Gauge.from(def.recommended_gauge.value()));
+						List<Gauge> validGauges = List.of(Gauge.from(def.recommended_gauge.value()));
 						gauge = next(validGauges, gauge, hand);
 					} else {
 						gauge = next(Gauge.values(), gauge, hand);

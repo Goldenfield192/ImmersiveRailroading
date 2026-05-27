@@ -24,7 +24,7 @@ public class ItemRail extends CustomItem {
 
 	@Override
 	public List<CreativeTab> getCreativeTabs() {
-		return Collections.singletonList(ItemTabs.MAIN_TAB);
+		return List.of(ItemTabs.MAIN_TAB);
 	}
 
 	public String getCustomName(ItemStack stack) {

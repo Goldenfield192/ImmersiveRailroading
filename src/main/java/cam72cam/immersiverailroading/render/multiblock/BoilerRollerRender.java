@@ -30,7 +30,7 @@ public class BoilerRollerRender implements IMultiblockRender {
 					if (name.startsWith("RAW_PLATE")) {
 						raw.add(name);
 					} else if (name.startsWith("PROGRESS")) {
-						segments.put(Integer.parseInt(name.substring(9)), Collections.singletonList(name));
+						segments.put(Integer.parseInt(name.substring(9)), List.of(name));
 					} else if (name.startsWith("FINISHED")) {
 						product.add(name);
 					} else {

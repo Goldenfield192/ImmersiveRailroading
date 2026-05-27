@@ -45,7 +45,7 @@ public class ItemSwitchKey extends CustomItem {
 
 	@Override
 	public List<CreativeTab> getCreativeTabs() {
-		return Collections.singletonList(ItemTabs.MAIN_TAB);
+		return List.of(ItemTabs.MAIN_TAB);
 	}
 
 	@Override
@@ -53,7 +53,7 @@ public class ItemSwitchKey extends CustomItem {
 	{
 		Data data = new Data(stack);
 		if (data.isEmpty()) {
-			return Collections.singletonList(GuiText.SWITCH_KEY_TOOLTIP.toString());
+			return List.of(GuiText.SWITCH_KEY_TOOLTIP.toString());
 		} else {
 			return Arrays.asList(
 					GuiText.SWITCH_KEY_TOOLTIP.toString(),

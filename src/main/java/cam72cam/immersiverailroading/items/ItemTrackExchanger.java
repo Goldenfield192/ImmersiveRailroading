@@ -32,12 +32,12 @@ public class ItemTrackExchanger extends CustomItem {
 
 	@Override
 	public List<CreativeTab> getCreativeTabs() {
-		return Collections.singletonList(ItemTabs.MAIN_TAB);
+		return List.of(ItemTabs.MAIN_TAB);
 	}
 
 	@Override
 	public List<String> getTooltip(ItemStack stack) {
-		return Collections.singletonList(GuiText.TRACK_SWITCHER_TOOLTIP.toString());
+		return List.of(GuiText.TRACK_SWITCHER_TOOLTIP.toString());
 	}
 
 	@Override
