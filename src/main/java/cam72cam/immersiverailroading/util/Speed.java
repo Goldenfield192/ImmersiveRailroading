@@ -22,7 +22,7 @@ public class Speed {
 	
 	private Speed(double speed) {
 		internalSpeed = speed;
-	};
+	}
 	
 	public double minecraft() {
 		return internalSpeed;

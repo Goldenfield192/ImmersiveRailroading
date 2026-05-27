@@ -257,7 +257,7 @@ public class EntityBuildableRollingStock extends EntityRollingStock implements I
 				case CASTING:
 				case CASTING_HAMMER:
 				case PLATE_BOILER:
-					str += String.format(" (%s)", component.crafting.toString());
+					str += String.format(" (%s)", component.crafting);
 					break;
 				case PLATE_LARGE:
 				case PLATE_MEDIUM:
@@ -268,7 +268,7 @@ public class EntityBuildableRollingStock extends EntityRollingStock implements I
 					break;
 				}
 			} else {
-				str += String.format(" (%d x %s)", component.getWoodCost(gauge, getDefinition()), ChatText.WOOD_PLANKS.toString());
+				str += String.format(" (%d x %s)", component.getWoodCost(gauge, getDefinition()), ChatText.WOOD_PLANKS);
 			}
 			player.sendMessage(PlayerMessage.direct(str));
 		}

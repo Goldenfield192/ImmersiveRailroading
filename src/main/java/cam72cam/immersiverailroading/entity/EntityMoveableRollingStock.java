@@ -187,12 +187,9 @@ public abstract class EntityMoveableRollingStock extends EntityRidableRollingSto
     @Override
     public void onDrag(Control<?> control, double newValue) {
         super.onDrag(control, newValue);
-        switch (control.part.type) {
-            case INDEPENDENT_BRAKE_X:
-                if (getDefinition().isLinearBrakeControl()) {
-                    setIndependentBrake(getControlPosition(control));
-                }
-                break;
+        if (control.part.type == ModelComponentType.INDEPENDENT_BRAKE_X
+                && getDefinition().isLinearBrakeControl()) {
+            setIndependentBrake(getControlPosition(control));
         }
     }
 
@@ -206,12 +203,10 @@ public abstract class EntityMoveableRollingStock extends EntityRidableRollingSto
 
     @Override
     protected float defaultControlPosition(Control<?> control) {
-        switch (control.part.type) {
-            case INDEPENDENT_BRAKE_X:
-                return getDefinition().isLinearBrakeControl() ? 0 : 0.5f;
-            default:
-                return super.defaultControlPosition(control);
+        if (control.part.type == ModelComponentType.INDEPENDENT_BRAKE_X) {
+            return getDefinition().isLinearBrakeControl() ? 0 : 0.5f;
         }
+        return super.defaultControlPosition(control);
     }
 
     @Override

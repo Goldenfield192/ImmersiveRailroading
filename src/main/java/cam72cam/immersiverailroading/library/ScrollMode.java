@@ -4,6 +4,5 @@ public enum ScrollMode {
     ALL,
     ONLY_ROT_TRANSLATION,
     NONE,
-    ;
 
 }

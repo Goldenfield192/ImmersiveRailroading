@@ -317,7 +317,7 @@ public class TileRailBase extends BlockEntityTrackTickable implements IRedstoneP
 						.replace(".json", "")
 						.replace(".caml", "");
 				String tag = "stock:" + stockName;
-				if (builder.length() != 0) {
+				if (!builder.isEmpty()) {
 					tag = " && " + tag;
 				}
 				builder.append(tag);
@@ -1159,7 +1159,7 @@ public class TileRailBase extends BlockEntityTrackTickable implements IRedstoneP
 	}
 
 	public boolean isCog() {
-		return getParentTile() != null ? getParentTile().isCog() : false;
+		return getParentTile() != null && getParentTile().isCog();
 	}
 
 	public int getTicksExisted() {
