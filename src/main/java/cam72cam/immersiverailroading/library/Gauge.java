@@ -1,14 +1,14 @@
 package cam72cam.immersiverailroading.library;
 
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.List;
-import java.util.Locale;
-
 import cam72cam.mod.serialization.TagField;
 import cam72cam.mod.serialization.TagMapped;
 import cam72cam.mod.text.TextUtil;
 import trackapi.lib.Gauges;
+
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.List;
+import java.util.Locale;
 
 @TagMapped(Gauge.TagMapper.class)
 public class Gauge {

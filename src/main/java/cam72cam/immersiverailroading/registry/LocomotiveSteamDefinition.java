@@ -3,12 +3,12 @@ package cam72cam.immersiverailroading.registry;
 import cam72cam.immersiverailroading.Config;
 import cam72cam.immersiverailroading.ImmersiveRailroading;
 import cam72cam.immersiverailroading.entity.LocomotiveSteam;
-import cam72cam.immersiverailroading.library.unit.PressureDisplayType;
-import cam72cam.immersiverailroading.util.DataBlock;
 import cam72cam.immersiverailroading.gui.overlay.GuiBuilder;
 import cam72cam.immersiverailroading.library.Gauge;
+import cam72cam.immersiverailroading.library.unit.PressureDisplayType;
 import cam72cam.immersiverailroading.model.SteamLocomotiveModel;
 import cam72cam.immersiverailroading.model.StockModel;
+import cam72cam.immersiverailroading.util.DataBlock;
 import cam72cam.immersiverailroading.util.FluidQuantity;
 import cam72cam.mod.resource.Identifier;
 

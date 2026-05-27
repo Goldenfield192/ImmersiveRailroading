@@ -2,8 +2,8 @@ package cam72cam.immersiverailroading.render.item;
 
 import cam72cam.immersiverailroading.model.TrackModel;
 import cam72cam.immersiverailroading.registry.DefinitionManager;
-import cam72cam.mod.render.ItemRender;
 import cam72cam.mod.item.ItemStack;
+import cam72cam.mod.render.ItemRender;
 import cam72cam.mod.render.StandardModel;
 import cam72cam.mod.render.obj.OBJRender;
 import cam72cam.mod.world.World;

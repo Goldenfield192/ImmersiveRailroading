@@ -22,7 +22,6 @@ import cam72cam.mod.gui.screen.IScreenBuilder;
 import cam72cam.mod.item.ItemStack;
 import cam72cam.mod.resource.Identifier;
 
-import java.util.Collections;
 import java.util.List;
 
 import static cam72cam.immersiverailroading.gui.ClickListHelper.next;

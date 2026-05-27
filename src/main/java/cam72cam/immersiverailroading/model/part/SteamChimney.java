@@ -8,7 +8,6 @@ import cam72cam.immersiverailroading.library.Particles;
 import cam72cam.immersiverailroading.model.components.ComponentProvider;
 import cam72cam.immersiverailroading.model.components.ModelComponent;
 import cam72cam.immersiverailroading.render.SmokeParticle;
-import cam72cam.immersiverailroading.util.MathUtil;
 import cam72cam.immersiverailroading.util.VecUtil;
 import cam72cam.mod.math.Vec3d;
 import cam72cam.mod.resource.Identifier;

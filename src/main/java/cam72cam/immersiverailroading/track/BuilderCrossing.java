@@ -1,14 +1,14 @@
 package cam72cam.immersiverailroading.track;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import cam72cam.immersiverailroading.library.TrackModelPart;
 import cam72cam.immersiverailroading.util.RailInfo;
 import cam72cam.immersiverailroading.util.VecUtil;
 import cam72cam.mod.math.Vec3d;
 import cam72cam.mod.math.Vec3i;
 import cam72cam.mod.world.World;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class BuilderCrossing extends BuilderBase {
 	/*

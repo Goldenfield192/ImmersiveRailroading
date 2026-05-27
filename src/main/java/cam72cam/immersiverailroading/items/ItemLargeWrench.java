@@ -19,7 +19,6 @@ import cam72cam.mod.math.Vec3i;
 import cam72cam.mod.util.Facing;
 import cam72cam.mod.world.World;
 
-import java.util.Collections;
 import java.util.List;
 
 public class ItemLargeWrench extends CustomItem {

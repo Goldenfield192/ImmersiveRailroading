@@ -9,7 +9,8 @@ import cam72cam.mod.render.OptiFine;
 import java.util.HashMap;
 import java.util.Map;
 
-import static cam72cam.mod.config.ConfigFile.*;
+import static cam72cam.mod.config.ConfigFile.File;
+import static cam72cam.mod.config.ConfigFile.Range;
 
 @Comment("Configuration File")
 @Name("general")

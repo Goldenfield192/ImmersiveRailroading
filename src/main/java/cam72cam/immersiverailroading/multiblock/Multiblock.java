@@ -1,15 +1,11 @@
 package cam72cam.immersiverailroading.multiblock;
 
-import java.util.*;
-import java.util.stream.Collectors;
-
 import cam72cam.immersiverailroading.IRBlocks;
 import cam72cam.immersiverailroading.ImmersiveRailroading;
 import cam72cam.immersiverailroading.library.ChatText;
 import cam72cam.immersiverailroading.tile.TileMultiblock;
 import cam72cam.immersiverailroading.util.BlockUtil;
 import cam72cam.immersiverailroading.util.IRFuzzy;
-
 import cam72cam.mod.entity.Player;
 import cam72cam.mod.item.ClickResult;
 import cam72cam.mod.item.Fuzzy;
@@ -22,6 +18,9 @@ import cam72cam.mod.text.PlayerMessage;
 import cam72cam.mod.text.TextUtil;
 import cam72cam.mod.world.BlockInfo;
 import cam72cam.mod.world.World;
+
+import java.util.*;
+import java.util.stream.Collectors;
 
 public abstract class Multiblock {
 	// z y x

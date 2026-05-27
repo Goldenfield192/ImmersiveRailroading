@@ -1,31 +1,30 @@
 package cam72cam.immersiverailroading.entity;
 
-import java.util.*;
-import java.util.function.BiConsumer;
-import java.util.function.Consumer;
-import java.util.function.Function;
-
+import cam72cam.immersiverailroading.Config.ConfigDebug;
+import cam72cam.immersiverailroading.IRItems;
 import cam72cam.immersiverailroading.entity.physics.Consist;
 import cam72cam.immersiverailroading.entity.physics.Simulation;
 import cam72cam.immersiverailroading.entity.physics.SimulationState;
+import cam72cam.immersiverailroading.library.ChatText;
 import cam72cam.immersiverailroading.library.ModelComponentType;
 import cam72cam.immersiverailroading.library.ModelComponentType.ModelPosition;
 import cam72cam.immersiverailroading.library.Permissions;
 import cam72cam.immersiverailroading.model.part.Control;
 import cam72cam.immersiverailroading.net.SoundPacket;
-import cam72cam.mod.entity.sync.TagSync;
-import cam72cam.mod.serialization.StrictTagMapper;
-import cam72cam.mod.serialization.TagField;
-import cam72cam.mod.world.World;
+import cam72cam.immersiverailroading.util.VecUtil;
 import cam72cam.mod.entity.Player;
+import cam72cam.mod.entity.sync.TagSync;
 import cam72cam.mod.item.ClickResult;
 import cam72cam.mod.math.Vec3d;
 import cam72cam.mod.math.Vec3i;
+import cam72cam.mod.serialization.StrictTagMapper;
+import cam72cam.mod.serialization.TagField;
+import cam72cam.mod.world.World;
 
-import cam72cam.immersiverailroading.Config.ConfigDebug;
-import cam72cam.immersiverailroading.IRItems;
-import cam72cam.immersiverailroading.library.ChatText;
-import cam72cam.immersiverailroading.util.VecUtil;
+import java.util.*;
+import java.util.function.BiConsumer;
+import java.util.function.Consumer;
+import java.util.function.Function;
 
 public abstract class EntityCoupleableRollingStock extends EntityMoveableRollingStock {
 

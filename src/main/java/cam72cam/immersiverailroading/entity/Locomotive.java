@@ -4,13 +4,15 @@ import cam72cam.immersiverailroading.Config;
 import cam72cam.immersiverailroading.IRItems;
 import cam72cam.immersiverailroading.entity.physics.SimulationState;
 import cam72cam.immersiverailroading.items.ItemRadioCtrlCard;
-import cam72cam.immersiverailroading.library.*;
+import cam72cam.immersiverailroading.library.ChatText;
+import cam72cam.immersiverailroading.library.KeyTypes;
+import cam72cam.immersiverailroading.library.ModelComponentType;
+import cam72cam.immersiverailroading.library.Permissions;
 import cam72cam.immersiverailroading.model.part.Control;
 import cam72cam.immersiverailroading.physics.MovementTrack;
 import cam72cam.immersiverailroading.registry.LocomotiveDefinition;
 import cam72cam.immersiverailroading.thirdparty.trackapi.ITrack;
 import cam72cam.immersiverailroading.tile.TileRailBase;
-import cam72cam.immersiverailroading.util.MathUtil;
 import cam72cam.immersiverailroading.util.Speed;
 import cam72cam.mod.entity.Entity;
 import cam72cam.mod.entity.Player;
@@ -23,7 +25,7 @@ import cam72cam.mod.world.World;
 import java.util.OptionalDouble;
 import java.util.UUID;
 
-import static cam72cam.immersiverailroading.library.PhysicalMaterials.*;
+import static cam72cam.immersiverailroading.library.PhysicalMaterials.STEEL;
 
 public abstract class Locomotive extends FreightTank {
 	private static final float trainBrakeNotch = 0.04f;

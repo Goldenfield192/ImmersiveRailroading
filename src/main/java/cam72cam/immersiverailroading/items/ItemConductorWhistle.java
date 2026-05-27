@@ -9,14 +9,13 @@ import cam72cam.mod.entity.Entity;
 import cam72cam.mod.entity.Player;
 import cam72cam.mod.entity.boundingbox.IBoundingBox;
 import cam72cam.mod.item.CreativeTab;
-import cam72cam.mod.item.Fuzzy;
 import cam72cam.mod.item.CustomItem;
+import cam72cam.mod.item.Fuzzy;
 import cam72cam.mod.item.Recipes;
 import cam72cam.mod.math.Vec3d;
 import cam72cam.mod.resource.Identifier;
 import cam72cam.mod.world.World;
 
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.UUID;

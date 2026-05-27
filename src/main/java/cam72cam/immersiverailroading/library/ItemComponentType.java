@@ -1,13 +1,13 @@
 package cam72cam.immersiverailroading.library;
 
-import java.util.Arrays;
-import java.util.List;
-import java.util.Locale;
-
 import cam72cam.immersiverailroading.model.components.ModelComponent;
 import cam72cam.immersiverailroading.registry.EntityRollingStockDefinition;
 import cam72cam.immersiverailroading.util.ItemCastingCost;
 import cam72cam.mod.text.TextUtil;
+
+import java.util.Arrays;
+import java.util.List;
+import java.util.Locale;
 
 public enum ItemComponentType {
 	FRAME(AssemblyStep.FRAME, CraftingType.CASTING, ModelComponentType.FRAME),

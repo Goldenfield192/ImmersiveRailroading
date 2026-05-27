@@ -6,9 +6,10 @@ import cam72cam.immersiverailroading.gui.overlay.Readouts;
 import cam72cam.immersiverailroading.library.ModelComponentType;
 import cam72cam.immersiverailroading.model.components.ComponentProvider;
 import cam72cam.immersiverailroading.model.components.ModelComponent;
-import cam72cam.immersiverailroading.model.part.*;
+import cam72cam.immersiverailroading.model.part.DieselExhaust;
+import cam72cam.immersiverailroading.model.part.Horn;
+import cam72cam.immersiverailroading.model.part.PartSound;
 import cam72cam.immersiverailroading.registry.LocomotiveDieselDefinition;
-import cam72cam.immersiverailroading.util.MathUtil;
 
 import java.util.HashMap;
 import java.util.List;

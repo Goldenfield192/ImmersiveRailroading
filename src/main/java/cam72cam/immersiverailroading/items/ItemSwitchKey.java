@@ -19,7 +19,6 @@ import cam72cam.mod.util.Facing;
 import cam72cam.mod.world.World;
 
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 
 public class ItemSwitchKey extends CustomItem {

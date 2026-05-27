@@ -3,6 +3,7 @@ package cam72cam.immersiverailroading.track;
 import cam72cam.immersiverailroading.Config.ConfigBalance;
 import cam72cam.immersiverailroading.Config.ConfigDamage;
 import cam72cam.immersiverailroading.library.TrackItems;
+import cam72cam.immersiverailroading.thirdparty.trackapi.ITrack;
 import cam72cam.immersiverailroading.tile.TileRail;
 import cam72cam.immersiverailroading.tile.TileRailBase;
 import cam72cam.immersiverailroading.util.BlockUtil;
@@ -10,7 +11,6 @@ import cam72cam.immersiverailroading.util.RailInfo;
 import cam72cam.mod.item.ItemStack;
 import cam72cam.mod.math.Vec3i;
 import cam72cam.mod.util.Facing;
-import cam72cam.immersiverailroading.thirdparty.trackapi.ITrack;
 import cam72cam.mod.world.World;
 
 import java.util.ArrayList;

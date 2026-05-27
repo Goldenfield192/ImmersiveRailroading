@@ -8,7 +8,6 @@ import cam72cam.immersiverailroading.entity.LocomotiveDiesel;
 import cam72cam.immersiverailroading.library.GuiText;
 import cam72cam.immersiverailroading.registry.EntityRollingStockDefinition;
 import cam72cam.immersiverailroading.util.DataBlock;
-import cam72cam.immersiverailroading.util.MathUtil;
 import cam72cam.immersiverailroading.util.MergedBlocks;
 import cam72cam.mod.MinecraftClient;
 import cam72cam.mod.config.ConfigFile;

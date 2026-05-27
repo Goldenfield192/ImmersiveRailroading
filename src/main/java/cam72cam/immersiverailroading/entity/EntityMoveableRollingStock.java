@@ -9,7 +9,6 @@ import cam72cam.immersiverailroading.model.part.Control;
 import cam72cam.immersiverailroading.net.SoundPacket;
 import cam72cam.immersiverailroading.physics.TickPos;
 import cam72cam.immersiverailroading.tile.TileRailBase;
-import cam72cam.immersiverailroading.util.MathUtil;
 import cam72cam.immersiverailroading.util.RealBB;
 import cam72cam.immersiverailroading.util.Speed;
 import cam72cam.mod.entity.Entity;

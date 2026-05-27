@@ -3,17 +3,17 @@ package cam72cam.immersiverailroading.physics;
 import cam72cam.immersiverailroading.ImmersiveRailroading;
 import cam72cam.immersiverailroading.library.Gauge;
 import cam72cam.immersiverailroading.library.TrackItems;
-import cam72cam.immersiverailroading.track.VecYPR;
+import cam72cam.immersiverailroading.thirdparty.trackapi.ITrack;
 import cam72cam.immersiverailroading.tile.TileRail;
 import cam72cam.immersiverailroading.tile.TileRailBase;
 import cam72cam.immersiverailroading.track.IIterableTrack;
+import cam72cam.immersiverailroading.track.VecYPR;
 import cam72cam.immersiverailroading.util.VecUtil;
-import cam72cam.immersiverailroading.thirdparty.trackapi.ITrack;
 import cam72cam.mod.math.Rotation;
-import cam72cam.mod.world.World;
 import cam72cam.mod.math.Vec3d;
 import cam72cam.mod.math.Vec3i;
 import cam72cam.mod.util.Facing;
+import cam72cam.mod.world.World;
 
 import java.util.List;
 

@@ -4,7 +4,6 @@ import cam72cam.immersiverailroading.entity.*;
 import cam72cam.immersiverailroading.entity.EntityCoupleableRollingStock.CouplerType;
 import cam72cam.immersiverailroading.model.LocomotiveModel;
 import cam72cam.immersiverailroading.model.StockModel;
-import cam72cam.immersiverailroading.util.MathUtil;
 
 public enum Readouts {
     LIQUID,

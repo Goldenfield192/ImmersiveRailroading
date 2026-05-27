@@ -9,17 +9,12 @@ import cam72cam.immersiverailroading.library.GuiText;
 import cam72cam.immersiverailroading.library.GuiTypes;
 import cam72cam.immersiverailroading.library.PaintBrushMode;
 import cam72cam.mod.entity.Player;
-import cam72cam.mod.item.CreativeTab;
-import cam72cam.mod.item.CustomItem;
-import cam72cam.mod.item.Fuzzy;
-import cam72cam.mod.item.ItemStack;
-import cam72cam.mod.item.Recipes;
+import cam72cam.mod.item.*;
 import cam72cam.mod.net.Packet;
 import cam72cam.mod.serialization.TagField;
 import cam72cam.mod.world.World;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.Random;
 

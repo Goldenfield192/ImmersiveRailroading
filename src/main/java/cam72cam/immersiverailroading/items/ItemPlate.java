@@ -1,9 +1,5 @@
 package cam72cam.immersiverailroading.items;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-
 import cam72cam.immersiverailroading.ImmersiveRailroading;
 import cam72cam.immersiverailroading.library.Gauge;
 import cam72cam.immersiverailroading.library.GuiText;
@@ -16,6 +12,9 @@ import cam72cam.mod.item.CustomItem;
 import cam72cam.mod.item.ItemStack;
 import cam72cam.mod.serialization.TagField;
 import cam72cam.mod.text.TextColor;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class ItemPlate extends CustomItem {
 	public ItemPlate() {

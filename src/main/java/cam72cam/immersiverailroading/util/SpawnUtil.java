@@ -1,29 +1,25 @@
 package cam72cam.immersiverailroading.util;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-
-import cam72cam.immersiverailroading.entity.EntityCoupleableRollingStock;
+import cam72cam.immersiverailroading.Config.ConfigDebug;
+import cam72cam.immersiverailroading.entity.EntityBuildableRollingStock;
+import cam72cam.immersiverailroading.entity.EntityCoupleableRollingStock.CouplerType;
 import cam72cam.immersiverailroading.entity.EntityMoveableRollingStock;
 import cam72cam.immersiverailroading.entity.EntityRollingStock;
-import cam72cam.immersiverailroading.entity.physics.SimulationState;
 import cam72cam.immersiverailroading.items.ItemRollingStock;
 import cam72cam.immersiverailroading.library.ChatText;
 import cam72cam.immersiverailroading.library.Gauge;
 import cam72cam.immersiverailroading.library.ItemComponentType;
-import cam72cam.immersiverailroading.Config.ConfigDebug;
-import cam72cam.immersiverailroading.entity.EntityBuildableRollingStock;
-import cam72cam.immersiverailroading.entity.EntityCoupleableRollingStock.CouplerType;
 import cam72cam.immersiverailroading.registry.EntityRollingStockDefinition;
-import cam72cam.mod.entity.Player;
 import cam72cam.immersiverailroading.thirdparty.trackapi.ITrack;
-import cam72cam.mod.util.DegreeFuncs;
-import cam72cam.mod.world.World;
+import cam72cam.mod.entity.Player;
 import cam72cam.mod.item.ClickResult;
 import cam72cam.mod.item.ItemStack;
 import cam72cam.mod.math.Vec3d;
 import cam72cam.mod.math.Vec3i;
+import cam72cam.mod.util.DegreeFuncs;
+import cam72cam.mod.world.World;
+
+import java.util.List;
 
 public class SpawnUtil {
 	public static ClickResult placeStock(Player player, Player.Hand hand, World worldIn, Vec3i pos, EntityRollingStockDefinition def, List<ItemComponentType> list) {

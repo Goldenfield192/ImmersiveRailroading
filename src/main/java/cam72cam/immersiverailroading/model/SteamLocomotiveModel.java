@@ -7,7 +7,10 @@ import cam72cam.immersiverailroading.gui.overlay.Readouts;
 import cam72cam.immersiverailroading.library.ModelComponentType;
 import cam72cam.immersiverailroading.model.components.ComponentProvider;
 import cam72cam.immersiverailroading.model.components.ModelComponent;
-import cam72cam.immersiverailroading.model.part.*;
+import cam72cam.immersiverailroading.model.part.PartSound;
+import cam72cam.immersiverailroading.model.part.PressureValve;
+import cam72cam.immersiverailroading.model.part.SteamChimney;
+import cam72cam.immersiverailroading.model.part.Whistle;
 import cam72cam.immersiverailroading.registry.LocomotiveSteamDefinition;
 
 import java.util.List;

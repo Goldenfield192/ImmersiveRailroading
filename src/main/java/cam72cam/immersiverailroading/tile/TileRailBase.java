@@ -15,6 +15,7 @@ import cam72cam.immersiverailroading.library.*;
 import cam72cam.immersiverailroading.model.part.Door;
 import cam72cam.immersiverailroading.physics.MovementTrack;
 import cam72cam.immersiverailroading.thirdparty.trackapi.BlockEntityTrackTickable;
+import cam72cam.immersiverailroading.thirdparty.trackapi.ITrack;
 import cam72cam.immersiverailroading.util.*;
 import cam72cam.mod.block.IRedstoneProvider;
 import cam72cam.mod.entity.Player;
@@ -25,18 +26,20 @@ import cam72cam.mod.fluid.ITank;
 import cam72cam.mod.item.*;
 import cam72cam.mod.math.Vec3d;
 import cam72cam.mod.math.Vec3i;
+import cam72cam.mod.serialization.TagCompound;
 import cam72cam.mod.serialization.TagField;
 import cam72cam.mod.sound.Audio;
 import cam72cam.mod.sound.SoundCategory;
 import cam72cam.mod.sound.StandardSound;
 import cam72cam.mod.text.PlayerMessage;
 import cam72cam.mod.util.Facing;
-import cam72cam.mod.serialization.TagCompound;
-import cam72cam.immersiverailroading.thirdparty.trackapi.ITrack;
 import cam72cam.mod.util.SingleCache;
 import org.apache.commons.lang3.ArrayUtils;
 
-import java.util.*;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.function.Predicate;
 
 public class TileRailBase extends BlockEntityTrackTickable implements IRedstoneProvider {

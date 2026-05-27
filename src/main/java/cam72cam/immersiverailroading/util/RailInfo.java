@@ -11,13 +11,16 @@ import cam72cam.immersiverailroading.registry.DefinitionManager;
 import cam72cam.immersiverailroading.registry.TrackDefinition;
 import cam72cam.immersiverailroading.render.ExpireableMap;
 import cam72cam.immersiverailroading.track.*;
-import cam72cam.mod.serialization.*;
 import cam72cam.mod.entity.Player;
 import cam72cam.mod.item.ItemStack;
 import cam72cam.mod.math.Vec3i;
+import cam72cam.mod.serialization.*;
 import cam72cam.mod.world.World;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.stream.Collectors;

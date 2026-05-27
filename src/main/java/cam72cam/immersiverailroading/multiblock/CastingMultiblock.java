@@ -2,7 +2,9 @@ package cam72cam.immersiverailroading.multiblock;
 
 import cam72cam.immersiverailroading.Config;
 import cam72cam.immersiverailroading.IRItems;
-import cam72cam.immersiverailroading.library.*;
+import cam72cam.immersiverailroading.library.CraftingMachineMode;
+import cam72cam.immersiverailroading.library.DamageTypes;
+import cam72cam.immersiverailroading.library.GuiTypes;
 import cam72cam.immersiverailroading.tile.TileMultiblock;
 import cam72cam.immersiverailroading.util.ItemCastingCost;
 import cam72cam.mod.energy.IEnergy;

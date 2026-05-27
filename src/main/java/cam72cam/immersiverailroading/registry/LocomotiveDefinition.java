@@ -3,13 +3,13 @@ package cam72cam.immersiverailroading.registry;
 import cam72cam.immersiverailroading.ConfigGraphics;
 import cam72cam.immersiverailroading.ImmersiveRailroading;
 import cam72cam.immersiverailroading.entity.EntityRollingStock;
-import cam72cam.immersiverailroading.library.unit.ForceDisplayType;
-import cam72cam.immersiverailroading.library.unit.PowerDisplayType;
-import cam72cam.immersiverailroading.util.DataBlock;
 import cam72cam.immersiverailroading.library.Gauge;
 import cam72cam.immersiverailroading.library.GuiText;
+import cam72cam.immersiverailroading.library.unit.ForceDisplayType;
+import cam72cam.immersiverailroading.library.unit.PowerDisplayType;
 import cam72cam.immersiverailroading.model.LocomotiveModel;
 import cam72cam.immersiverailroading.model.StockModel;
+import cam72cam.immersiverailroading.util.DataBlock;
 import cam72cam.immersiverailroading.util.Speed;
 import cam72cam.mod.resource.Identifier;
 

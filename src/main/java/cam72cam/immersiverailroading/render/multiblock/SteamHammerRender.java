@@ -1,14 +1,13 @@
 package cam72cam.immersiverailroading.render.multiblock;
 
-import java.util.ArrayList;
-
+import cam72cam.immersiverailroading.multiblock.SteamHammerMultiblock.SteamHammerInstance;
+import cam72cam.immersiverailroading.tile.TileMultiblock;
+import cam72cam.mod.model.obj.OBJModel;
 import cam72cam.mod.render.obj.OBJRender;
 import cam72cam.mod.render.opengl.RenderState;
 import cam72cam.mod.resource.Identifier;
 
-import cam72cam.mod.model.obj.OBJModel;
-import cam72cam.immersiverailroading.multiblock.SteamHammerMultiblock.SteamHammerInstance;
-import cam72cam.immersiverailroading.tile.TileMultiblock;
+import java.util.ArrayList;
 
 public class SteamHammerRender implements IMultiblockRender {
 	private OBJModel model;

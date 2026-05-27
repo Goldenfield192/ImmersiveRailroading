@@ -1,15 +1,12 @@
 package cam72cam.immersiverailroading.track;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-
 import cam72cam.immersiverailroading.Config;
 import cam72cam.immersiverailroading.library.SwitchState;
 import cam72cam.immersiverailroading.library.TrackDirection;
 import cam72cam.immersiverailroading.library.TrackModelPart;
 import cam72cam.immersiverailroading.util.MathUtil;
+import cam72cam.immersiverailroading.util.RailInfo;
+import cam72cam.immersiverailroading.util.VecUtil;
 import cam72cam.mod.math.Vec3d;
 import cam72cam.mod.math.Vec3i;
 import cam72cam.mod.serialization.SerializationException;
@@ -19,8 +16,10 @@ import cam72cam.mod.util.Facing;
 import cam72cam.mod.world.World;
 import org.apache.commons.lang3.tuple.Pair;
 
-import cam72cam.immersiverailroading.util.RailInfo;
-import cam72cam.immersiverailroading.util.VecUtil;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
 
 public abstract class BuilderIterator extends BuilderBase implements IIterableTrack {
 	protected HashSet<Pair<Integer, Integer>> positions;

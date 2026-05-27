@@ -1,9 +1,9 @@
 package cam72cam.immersiverailroading.model;
 
 import cam72cam.immersiverailroading.entity.EntityMoveableRollingStock;
+import cam72cam.immersiverailroading.entity.Freight;
 import cam72cam.immersiverailroading.model.components.ComponentProvider;
 import cam72cam.immersiverailroading.model.part.CargoFill;
-import cam72cam.immersiverailroading.entity.Freight;
 import cam72cam.immersiverailroading.model.part.CargoItems;
 import cam72cam.immersiverailroading.registry.FreightDefinition;
 import cam72cam.mod.entity.ItemEntity;
@@ -11,7 +11,9 @@ import cam72cam.mod.math.Vec3d;
 import cam72cam.mod.render.opengl.RenderState;
 import util.Matrix4;
 
-import java.util.*;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 public class FreightModel<ENTITY extends Freight, DEFINITION extends FreightDefinition> extends StockModel<ENTITY, DEFINITION> {

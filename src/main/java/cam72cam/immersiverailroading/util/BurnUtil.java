@@ -1,10 +1,11 @@
 package cam72cam.immersiverailroading.util;
 
-import java.util.ArrayList;
-import java.util.List;
 import cam72cam.immersiverailroading.Config.ConfigBalance;
 import cam72cam.mod.fluid.Fluid;
 import cam72cam.mod.item.ItemStack;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class BurnUtil {
 

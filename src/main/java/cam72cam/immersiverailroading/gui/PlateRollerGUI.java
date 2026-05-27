@@ -10,14 +10,12 @@ import cam72cam.immersiverailroading.library.GuiText;
 import cam72cam.immersiverailroading.library.PlateType;
 import cam72cam.immersiverailroading.registry.EntityRollingStockDefinition;
 import cam72cam.immersiverailroading.tile.TileMultiblock;
-import cam72cam.immersiverailroading.util.MathUtil;
 import cam72cam.mod.entity.Player;
 import cam72cam.mod.gui.screen.Button;
 import cam72cam.mod.gui.screen.IScreen;
 import cam72cam.mod.gui.screen.IScreenBuilder;
 import cam72cam.mod.item.ItemStack;
 
-import java.util.Collections;
 import java.util.List;
 
 import static cam72cam.immersiverailroading.gui.ClickListHelper.next;

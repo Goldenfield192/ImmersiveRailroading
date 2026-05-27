@@ -8,7 +8,10 @@ import cam72cam.mod.config.ConfigFile.Range;
 import cam72cam.mod.item.Fuzzy;
 import cam72cam.mod.item.ItemStack;
 
-import java.util.*;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 @Comment("Configuration File")

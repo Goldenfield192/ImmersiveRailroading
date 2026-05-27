@@ -2,11 +2,11 @@ package cam72cam.immersiverailroading.registry;
 
 import cam72cam.immersiverailroading.IRItems;
 import cam72cam.immersiverailroading.ImmersiveRailroading;
-import cam72cam.immersiverailroading.util.DataBlock;
 import cam72cam.immersiverailroading.items.ItemRail;
 import cam72cam.immersiverailroading.library.Gauge;
 import cam72cam.immersiverailroading.library.TrackComponent;
 import cam72cam.immersiverailroading.model.TrackModel;
+import cam72cam.immersiverailroading.util.DataBlock;
 import cam72cam.mod.item.Fuzzy;
 import cam72cam.mod.item.ItemStack;
 import trackapi.lib.Gauges;

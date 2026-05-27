@@ -12,7 +12,10 @@ import cam72cam.mod.MinecraftClient;
 import cam72cam.mod.entity.Entity;
 import cam72cam.mod.entity.Player;
 import cam72cam.mod.gui.helpers.GUIHelpers;
-import cam72cam.mod.gui.screen.*;
+import cam72cam.mod.gui.screen.Button;
+import cam72cam.mod.gui.screen.IScreen;
+import cam72cam.mod.gui.screen.IScreenBuilder;
+import cam72cam.mod.gui.screen.Slider;
 import cam72cam.mod.render.opengl.RenderState;
 import util.Matrix4;
 

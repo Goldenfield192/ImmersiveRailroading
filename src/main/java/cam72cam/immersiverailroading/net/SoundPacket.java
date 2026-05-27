@@ -1,12 +1,12 @@
 package cam72cam.immersiverailroading.net;
 
 import cam72cam.immersiverailroading.ConfigSound;
-import cam72cam.mod.serialization.TagField;
-import cam72cam.mod.sound.Audio;
-import cam72cam.mod.sound.ISound;
 import cam72cam.mod.math.Vec3d;
 import cam72cam.mod.net.Packet;
 import cam72cam.mod.resource.Identifier;
+import cam72cam.mod.serialization.TagField;
+import cam72cam.mod.sound.Audio;
+import cam72cam.mod.sound.ISound;
 import cam72cam.mod.sound.SoundCategory;
 
 public class SoundPacket extends Packet {

@@ -1,7 +1,7 @@
 package cam72cam.immersiverailroading.track;
 
-import cam72cam.immersiverailroading.tile.TileRailBase;
 import cam72cam.immersiverailroading.IRBlocks;
+import cam72cam.immersiverailroading.tile.TileRailBase;
 import cam72cam.immersiverailroading.tile.TileRailGag;
 import cam72cam.mod.math.Vec3i;
 

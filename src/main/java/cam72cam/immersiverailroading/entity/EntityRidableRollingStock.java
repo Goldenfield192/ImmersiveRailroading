@@ -6,7 +6,6 @@ import cam72cam.immersiverailroading.entity.EntityCoupleableRollingStock.Coupler
 import cam72cam.immersiverailroading.library.Permissions;
 import cam72cam.immersiverailroading.model.part.Door;
 import cam72cam.immersiverailroading.model.part.Seat;
-import cam72cam.immersiverailroading.render.ExpireableMap;
 import cam72cam.mod.entity.Entity;
 import cam72cam.mod.entity.Player;
 import cam72cam.mod.entity.custom.IRidable;

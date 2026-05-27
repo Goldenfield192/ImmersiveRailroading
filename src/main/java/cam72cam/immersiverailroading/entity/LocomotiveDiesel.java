@@ -16,7 +16,10 @@ import cam72cam.mod.fluid.Fluid;
 import cam72cam.mod.fluid.FluidStack;
 import cam72cam.mod.serialization.TagField;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.OptionalDouble;
+import java.util.Set;
 
 public class LocomotiveDiesel extends Locomotive {
 

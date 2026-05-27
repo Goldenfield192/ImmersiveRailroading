@@ -6,10 +6,10 @@ import cam72cam.immersiverailroading.library.TrackDirection;
 import cam72cam.mod.item.ItemStack;
 import cam72cam.mod.math.Vec3d;
 import cam72cam.mod.math.Vec3i;
+import cam72cam.mod.serialization.TagCompound;
 import cam72cam.mod.serialization.TagField;
 import cam72cam.mod.serialization.TagMapped;
 import cam72cam.mod.util.Facing;
-import cam72cam.mod.serialization.TagCompound;
 
 @TagMapped(PlacementInfo.TagMapper.class)
 public class PlacementInfo {

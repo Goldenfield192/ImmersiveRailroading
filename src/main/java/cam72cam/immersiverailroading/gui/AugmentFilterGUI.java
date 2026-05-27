@@ -1,6 +1,7 @@
 package cam72cam.immersiverailroading.gui;
 
-import cam72cam.immersiverailroading.library.*;
+import cam72cam.immersiverailroading.library.Augment;
+import cam72cam.immersiverailroading.library.GuiText;
 import cam72cam.immersiverailroading.tile.TileRailBase;
 import cam72cam.mod.entity.Player;
 import cam72cam.mod.gui.helpers.GUIHelpers;

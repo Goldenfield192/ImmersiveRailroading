@@ -2,7 +2,6 @@ package cam72cam.immersiverailroading.gui;
 
 import cam72cam.immersiverailroading.Config;
 import cam72cam.immersiverailroading.gui.components.ListSelector;
-import cam72cam.immersiverailroading.gui.components.NumberInputer;
 import cam72cam.immersiverailroading.items.nbt.RailSettings;
 import cam72cam.immersiverailroading.library.*;
 import cam72cam.immersiverailroading.net.ItemRailUpdatePacket;
@@ -14,7 +13,6 @@ import cam72cam.immersiverailroading.track.BuilderTransferTable;
 import cam72cam.immersiverailroading.track.BuilderTurnTable;
 import cam72cam.immersiverailroading.track.TrackBase;
 import cam72cam.immersiverailroading.util.IRFuzzy;
-import cam72cam.immersiverailroading.util.MathUtil;
 import cam72cam.immersiverailroading.util.PlacementInfo;
 import cam72cam.immersiverailroading.util.RailInfo;
 import cam72cam.mod.MinecraftClient;

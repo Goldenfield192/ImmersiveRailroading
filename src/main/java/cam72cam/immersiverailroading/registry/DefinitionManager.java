@@ -2,13 +2,12 @@ package cam72cam.immersiverailroading.registry;
 
 import cam72cam.immersiverailroading.Config.ConfigPerformance;
 import cam72cam.immersiverailroading.ImmersiveRailroading;
+import cam72cam.immersiverailroading.library.Gauge;
+import cam72cam.immersiverailroading.model.TrackModel;
 import cam72cam.immersiverailroading.util.BiMultiMap;
 import cam72cam.immersiverailroading.util.CAML;
 import cam72cam.immersiverailroading.util.DataBlock;
-import cam72cam.immersiverailroading.library.Gauge;
-import cam72cam.immersiverailroading.model.TrackModel;
 import cam72cam.immersiverailroading.util.JSON;
-import cam72cam.immersiverailroading.util.MathUtil;
 import cam72cam.mod.gui.Progress;
 import cam72cam.mod.resource.Identifier;
 import org.apache.commons.lang3.tuple.Pair;

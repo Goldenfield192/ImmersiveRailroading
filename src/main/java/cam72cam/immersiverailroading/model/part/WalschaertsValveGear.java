@@ -10,7 +10,8 @@ import cam72cam.immersiverailroading.util.VecUtil;
 import cam72cam.mod.math.Vec3d;
 import util.Matrix4;
 
-import java.util.*;
+import java.util.Comparator;
+import java.util.List;
 
 public class WalschaertsValveGear extends StephensonValveGear {
     protected final ModelComponent crossHead;

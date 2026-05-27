@@ -7,7 +7,8 @@ import cam72cam.mod.math.Vec3d;
 import cam72cam.mod.model.obj.OBJGroup;
 import cam72cam.mod.model.obj.OBJModel;
 
-import java.util.*;
+import java.util.List;
+import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;

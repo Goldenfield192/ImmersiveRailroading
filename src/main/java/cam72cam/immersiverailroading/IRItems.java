@@ -1,7 +1,6 @@
 package cam72cam.immersiverailroading;
 
 import cam72cam.immersiverailroading.items.*;
-import cam72cam.immersiverailroading.items.ItemGoldenSpike;
 
 public class IRItems {
 	public static ItemRollingStock ITEM_ROLLING_STOCK = new ItemRollingStock();

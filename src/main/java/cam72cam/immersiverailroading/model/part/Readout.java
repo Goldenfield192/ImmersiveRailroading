@@ -8,7 +8,6 @@ import cam72cam.immersiverailroading.model.ModelState;
 import cam72cam.immersiverailroading.model.components.ComponentProvider;
 import cam72cam.immersiverailroading.model.components.ModelComponent;
 import cam72cam.immersiverailroading.util.DataBlock;
-import cam72cam.immersiverailroading.util.MathUtil;
 
 import java.util.HashMap;
 import java.util.List;

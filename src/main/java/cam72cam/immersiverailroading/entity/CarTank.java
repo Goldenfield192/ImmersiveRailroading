@@ -1,11 +1,10 @@
 package cam72cam.immersiverailroading.entity;
 
-import java.util.List;
-
 import cam72cam.immersiverailroading.registry.CarTankDefinition;
 import cam72cam.immersiverailroading.util.FluidQuantity;
-import cam72cam.mod.entity.ModdedEntity;
 import cam72cam.mod.fluid.Fluid;
+
+import java.util.List;
 
 public class CarTank extends FreightTank {
 	@Override

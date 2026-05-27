@@ -5,7 +5,6 @@ import cam72cam.immersiverailroading.library.GuiText;
 import cam72cam.mod.item.*;
 import cam72cam.mod.serialization.TagField;
 
-import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
 
