@@ -100,7 +100,7 @@ public class TileRail extends TileRailBase {
 
 		Vec3i offset = pos.subtract(parent.getPos().subtract(mainOffset)).rotate(Rotation.from(parent.info.placementInfo.facing().getOpposite()));
 
-		this.tableIndex = MathUtil.clamp(Math.round(Math.abs((float) offset.x) / this.info.settings.transfertableEntrySpacing), 0, info.settings.transfertableEntryCount - 1);
+		this.tableIndex = Math.clamp(Math.round(Math.abs((float) offset.x) / this.info.settings.transfertableEntrySpacing), 0, info.settings.transfertableEntryCount - 1);
 	}
 
 	@Override

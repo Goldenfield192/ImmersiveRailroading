@@ -54,13 +54,13 @@ public class Readout<T extends EntityMoveableRollingStock> extends Control<T> {
     @Override
     public void effects(T stock) {
         super.effects(stock);
-        positions.put(stock.getUUID(), position.apply((T) stock));
+        positions.put(stock.getUUID(), position.apply(stock));
     }
 
     @Override
     public float getValue(EntityMoveableRollingStock stock) {
         float pos = positions.getOrDefault(stock.getUUID(), 0f);
-        pos = MathUtil.clamp((pos - rangeMin) / (rangeMax - rangeMin), 0, 1);
+        pos = Math.clamp((pos - rangeMin) / (rangeMax - rangeMin), 0, 1);
         pos = pos + offset;
         return invert ? 1 - pos : pos;
     }

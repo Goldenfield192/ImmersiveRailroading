@@ -43,7 +43,7 @@ public class EntityRollingStock extends CustomEntity implements ITickable, IClic
 	@TagSync
 	@TagField(value = "texture", mapper = StrictTagMapper.class)
 	private String texture = null;
-	private SingleCache<Vec3d, Matrix4> modelMatrix = new SingleCache<>(v -> new Matrix4()
+	private final SingleCache<Vec3d, Matrix4> modelMatrix = new SingleCache<>(v -> new Matrix4()
 			.translate(this.getPosition().x, this.getPosition().y, this.getPosition().z)
 			.rotate(Math.toRadians(180 - this.getRotationYaw()), 0, 1, 0)
 			.rotate(Math.toRadians(this.getRotationPitch()), 1, 0, 0)
@@ -327,12 +327,12 @@ public class EntityRollingStock extends CustomEntity implements ITickable, IClic
 	}
 
 	public void setControlPosition(Control<?> control, float val) {
-		val = MathUtil.clamp(val, 0, 1);
+		val = Math.clamp(val, 0, 1);
 		controlPositions.put(control.controlGroup, Pair.of(getControlPressed(control), val));
 	}
 
 	public void setControlPosition(String control, float val) {
-		val = MathUtil.clamp(val, 0, 1);
+		val = Math.clamp(val, 0, 1);
 		controlPositions.put(control, Pair.of(false, val));
 	}
 

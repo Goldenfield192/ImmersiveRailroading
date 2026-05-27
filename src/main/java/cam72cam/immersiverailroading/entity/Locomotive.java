@@ -307,8 +307,8 @@ public abstract class Locomotive extends FreightTank {
 				data.write();
 			}
 			else {
-				player.sendMessage(ChatText.RADIO_CANT_LINK.getMessage(this.getDefinition().name()));;
-			}
+				player.sendMessage(ChatText.RADIO_CANT_LINK.getMessage(this.getDefinition().name()));
+            }
 			return ClickResult.ACCEPTED;
 		}
 		return super.onClick(player, hand);
@@ -331,7 +331,7 @@ public abstract class Locomotive extends FreightTank {
 			for (Control<?> control : getDefinition().getModel().getControls()) {
 				// Logic duplicated in Readouts#setValue
 				if (!getDefinition().isLinearBrakeControl() && control.part.type == ModelComponentType.TRAIN_BRAKE_X) {
-					setTrainBrake(MathUtil.clamp(getTrainBrake() + (getControlPosition(control) - 0.5f) / 8, 0, 1));
+					setTrainBrake(Math.clamp(getTrainBrake() + (getControlPosition(control) - 0.5f) / 8, 0, 1));
 				}
 			}
 
@@ -386,9 +386,8 @@ public abstract class Locomotive extends FreightTank {
 				SimulationState state = getCurrentState();
 				if (state != null) {
 					ITrack found = MovementTrack.findTrack(getWorld(), state.couplerPositionFront, state.yaw, gauge.value());
-					if (found instanceof TileRailBase) {
-						TileRailBase onTrack = (TileRailBase) found;
-						cogging = onTrack.isCog();
+					if (found instanceof TileRailBase onTrack) {
+                        cogging = onTrack.isCog();
 					}
 				}
 			}
@@ -493,7 +492,7 @@ public abstract class Locomotive extends FreightTank {
 		}
 	}
 	private void setRealThrottle(float newThrottle) {
-		newThrottle = MathUtil.clamp(newThrottle, 0, 1);
+		newThrottle = Math.clamp(newThrottle, 0, 1);
 		if (this.getThrottle() != newThrottle) {
 			setControlPositions(ModelComponentType.THROTTLE_X, newThrottle);
 			throttle = newThrottle;
@@ -502,9 +501,9 @@ public abstract class Locomotive extends FreightTank {
 	}
 	public float getThrottleDelta() {
 		return 0.04F;
-	};
+	}
 
-	public float getReverser() {
+    public float getReverser() {
 		return reverser;
 	}
 	public void setReverser(float newReverser) {
@@ -514,7 +513,7 @@ public abstract class Locomotive extends FreightTank {
 		}
 	}
 	private void setRealReverser(float newReverser){
-		newReverser = MathUtil.clamp(newReverser, -1, 1);
+		newReverser = Math.clamp(newReverser, -1, 1);
 
 		if (this.getReverser() != newReverser) {
 			setControlPositions(ModelComponentType.REVERSER_X, newReverser/-2 + 0.5f);
@@ -584,7 +583,7 @@ public abstract class Locomotive extends FreightTank {
 		}
 	}
 	private void setRealTrainBrake(float newTrainBrake) {
-		newTrainBrake = MathUtil.clamp(newTrainBrake, 0, 1);
+		newTrainBrake = Math.clamp(newTrainBrake, 0, 1);
 		if (this.getTrainBrake() != newTrainBrake) {
 			if (getDefinition().isLinearBrakeControl()) {
 				setControlPositions(ModelComponentType.TRAIN_BRAKE_X, newTrainBrake);

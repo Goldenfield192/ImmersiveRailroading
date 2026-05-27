@@ -2,7 +2,6 @@ package cam72cam.immersiverailroading.util;
 
 import java.awt.*;
 import java.awt.geom.AffineTransform;
-import java.awt.geom.Area;
 import java.awt.geom.Rectangle2D;
 
 import cam72cam.mod.entity.boundingbox.IBoundingBox;
@@ -173,7 +172,7 @@ public class RealBB implements IBoundingBox {
 		double hack = 0.05;
 		Double intersect = intersectsAt(other.min().subtract(hack, 0, hack), other.max().add(hack, 0, hack), true).getRight();
 		double minY = other.min().y;
-		return MathUtil.clamp(intersect - minY, -0.1, 0.1);
+		return Math.clamp(intersect - minY, -0.1, 0.1);
 	}
 	@Override
 	public double calculateZOffset(IBoundingBox other, double offsetZ) {
@@ -227,10 +226,10 @@ public class RealBB implements IBoundingBox {
 			double Px = bds.getMaxX() - (this.centerX - length/2);
 			double Pz = bds.getMaxY() - (this.centerZ - width/2);
 
-			double cx = MathUtil.clamp(px, 0, length);
-			double cz = MathUtil.clamp(pz, 0, width);
-			double Cx = MathUtil.clamp(Px, 0, length);
-			double Cz = MathUtil.clamp(Pz, 0, width);
+			double cx = Math.clamp(px, 0, length);
+			double cz = Math.clamp(pz, 0, width);
+			double Cx = Math.clamp(Px, 0, length);
+			double Cz = Math.clamp(Pz, 0, width);
 
 			cx = (cx/length*xRes);
 			cz = (cz/width*zRes);

@@ -127,7 +127,7 @@ public class LightFlare<T extends EntityMoveableRollingStock> {
         }
 
         ModelState mystate = state.push(builder -> builder
-                .add((ModelState.Lighter) (stock) ->
+                .add((stock) ->
                         new ModelState.LightState(null, null, blinkFullBright ? !isBlinkOff(stock) : !isLightOff(stock), null)
                 )
         );
@@ -179,7 +179,7 @@ public class LightFlare<T extends EntityMoveableRollingStock> {
                 subtract(flareOffset).scale(forward ? 1 : -1);
 
         int viewAngle = 45;
-        float intensity = 1 - Math.abs(MathUtil.clamp(VecUtil.toWrongYaw(playerOffset) - 90, -viewAngle, viewAngle)) / viewAngle;
+        float intensity = 1 - Math.abs(Math.clamp(VecUtil.toWrongYaw(playerOffset) - 90, -viewAngle, viewAngle)) / viewAngle;
         intensity *= Math.abs(playerOffset.x/(50 * stock.gauge.scale()));
         intensity = Math.min(intensity, 1.5f);
 

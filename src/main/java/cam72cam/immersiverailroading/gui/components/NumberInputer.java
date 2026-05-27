@@ -1,6 +1,5 @@
 package cam72cam.immersiverailroading.gui.components;
 
-import cam72cam.immersiverailroading.util.MathUtil;
 import cam72cam.mod.entity.Player;
 import cam72cam.mod.gui.screen.Button;
 import cam72cam.mod.gui.screen.IScreenBuilder;
@@ -71,7 +70,7 @@ public class NumberInputer {
         this.useLogScale = useLogScale;
         this.prefix = prefix;
         this.suffix = suffix;
-        this.content = MathUtil.clamp(start, min, max);
+        this.content = Math.clamp(start, min, max);
         this.showingSlider = false;
 
         number = new TextField(builder, x + 2, y + 2, width - height - 4, height - 4);
@@ -152,7 +151,7 @@ public class NumberInputer {
     }
 
     public void setValue(double value) {
-        content = MathUtil.clamp(value, min, max);
+        content = Math.clamp(value, min, max);
         slider.setValue(useLogScale ? Math.log10(content) : content);
         number.setText(formatValue(content));
         consumer.accept(content);

@@ -59,7 +59,7 @@ public class TrackGui implements IScreen {
 
 	private final List<ItemStack> oreDict;
 
-	private RailSettings.Mutable settings;
+	private final RailSettings.Mutable settings;
 
 	private ListSelector<Gauge> gaugeSelector;
 	private ListSelector<TrackItems> typeSelector;
@@ -495,7 +495,7 @@ public class TrackGui implements IScreen {
 						length = 5;
 					}
 					if (settings.type == TrackItems.TURNTABLE) {
-						length = MathUtil.clamp(length, 10, 25);
+						length = Math.clamp(length, 10, 25);
 					}
 					b.length = length;
 				}),

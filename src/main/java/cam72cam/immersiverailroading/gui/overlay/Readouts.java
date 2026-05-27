@@ -147,7 +147,7 @@ public enum Readouts {
                 } else {
                     if (stock instanceof Locomotive) {
                         // Logic duplicated in Locomotive#onTick
-                        ((Locomotive) stock).setTrainBrake(MathUtil.clamp(((Locomotive) stock).getTrainBrake() + (value - 0.5f) / 80, 0, 1));
+                        ((Locomotive) stock).setTrainBrake(Math.clamp(((Locomotive) stock).getTrainBrake() + (value - 0.5f) / 80, 0, 1));
                     }
                 }
                 break;

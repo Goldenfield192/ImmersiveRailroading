@@ -79,7 +79,7 @@ public class Whistle {
                 if (pullString == 0) {
                     pullString += delta * 0.55f;
                 } else {
-                    pullString += MathUtil.clamp(delta, -maxDelta, maxDelta);
+                    pullString += Math.clamp(delta, -maxDelta, maxDelta);
                 }
                 pullString = Math.min(pullString, (float) quilling.maxPull);
 
@@ -148,7 +148,7 @@ public class Whistle {
 
             float darken = 0;
             float thickness = 1;
-            double smokeMod = MathUtil.clamp(Math.abs(stock.getCurrentSpeed().minecraft()) * 2, 0.2, 1);
+            double smokeMod = Math.clamp(Math.abs(stock.getCurrentSpeed().minecraft()) * 2, 0.2, 1);
             int lifespan = (int) (40 * (1 + smokeMod * stock.gauge.scale()));
             double verticalSpeed = 0.8f * stock.gauge.scale();
             double size = 0.3 * (0.8 + smokeMod) * stock.gauge.scale();

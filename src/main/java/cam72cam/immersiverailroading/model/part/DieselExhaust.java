@@ -32,7 +32,7 @@ public class DieselExhaust {
                 for (ModelComponent exhaust : components) {
                     Vec3d particlePos = stock.getPosition().add(VecUtil.rotateWrongYaw(exhaust.center.scale(stock.gauge.scale()), stock.getRotationYaw() + 180));
 
-                    double smokeMod = (1 + MathUtil.clamp(Math.abs(stock.getCurrentSpeed().minecraft())*2, 0.2, 1))/2;
+                    double smokeMod = (1 + Math.clamp(Math.abs(stock.getCurrentSpeed().minecraft())*2, 0.2, 1))/2;
                     Particles.SMOKE.accept(new SmokeParticle.SmokeParticleData(stock.getWorld(), particlePos, new Vec3d(fakeMotion.x, fakeMotion.y + 0.4 * stock.gauge.scale(), fakeMotion.z), (int) (40 * (1+throttle) * smokeMod), throttle, throttle, exhaust.width() * stock.gauge.scale(), stock.getDefinition().smokeParticleTexture));
                 }
             }

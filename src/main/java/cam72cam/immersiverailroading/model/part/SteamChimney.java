@@ -45,7 +45,7 @@ public class SteamChimney {
             for (ModelComponent smoke : emitter) {
                 Vec3d particlePos = stock.getPosition().add(VecUtil.rotateWrongYaw(smoke.center.scale(stock.gauge.scale()), stock.getRotationYaw() + 180));
 
-                double smokeMod = MathUtil.clamp(Math.abs(stock.getCurrentSpeed().minecraft())*2, 0.2, 1);
+                double smokeMod = Math.clamp(Math.abs(stock.getCurrentSpeed().minecraft())*2, 0.2, 1);
 
                 int lifespan = (int) (200 * (1 + exhaust) * smokeMod * stock.gauge.scale());
 

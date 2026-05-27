@@ -45,7 +45,7 @@ public class StockAnimation {
 
     public float getValue(EntityRollingStock stock) {
         float value = def.control_group != null ? stock.getControlPosition(def.control_group) : def.readout.getValue(stock);
-        value = MathUtil.clamp((value - def.rangeMin) / (def.rangeMax - def.rangeMin), 0, 1);
+        value = Math.clamp((value - def.rangeMin) / (def.rangeMax - def.rangeMin), 0, 1);
         value += def.offset;
         return def.invert ? 1 - value : value;
     }

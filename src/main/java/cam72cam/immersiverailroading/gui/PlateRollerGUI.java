@@ -29,7 +29,7 @@ public class PlateRollerGUI implements IScreen {
 
 	private Button pickerButton;
 
-	private TileMultiblock tile;
+	private final TileMultiblock tile;
 	private ItemStack currentItem;
 	
 	public PlateRollerGUI(TileMultiblock te) {
@@ -51,7 +51,7 @@ public class PlateRollerGUI implements IScreen {
 
 	@Override
 	public void init(IScreenBuilder screen) {
-		gaugeButton = new Button(screen, 0 - 100, -24 + 0 * 30, GuiText.SELECTOR_GAUGE.toString(gauge)) {
+		gaugeButton = new Button(screen, -100, -24, GuiText.SELECTOR_GAUGE.toString(gauge)) {
 			@Override
 			public void onClick(Player.Hand hand) {
 				if(!currentItem.isEmpty()) {
@@ -68,7 +68,7 @@ public class PlateRollerGUI implements IScreen {
 			}
 		};
 
-		pickerButton = new Button(screen, 0 - 100, -24 + 2 * 30, "") {
+		pickerButton = new Button(screen, -100, -24 + 2 * 30, "") {
 			@Override
 			public void onClick(Player.Hand hand) {
 				CraftPicker.showCraftPicker(screen, null, CraftingType.PLATE_BOILER, (ItemStack item) -> {
@@ -119,7 +119,7 @@ public class PlateRollerGUI implements IScreen {
 		ItemPlate.Data data = new ItemPlate.Data(currentItem);
 		data.gauge = gauge;
 		data.write();
-		currentItem.setCount(MathUtil.clamp((int) Math.floor(data.type.platesPerBlock() / gauge.scale()), 1, 64));
+		currentItem.setCount(Math.clamp((int) Math.floor(data.type.platesPerBlock() / gauge.scale()), 1, 64));
 		tile.setCraftItem(currentItem);
     }
 }

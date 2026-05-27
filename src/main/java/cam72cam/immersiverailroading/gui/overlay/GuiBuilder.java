@@ -389,7 +389,7 @@ public class GuiBuilder {
                         && Character.isDigit(out.charAt(decimalIndex + 1))) {
                         // [stat].[digit(0~5)]
                         int dig = Character.getNumericValue(out.charAt(decimalIndex + 1));
-                        dig = MathUtil.clamp(dig, 0, 5);
+                        dig = Math.clamp(dig, 0, 5);
 
                         out = out.replace(out.substring(index, decimalIndex + 2), stat.getValue(stock, dig));
                     } else {
@@ -650,10 +650,9 @@ public class GuiBuilder {
                 return ;
             }
             Entity riding = MinecraftClient.getPlayer().getRiding();
-            if (!(riding instanceof EntityRollingStock)) {
+            if (!(riding instanceof EntityRollingStock stock)) {
                 return ;
             }
-            EntityRollingStock stock = (EntityRollingStock) riding;
             float value = target.invert ? target.getValue(stock) : 1 - target.getValue(stock);
             new ControlChangePacket(stock, target.readout, target.control, target.global, target.texture_variant, value).sendToServer();
         }

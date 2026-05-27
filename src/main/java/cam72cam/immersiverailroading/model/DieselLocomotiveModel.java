@@ -22,7 +22,7 @@ public class DieselLocomotiveModel extends LocomotiveModel<LocomotiveDiesel, Loc
     private final PartSound idle;
     private final PartSound running;
 
-    private Map<UUID, Float> runningFade = new HashMap<>();
+    private final Map<UUID, Float> runningFade = new HashMap<>();
 
     public DieselLocomotiveModel(LocomotiveDieselDefinition def) throws Exception {
         super(def);
@@ -87,7 +87,7 @@ public class DieselLocomotiveModel extends LocomotiveModel<LocomotiveDiesel, Loc
                     boolean isThrottledUp = stock.getRelativeRPM() > 0.01;
                     float fade = runningFade.getOrDefault(stock.getUUID(), 0f);
                     fade += 0.05f * (isThrottledUp ? 1 : -1);
-                    fade = MathUtil.clamp(fade, 0, 1);
+                    fade = Math.clamp(fade, 0, 1);
                     runningFade.put(stock.getUUID(), fade);
 
                     idle.effects(stock, 1 - fade + 0.01f, 1);

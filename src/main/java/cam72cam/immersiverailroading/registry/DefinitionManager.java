@@ -135,7 +135,7 @@ public class DefinitionManager {
         }
 
         long bytesPerThread = ConfigPerformance.megabytesReservedPerStockLoadingThread * 1024L * 1024L;
-        int loadingThreads = MathUtil.clamp((int) (maxMemory / bytesPerThread), 1, processors);
+        int loadingThreads = Math.clamp((int) (maxMemory / bytesPerThread), 1, processors);
         ImmersiveRailroading.info("Using %s threads to load Immersive Railroading (%sMB per thread)", loadingThreads, ConfigPerformance.megabytesReservedPerStockLoadingThread);
         ForkJoinPool stockLoadingPool = new ForkJoinPool(loadingThreads, pool -> {
             final ForkJoinWorkerThread worker = ForkJoinPool.defaultForkJoinWorkerThreadFactory.newThread(pool);
