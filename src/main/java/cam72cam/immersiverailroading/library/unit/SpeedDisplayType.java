@@ -6,26 +6,18 @@ public enum SpeedDisplayType {
 	mph;
 
 	public double convertFromKmh(double value) {
-		switch (this) {
-			default:
-			case kmh:
-				return value;
-			case ms:
-				return value / 3.6;
-			case mph:
-				return value * 0.621371;
-		}
+        return switch (this) {
+            case ms -> value / 3.6;
+            case mph -> value * 0.621371;
+            default -> value;
+        };
 	}
 
 	public String toUnitString() {
-		switch (this) {
-			default:
-			case kmh:
-				return "km/h";
-			case ms:
-				return "m/s";
-			case mph:
-				return "mph";
-		}
+        return switch (this) {
+            case ms -> "m/s";
+            case mph -> "mph";
+            default -> "km/h";
+        };
 	}
 }

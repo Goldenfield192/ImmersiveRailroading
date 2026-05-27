@@ -8,26 +8,18 @@ public enum ForceDisplayType {
     public static final float lbfToNewton = 4.448221f;
 
     public float convertFromNewton(float value) {
-        switch (this) {
-            default:
-            case kn:
-                return value / 1000f;
-            case n:
-                return value;
-            case lbf:
-                return value * 0.224809f;
-        }
+        return switch (this) {
+            case n -> value;
+            case lbf -> value * 0.224809f;
+            default -> value / 1000f;
+        };
     }
 
     public String toUnitString() {
-        switch (this) {
-            default:
-            case kn:
-                return "kN";
-            case n:
-                return "N";
-            case lbf:
-                return "lbf";
-        }
+        return switch (this) {
+            case n -> "N";
+            case lbf -> "lbf";
+            default -> "kN";
+        };
     }
 }

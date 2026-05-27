@@ -6,26 +6,18 @@ public enum TemperatureDisplayType {
     farenheit;
 
     public float convertFromCelcius(float value) {
-        switch (this) {
-            default:
-            case celcius:
-                return value;
-            case kelvin:
-                return value + 273.15f;
-            case farenheit:
-                return (value * 9f/5f) + 32f;
-        }
+        return switch (this) {
+            case kelvin -> value + 273.15f;
+            case farenheit -> (value * 9f / 5f) + 32f;
+            default -> value;
+        };
     }
 
     public String toUnitString() {
-        switch (this) {
-            default:
-            case celcius:
-                return "°C";
-            case kelvin:
-                return "K";
-            case farenheit:
-                return "°F";
-        }
+        return switch (this) {
+            case kelvin -> "K";
+            case farenheit -> "°F";
+            default -> "°C";
+        };
     }
 }
