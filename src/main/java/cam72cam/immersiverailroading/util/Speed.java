@@ -10,7 +10,7 @@ public class Speed {
 	
 	public static final Speed ZERO = fromMetric(0);
 	
-	private double internalSpeed;
+	private final double internalSpeed;
 	
 	public static Speed fromMinecraft(double speed) {
 		return new Speed(speed);

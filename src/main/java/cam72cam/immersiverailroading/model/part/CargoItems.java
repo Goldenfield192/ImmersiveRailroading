@@ -20,7 +20,7 @@ import java.util.*;
 
 public class CargoItems {
     private final Map<UUID, StandardModel> cache = new HashMap<>();
-    private Map<UUID, Long> lastUpdate = new HashMap<>();
+    private final Map<UUID, Long> lastUpdate = new HashMap<>();
 
     private final List<ModelComponent> components;
     public final List<IBoundingBox> boxes;

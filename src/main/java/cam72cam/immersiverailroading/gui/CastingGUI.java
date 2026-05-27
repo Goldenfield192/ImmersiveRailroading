@@ -28,7 +28,10 @@ import static cam72cam.immersiverailroading.gui.ClickListHelper.next;
 
 public class CastingGUI implements IScreen {
     public static final Identifier CASTING_GUI_TEXTURE = new Identifier("immersiverailroading:gui/casting_gui.png");
-    
+
+	private final TileMultiblock tile;
+	private ItemStack currentItem;
+
 	private Button gaugeButton;
 	private Gauge gauge;
 
@@ -36,9 +39,6 @@ public class CastingGUI implements IScreen {
 
 	private Button singleCastButton;
 	private Button repeatCastButton;
-	
-	private TileMultiblock tile;
-	private ItemStack currentItem;
 	
 	public CastingGUI(TileMultiblock te) {
 		this.tile = te;

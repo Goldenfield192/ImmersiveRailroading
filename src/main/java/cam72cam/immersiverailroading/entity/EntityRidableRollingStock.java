@@ -34,7 +34,7 @@ public abstract class EntityRidableRollingStock extends EntityBuildableRollingSt
 	private Map<String, UUID> seatedPassengers = new HashMap<>();
 
 	// Hack to remount players if they were seated
-	private Map<UUID, Vec3d> remount = new HashMap<>();
+	private final Map<UUID, Vec3d> remount = new HashMap<>();
 
 
 
