@@ -95,7 +95,8 @@ public class TrackModel extends OBJModel{
         }
 
         List<DataBlock> randomized = block.getBlocks("randomized");
-            if(randomized != null){randomized.forEach(b -> {
+            if(randomized != null){
+                randomized.forEach(b -> {
                 String ident = b.getValue("ident").asString();
                 Random rand = new Random(ident.hashCode());
                 Map<String, Integer> partWeights = b.getBlock("part_weights").getValueMap().entrySet()
@@ -148,12 +149,12 @@ public class TrackModel extends OBJModel{
     }
 
     public boolean canRender(double gauge) {
-        switch (compare) {
-            case ">": return gauge > size;
-            case "<": return gauge < size;
-            case "=": return gauge == size;
-            default: return true;
-        }
+        return switch (compare) {
+            case ">" -> gauge > size;
+            case "<" -> gauge < size;
+            case "=" -> gauge == size;
+            default -> true;
+        };
     }
 
     public VBO getModel(RailInfo info, List<VecYPR> data) {
