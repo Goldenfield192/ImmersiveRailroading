@@ -38,7 +38,7 @@ jobs:
         BRANCH: ${{ matrix.branch }}
       run: java -jar UMCSetup.jar ${BRANCH} https
     - name: Gradle compile
-      run: ./gradlew classes --stacktrace --debug
+      run: ./gradlew classes --stacktrace
     - name: Process images
       run: find src/main/resources/assets/immersiverailroading/ | grep png | xargs -I foo pngquant -s1 -f --ext .png foo
     - name: Gradle build
