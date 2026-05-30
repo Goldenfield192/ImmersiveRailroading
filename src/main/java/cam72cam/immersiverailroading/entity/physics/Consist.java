@@ -13,12 +13,11 @@ import java.util.stream.Collectors;
 
 /**
  * 1d dynamics simulator
- *
+ * <p>
  * It's a touch special since it applies forces to groups of
  * particles when they are interfering with each other via slacked linkages
  * It is not technically correct, but I believe it will produce the most reasonable simulation
- *
- * */
+ */
 public class Consist {
     static boolean debug = false;
 
@@ -506,9 +505,9 @@ public class Consist {
                                     p.brakePressure = desiredBrakePressure;
                                 } else {
                                     if (p.brakePressure > desiredBrakePressure + brakePressureDelta) {
-                                        p.brakePressure -= brakePressureDelta;
+                                        p.brakePressure -= (float) brakePressureDelta;
                                     } else if (p.brakePressure < desiredBrakePressure - brakePressureDelta) {
-                                        p.brakePressure += brakePressureDelta;
+                                        p.brakePressure += (float) brakePressureDelta;
                                     } else {
                                         p.brakePressure = desiredBrakePressure;
                                     }
@@ -577,24 +576,25 @@ public class Consist {
             particles.forEach(Particle::setup);
 
             if (debug) {
-                String s = "";
+                StringBuilder s = new StringBuilder();
                 for (Particle particle : particles) {
-                    s += String.format("[%s = %.3f]", particle.hashCode(), particle.velocity_M_S);
+                    s.append(String.format("[%s = %.3f]", particle.hashCode(), particle.velocity_M_S));
                     if (particle.nextLink != null) {
                         if (particle.nextLink.canPush) {
-                            s += " >< ";
+                            s.append(" >< ");
                         } else if (particle.nextLink.canPull) {
-                            s += " <> ";
+                            s.append(" <> ");
                         } else {
-                            s += String.format(" %.2f ", particle.nextLink.currentDistance_M - particle.nextLink.minDistance_M);
+                            s.append(String.format(" %.2f ",
+                                                   particle.nextLink.currentDistance_M - particle.nextLink.minDistance_M));
                         }
                     } else {
-                        ImmersiveRailroading.info(s);
-                        s = "";
+                        ImmersiveRailroading.info(s.toString());
+                        s = new StringBuilder();
                     }
                 }
                 if (!s.isEmpty()) {
-                    ImmersiveRailroading.info(s);
+                    ImmersiveRailroading.info(s.toString());
                 }
             }
 
@@ -636,7 +636,7 @@ public class Consist {
     public static class TagMapper implements cam72cam.mod.serialization.TagMapper<Consist> {
         @Override
         public TagAccessor<Consist> apply(Class<Consist> type, String fieldName, TagField tag) {
-            return new TagAccessor<Consist>(
+            return new TagAccessor<>(
                     (d, o) -> {
                         if (o != null) {
                             d.set(fieldName, new TagCompound()

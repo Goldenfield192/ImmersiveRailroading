@@ -240,7 +240,7 @@ public class LocomotiveDiesel extends Locomotive {
 			}
 			
 			consumption *= 100;
-			consumption *= gauge.scale();
+			consumption *= (float) gauge.scale();
 			
 			internalBurn -= consumption;
 			

@@ -49,9 +49,9 @@ public class ClientPartDragging {
                     return true;
                 }
                 if (targetStock instanceof LocomotiveDiesel && targetInteractable.part.type == ModelComponentType.REVERSER_X) {
-                    value += scroll > 0 ? 0.5 : -0.5;
+                    value += scroll > 0 ? 0.5f : -0.5f;
                 } else {
-                    value += scroll / -50 * ConfigGraphics.ScrollSpeed;
+                    value += (float) (scroll / -50 * ConfigGraphics.ScrollSpeed);
                 }
 
                 targetStock.setControlPosition((Control<?>) targetInteractable, value);
@@ -103,7 +103,10 @@ public class ClientPartDragging {
         @Override
         protected void handle() {
             EntityRollingStock stock = getWorld().getEntity(stockUUID, EntityRollingStock.class);
-            Control<?> control = stock.getDefinition().getModel().getDraggable().stream().filter(x -> x.part.key.equals(typeKey)).findFirst().get();
+            Control<?> control = stock.getDefinition().getModel().getDraggable().stream()
+                                      .filter(x -> x.part.key.equals(typeKey))
+                                      .findFirst()
+                                      .orElseThrow();
             if (!stock.playerCanDrag(getPlayer(), control)) {
                 return;
             }

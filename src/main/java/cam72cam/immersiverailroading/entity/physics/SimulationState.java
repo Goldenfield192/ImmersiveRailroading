@@ -99,8 +99,8 @@ public class SimulationState {
         private final Function<List<Vec3i>, Double> directResistanceNewtons;
 
         // We don't actually want to use this value, it's only for dirty checking
-        private double tractiveEffortFactors;
-        private Function<Speed, Double> tractiveEffortNewtons;
+        private final double tractiveEffortFactors;
+        private final Function<Speed, Double> tractiveEffortNewtons;
 
         public Double desiredBrakePressure;
         public double independentBrakePosition;
@@ -136,13 +136,12 @@ public class SimulationState {
             // When FuelRequired is false, most of the time the locos are empty.  Work around that here
             double designMassKg = !Config.ConfigBalance.FuelRequired && (stock instanceof Locomotive || stock instanceof Tender) ? massKg : stock.getMaxWeight();
 
-            if (stock instanceof Locomotive) {
-                Locomotive locomotive = (Locomotive) stock;
+            if (stock instanceof Locomotive locomotive) {
                 tractiveEffortNewtons = locomotive::getTractiveEffortNewtons;
                 tractiveEffortFactors = locomotive.getThrottle() + (locomotive.getReverser() * 10);
                 desiredBrakePressure = (double)locomotive.getTrainBrake();
             } else {
-                tractiveEffortNewtons = speed -> 0d;
+                tractiveEffortNewtons = _ -> 0d;
                 tractiveEffortFactors = 0;
                 desiredBrakePressure = null;
             }
@@ -160,8 +159,7 @@ public class SimulationState {
 
         @Override
         public boolean equals(Object o) {
-            if (o instanceof Configuration) {
-                Configuration other = (Configuration) o;
+            if (o instanceof Configuration other) {
                 return couplerEngagedFront == other.couplerEngagedFront &&
                         couplerEngagedRear == other.couplerEngagedRear &&
                         Math.abs(tractiveEffortFactors - other.tractiveEffortFactors) < 0.01 &&

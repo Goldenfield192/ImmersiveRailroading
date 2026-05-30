@@ -19,7 +19,6 @@ import cam72cam.mod.serialization.TagField;
 import cam72cam.mod.serialization.TagMapper;
 
 import java.util.*;
-import java.util.stream.Collectors;
 
 public abstract class EntityRidableRollingStock extends EntityBuildableRollingStock implements IRidable {
 	public float getRidingSoundModifier() {
@@ -127,12 +126,12 @@ public abstract class EntityRidableRollingStock extends EntityBuildableRollingSt
 
 	private boolean isNearestDoorOpen(Player source) {
 		// Find any doors that are close enough that are closed (and then negate)
-		return !this.getDefinition().getModel().getDoors().stream()
-				.filter(d -> d.type == Door.Types.CONNECTING)
-				.filter(d -> d.center(this).distanceTo(source.getPosition()) < getDefinition().getLength(this.gauge)/3)
-				.min(Comparator.comparingDouble(d -> d.center(this).distanceTo(source.getPosition())))
-				.filter(x -> !x.isOpen(this))
-				.isPresent();
+		return this.getDefinition().getModel().getDoors().stream()
+                   .filter(d -> d.type == Door.Types.CONNECTING)
+                   .filter(d -> d.center(this).distanceTo(source.getPosition()) < getDefinition().getLength(this.gauge)/3)
+                   .min(Comparator.comparingDouble(d -> d.center(this).distanceTo(source.getPosition())))
+                   .filter(x -> !x.isOpen(this))
+                   .isEmpty();
 	}
 
 	private Vec3d playerMovement(Player source, Vec3d offset) {
@@ -150,10 +149,8 @@ public abstract class EntityRidableRollingStock extends EntityBuildableRollingSt
 
         offset = offset.add(movement);
 
-        if (this instanceof EntityCoupleableRollingStock) {
-			EntityCoupleableRollingStock couplable = (EntityCoupleableRollingStock) this;
-
-			boolean atFront = this.getDefinition().isAtFront(gauge, offset);
+        if (this instanceof EntityCoupleableRollingStock couplable) {
+            boolean atFront = this.getDefinition().isAtFront(gauge, offset);
 			boolean atBack = this.getDefinition().isAtRear(gauge, offset);
 			// TODO config for strict doors
 			boolean atDoor = isNearestDoorOpen(source);
@@ -215,7 +212,7 @@ public abstract class EntityRidableRollingStock extends EntityBuildableRollingSt
 
 	public Vec3d onDismountPassenger(Entity passenger, Vec3d offset) {
 		List<String> seats = seatedPassengers.entrySet().stream().filter(x -> x.getValue().equals(passenger.getUUID()))
-				.map(Map.Entry::getKey).collect(Collectors.toList());
+				.map(Map.Entry::getKey).toList();
 		if (!seats.isEmpty()) {
 			seats.forEach(seatedPassengers::remove);
 			if (getWorld().isServer && passenger.isPlayer()) {
@@ -232,7 +229,7 @@ public abstract class EntityRidableRollingStock extends EntityBuildableRollingSt
 			int payout = (int) Math.floor(distanceMoved * Config.ConfigBalance.villagerPayoutPerMeter);
 
 			List<ItemStack> payouts = Config.ConfigBalance.getVillagerPayout();
-			if (payouts.size() != 0) {
+			if (!payouts.isEmpty()) {
 				int type = (int)(Math.random() * 100) % payouts.size();
 				ItemStack stack = payouts.get(type).copy();
 				stack.setCount(payout);
@@ -247,7 +244,7 @@ public abstract class EntityRidableRollingStock extends EntityBuildableRollingSt
 
 	public void onSeatClick(String seat, Player player) {
 		List<String> seats = seatedPassengers.entrySet().stream().filter(x -> x.getValue().equals(player.getUUID()))
-				.map(Map.Entry::getKey).collect(Collectors.toList());
+				.map(Map.Entry::getKey).toList();
 		if (!seats.isEmpty()) {
 			seats.forEach(seatedPassengers::remove);
 			return;

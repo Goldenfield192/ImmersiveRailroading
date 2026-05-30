@@ -22,7 +22,6 @@ import cam72cam.mod.serialization.TagField;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
 public abstract class EntityMoveableRollingStock extends EntityRidableRollingStock implements ICollision {
     @TagField("frontYaw")
@@ -124,18 +123,18 @@ public abstract class EntityMoveableRollingStock extends EntityRidableRollingSto
      */
     public void handleTickPosPacket(List<TickPos> newPositions) {
 
-        if (newPositions.size() != 0) {
+        if (!newPositions.isEmpty()) {
             this.clearPositionCache();
 
             if (ChronoState.getState(getWorld()) == null) {
                 positions.clear();
             } else {
                 int tickID = (int) Math.floor(ChronoState.getState(getWorld()).getTickID());
-                List<Integer> newIds = newPositions.stream().map(p -> p.tickID).collect(Collectors.toList());
+                List<Integer> newIds = newPositions.stream().map(p -> p.tickID).toList();
                 positions.removeAll(positions.stream()
                         // old OR far in the future OR to be replaced
                         .filter(p -> p.tickID < tickID - 30 || p.tickID > tickID + 60 || newIds.contains(p.tickID))
-                        .collect(Collectors.toList())
+                        .toList()
                 );
             }
             // unordered

@@ -260,15 +260,11 @@ public abstract class Locomotive extends FreightTank {
 
 	@Override
 	protected float defaultControlPosition(Control<?> control) {
-		switch (control.part.type) {
-			case THROTTLE_BRAKE_X:
-			case REVERSER_X:
-				return 0.5f;
-			case TRAIN_BRAKE_X:
-				return getDefinition().isLinearBrakeControl() ? 0 : 0.5f;
-			default:
-				return super.defaultControlPosition(control);
-		}
+        return switch (control.part.type) {
+            case THROTTLE_BRAKE_X, REVERSER_X -> 0.5f;
+            case TRAIN_BRAKE_X -> getDefinition().isLinearBrakeControl() ? 0 : 0.5f;
+            default -> super.defaultControlPosition(control);
+        };
 	}
 
     @Override
@@ -276,20 +272,19 @@ public abstract class Locomotive extends FreightTank {
         if (!super.playerCanDrag(player, control)) {
         	return false;
 		}
-        switch (control.part.type) {
-			case THROTTLE_X:
-			case REVERSER_X:
-			case TRAIN_BRAKE_X:
-			case INDEPENDENT_BRAKE_X:
-			case THROTTLE_BRAKE_X:
-			case BELL_CONTROL_X:
-			case WHISTLE_CONTROL_X:
-			case HORN_CONTROL_X:
-			case ENGINE_START_X:
-				return player.hasPermission(Permissions.LOCOMOTIVE_CONTROL);
-			default:
-				return true;
-		}
+        return switch (control.part.type) {
+            case THROTTLE_X,
+				 REVERSER_X,
+				 TRAIN_BRAKE_X,
+				 INDEPENDENT_BRAKE_X,
+				 THROTTLE_BRAKE_X,
+				 BELL_CONTROL_X,
+                 WHISTLE_CONTROL_X,
+				 HORN_CONTROL_X,
+				 ENGINE_START_X ->
+                    player.hasPermission(Permissions.LOCOMOTIVE_CONTROL);
+            default -> true;
+        };
     }
 
     public ClickResult onClick(Player player, Player.Hand hand) {

@@ -52,7 +52,7 @@ public abstract class Freight extends EntityCoupleableRollingStock {
 		List<ItemStack> extras = cargoItems.setSize(this.getInventorySize());
 		if (getWorld().isServer) {
 			extras.forEach(stack -> getWorld().dropItem(stack, getPosition()));
-			cargoItems.onChanged(slot -> handleMass());
+			cargoItems.onChanged(_ -> handleMass());
 			handleMass();
 		}
 		initContainerFilter();
@@ -103,10 +103,9 @@ public abstract class Freight extends EntityCoupleableRollingStock {
 
 			if (player.getHeldItem(hand).is(Fuzzy.LEAD)) {
 				for (Entity passenger : this.getPassengers()) {
-					if (passenger instanceof Living && !passenger.isVillager()) {
+					if (passenger instanceof Living living && !living.isVillager()) {
 						if (getWorld().isServer) {
-							Living living = (Living) passenger;
-							if (living.canBeLeashedTo(player)) {
+                            if (living.canBeLeashedTo(player)) {
 								this.removePassenger(living);
 								living.setLeashHolder(player);
 								player.getHeldItem(hand).shrink(1);

@@ -108,7 +108,7 @@ public class EntityBuildableRollingStock extends EntityRollingStock implements I
 			return;
 		}
 		
-		List<ItemComponentType> toAdd = new ArrayList<ItemComponentType>();
+		List<ItemComponentType> toAdd = new ArrayList<>();
 		
 		for (AssemblyStep step : AssemblyStep.values()) {
 			for (ItemComponentType component : this.getMissingItemComponents()) {
@@ -116,7 +116,7 @@ public class EntityBuildableRollingStock extends EntityRollingStock implements I
 					toAdd.add(component);
 				}
 			}
-			if (toAdd.size() != 0) {
+			if (!toAdd.isEmpty()) {
 				break;
 			}
 		}
@@ -196,8 +196,8 @@ public class EntityBuildableRollingStock extends EntityRollingStock implements I
 				continue;
 			}
 			
-			int platesStart = 0;
-			int platesUsed = 0;
+			int platesStart;
+			int platesUsed;
 			
 			switch (type.crafting) {
 			case PLATE_LARGE:
@@ -241,7 +241,7 @@ public class EntityBuildableRollingStock extends EntityRollingStock implements I
 			return;
 		}
 		
-		Map<ItemComponentType, Integer> addMap = new HashMap<ItemComponentType, Integer>();
+		Map<ItemComponentType, Integer> addMap = new HashMap<>();
 		for (ItemComponentType component : toAdd) {
 			if (!addMap.containsKey(component)) {
 				addMap.put(component, 0);
