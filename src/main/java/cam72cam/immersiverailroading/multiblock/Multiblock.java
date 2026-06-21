@@ -236,7 +236,7 @@ public abstract class Multiblock {
 		public abstract boolean canInsertItem(Vec3i offset, int slot, ItemStack stack);
 		public abstract boolean isOutputSlot(Vec3i offset, int slot);
 		public abstract int getSlotLimit(Vec3i offset, int slot);
-		public abstract boolean canRecievePower(Vec3i offset);
+		public abstract boolean canReceivePower(Vec3i offset);
 		public void onBreak() {
 			for (Vec3i offset : componentPositions) {
 				Vec3i pos = getPos(offset);

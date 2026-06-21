@@ -49,7 +49,7 @@ public class TileMultiblock extends BlockEntityTickable {
 
 	public boolean isLoaded() {
 			//TODO FIX ME bad init
-    	return this.name != null && this.name.length() != 0;
+    	return this.name != null && !this.name.isEmpty();
     }
 
 	public void configure(String name, Rotation rot, Vec3i offset, BlockInfo replaced) {
@@ -65,7 +65,7 @@ public class TileMultiblock extends BlockEntityTickable {
 
 	@Override
 	public void load(TagCompound nbt) {
-		container.onChanged(slot -> this.markDirty());
+		container.onChanged(_ -> this.markDirty());
 		container.setSlotLimit(slot -> getMultiblock().getSlotLimit(offset, slot));
 		energy.onChanged(this::markDirty);
 	}
@@ -251,7 +251,7 @@ public class TileMultiblock extends BlockEntityTickable {
 
 	@Override
 	public IEnergy getEnergy(Facing facing) {
-		return this.isLoaded() && this.getMultiblock().canRecievePower(offset) ? energy : null;
+		return this.isLoaded() && this.getMultiblock().canReceivePower(offset) ? energy : null;
 	}
 
 	@Override

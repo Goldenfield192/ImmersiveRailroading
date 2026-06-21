@@ -164,7 +164,7 @@ public class SteamHammerMultiblock extends Multiblock {
 		}
 
 		@Override
-		public boolean canRecievePower(Vec3i offset) {
+		public boolean canReceivePower(Vec3i offset) {
 			return offset.equals(power);
 		}
 

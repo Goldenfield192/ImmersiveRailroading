@@ -82,9 +82,9 @@ public class BoilerRollerMultiblock extends Multiblock {
 						return false;
 					}
 					
-					ItemStack outstack = craftTe.getContainer().get(1);
-					if (!outstack.isEmpty()) {
-						world.dropItem(outstack, player.getPosition());
+					ItemStack outputStack = craftTe.getContainer().get(1);
+					if (!outputStack.isEmpty()) {
+						world.dropItem(outputStack, player.getPosition());
 
 						craftTe.getContainer().set(1, ItemStack.EMPTY);
 					}
@@ -199,7 +199,7 @@ public class BoilerRollerMultiblock extends Multiblock {
 		}
 
 		@Override
-		public boolean canRecievePower(Vec3i offset) {
+		public boolean canReceivePower(Vec3i offset) {
 			return offset.equals(power);
 		}
 

@@ -79,8 +79,8 @@ public class RailRollerMultiblock extends Multiblock {
 						return false;
 					}
 
-					ItemStack outstack = outputTe.getContainer().get(0);
-					world.dropItem(outstack, player.getPosition());
+					ItemStack outputStack = outputTe.getContainer().get(0);
+					world.dropItem(outputStack, player.getPosition());
 					outputTe.getContainer().set(0, ItemStack.EMPTY);
 				} else if (held.is(IRItems.ITEM_CAST_RAIL)) {
 					TileMultiblock inputTe = getTile(input);
@@ -194,7 +194,7 @@ public class RailRollerMultiblock extends Multiblock {
 		}
 
 		@Override
-		public boolean canRecievePower(Vec3i offset) {
+		public boolean canReceivePower(Vec3i offset) {
 			return offset.equals(power);
 		}
 

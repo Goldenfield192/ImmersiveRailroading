@@ -85,8 +85,8 @@ public class PlateRollerMultiblock extends Multiblock {
 					
 					if (!outputTe.getContainer().get(0).isEmpty()) {
 						if (world.isServer) {
-							ItemStack outstack = outputTe.getContainer().get(0);
-							world.dropItem(outstack, player.getPosition());
+							ItemStack outputStack = outputTe.getContainer().get(0);
+							world.dropItem(outputStack, player.getPosition());
 							outputTe.getContainer().set(0, ItemStack.EMPTY);
 						}
 						return true;
@@ -208,7 +208,7 @@ public class PlateRollerMultiblock extends Multiblock {
 		}
 
 		@Override
-		public boolean canRecievePower(Vec3i offset) {
+		public boolean canReceivePower(Vec3i offset) {
 			return offset.equals(power);
 		}
 
