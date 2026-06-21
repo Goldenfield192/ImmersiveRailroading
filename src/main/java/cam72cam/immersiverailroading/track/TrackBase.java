@@ -49,7 +49,7 @@ public abstract class TrackBase {
             // Valid block beneath
             builder.world.isTopSolid(pos) ||
             // BlockType below is replaceable and we will replace it with something
-            countFill && (BlockUtil.canBeReplaced(builder.world, pos, false) && !builder.info.settings.railBedFill.isEmpty()) ||
+            countFill && (BlockUtil.canBeReplaced(builder.world, pos, false) && !builder.info.settings.railBedFill().isEmpty()) ||
             // BlockType below is an IR Rail
             BlockUtil.isIRRail(builder.world, pos);
 	}
@@ -80,8 +80,8 @@ public abstract class TrackBase {
 			return tr;
 		}
 
-		if (!builder.info.settings.railBedFill.isEmpty() && BlockUtil.canBeReplaced(builder.world, pos.down(), false)) {
-			builder.world.setBlock(pos.down(), builder.info.settings.railBedFill);
+		if (!builder.info.settings.railBedFill().isEmpty() && BlockUtil.canBeReplaced(builder.world, pos.down(), false)) {
+			builder.world.setBlock(pos.down(), builder.info.settings.railBedFill());
 		}
 
 

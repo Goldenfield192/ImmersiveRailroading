@@ -440,6 +440,6 @@ public class SimulationState {
     private boolean checkTileType(TileRailBase base, TrackItems type) {
         return base != null
                 && base.getParentTile() != null
-                && base.getParentTile().info.settings.type == type;
+                && base.getParentTile().info.settings.type() == type;
     }
 }

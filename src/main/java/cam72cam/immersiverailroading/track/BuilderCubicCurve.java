@@ -65,14 +65,14 @@ public class BuilderCubicCurve extends BuilderIterator {
 	private HashMap<Double, Pair<Double, List<VecYPR>>> cache;
 
 	public CubicCurve getCurve() {
-		Vec3d nextPos = new Vec3d(new Vec3i(VecUtil.fromYaw(info.settings.length, info.placementInfo.yaw + 45)));
+		Vec3d nextPos = new Vec3d(new Vec3i(VecUtil.fromYaw(info.settings.length(), info.placementInfo.yaw + 45)));
 
 		boolean isDefault = info.customInfo.placementPosition.equals(info.placementInfo.placementPosition);
 		if (!isDefault) {
 			nextPos = info.customInfo.placementPosition.subtract(info.placementInfo.placementPosition);
 		}
 
-		double ctrlGuess = nextPos.length()/2 * Math.max(0.1, info.settings.curvosity);
+		double ctrlGuess = nextPos.length()/2 * Math.max(0.1, info.settings.curvosity());
 		float angle = info.placementInfo.yaw;
 
 		float angle2 = angle + 180;
@@ -84,7 +84,7 @@ public class BuilderCubicCurve extends BuilderIterator {
 		Vec3d ctrl1 = VecUtil.fromYaw(ctrlGuess, angle);
 		Vec3d ctrl2 = nextPos.add(VecUtil.fromYaw(ctrlGuess, angle2));
 
-		CubicCurve adjusted = new CubicCurve(Vec3d.ZERO, ctrl1, ctrl2, nextPos).linearize(info.settings.smoothing);
+		CubicCurve adjusted = new CubicCurve(Vec3d.ZERO, ctrl1, ctrl2, nextPos).linearize(info.settings.smoothing());
 		ctrl1 = adjusted.ctrl1;
 		ctrl2 = adjusted.ctrl2;
 

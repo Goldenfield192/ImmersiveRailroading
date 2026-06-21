@@ -17,7 +17,7 @@ public interface IIterableTrack {
         Vec3d relative = position.subtract(info.placementInfo.placementPosition).subtract(pos);
         relative = relative.add(0, -(relative.y % 1), 0);
 
-        List<VecYPR> positions = getPath(info.settings.gauge.scale() / 8);
+        List<VecYPR> positions = getPath(info.settings.gauge().scale() / 8);
 
         /*double distSquared = 100 * 100;
         for (Vec3d gagPos : positions) {

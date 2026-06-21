@@ -59,7 +59,7 @@ public class RailRender {
 		isLoading = false;
 	}
 	public void renderRailModel(RenderState state) {
-		if (info.settings.type.isTable()) {
+		if (info.settings.type().isTable()) {
 			load();
 		}
 

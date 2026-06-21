@@ -110,12 +110,12 @@ public class MovementTrack {
 
 		double railHeight = rail.info.getTrackHeight();
 		double distance = delta.length();
-		double heightOffset = railHeight * rail.info.settings.gauge.scale();
+		double heightOffset = railHeight * rail.info.settings.gauge().scale();
 
-		if (rail.info.settings.type == TrackItems.CROSSING) {
+		if (rail.info.settings.type() == TrackItems.CROSSING) {
 			delta = VecUtil.fromWrongYaw(distance, Facing.fromAngle(VecUtil.toWrongYaw(delta)).getAngle());
 			return currentPosition.add(delta);
-		} else if (rail.info.settings.type.isTable()) {
+		} else if (rail.info.settings.type().isTable()) {
 			double tablePos = rail.getParentTile().info.tablePos;
 
 			currentPosition = currentPosition.add(delta);
@@ -123,15 +123,15 @@ public class MovementTrack {
 			Vec3d center, forward, backward;
 			double distanceToCenter;
 			float angle;
-			if (rail.info.settings.type == TrackItems.TURNTABLE) {
+			if (rail.info.settings.type() == TrackItems.TURNTABLE) {
 				angle = (float) tablePos + placementFacing.getAngle();
 				center = new Vec3d(rail.getParentTile().getPos()).add(0.5, 1 + heightOffset, 0.5);
 				distanceToCenter = currentPosition.distanceTo(center);
 			} else {
 				//Must be transfer table
-				int halfGauge = (int) Math.floor((rail.info.settings.gauge.value() * 1.1 + 0.5) / 2);
-				int width = rail.info.settings.transfertableEntrySpacing * (rail.info.settings.transfertableEntryCount - 1) + halfGauge + 2;
-				Vec3i mainOffset = new Vec3i(-width / 2, 1, rail.info.settings.length / 2);
+				int halfGauge = (int) Math.floor((rail.info.settings.gauge().value() * 1.1 + 0.5) / 2);
+				int width = rail.info.settings.transfertableEntrySpacing() * (rail.info.settings.transfertableEntryCount() - 1) + halfGauge + 2;
+				Vec3i mainOffset = new Vec3i(-width / 2, 1, rail.info.settings.length() / 2);
 				center = new Vec3d(rail.getPos().subtract(mainOffset.rotate(Rotation.from(placementFacing))));
 				double xValue;
 				switch (placementFacing) {
@@ -153,7 +153,7 @@ public class MovementTrack {
 				}
 				angle = -placementFacing.getAngle() + 180;
 				center = center.add(
-						new Vec3d(xValue, 2 + heightOffset, rail.info.settings.length / 2d).rotateYaw(angle));
+						new Vec3d(xValue, 2 + heightOffset, rail.info.settings.length() / 2d).rotateYaw(angle));
 				distanceToCenter = currentPosition.distanceTo(center);
 			}
 
@@ -172,7 +172,7 @@ public class MovementTrack {
 			 * trying to move.  Instead we should probably calculate the vector between the closest pos
 			 * and the current pos and move distance along that.  How would that work for slopes at the ends? just fine?
 			 */
-			List<VecYPR> positions = ((IIterableTrack) rail.info.getBuilder(world)).getPath(0.25 * rail.info.settings.gauge.scale());
+			List<VecYPR> positions = ((IIterableTrack) rail.info.getBuilder(world)).getPath(0.25 * rail.info.settings.gauge().scale());
 			Vec3d center = rail.info.placementInfo.placementPosition.add(rail.getPos()).add(0, heightOffset, 0);
 			Vec3d target = currentPosition.add(delta);
 			Vec3d relative = target.subtract(center);

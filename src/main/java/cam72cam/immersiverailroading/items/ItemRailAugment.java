@@ -63,7 +63,7 @@ public class ItemRailAugment extends CustomItem {
 						break;
 						*/
 					case SPEED_RETARDER:
-						switch(parent.info.settings.type) {
+						switch(parent.info.settings.type()) {
 						case SWITCH:
 						case TURN:
 							return ClickResult.REJECTED;

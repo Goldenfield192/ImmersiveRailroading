@@ -408,11 +408,11 @@ public class TrackGui implements IScreen {
 			state.translate(-0.5, 0, -0.5);
 			RailRender.get(info).renderRailBase(state);
 
-			if (!info.settings.railBedFill.isEmpty()) {
+			if (!info.settings.railBedFill().isEmpty()) {
 				StandardModel model = new StandardModel();
 				for (TrackBase base : info.getBuilder(MinecraftClient.getPlayer().getWorld()).getTracksForRender()) {
 					Vec3i basePos = base.getPos();
-					model.addItemBlock(info.settings.railBedFill, new Matrix4()
+					model.addItemBlock(info.settings.railBedFill(), new Matrix4()
 							.translate(basePos.x, basePos.y-1, basePos.z)
 					);
 				}
@@ -446,7 +446,7 @@ public class TrackGui implements IScreen {
 				new PlacementInfo(new Vec3d(0.5, 0, 0.5), settings.direction, 0, null),
 				null, SwitchState.NONE, SwitchState.NONE, tablePos, true);
 
-		int length = info.settings.length;
+		int length = info.settings.length();
 		double scale = (GUIHelpers.getScreenWidth() / (length * 2.25)) * zoom;
 		if (settings.type.isTable()) {
 			scale /= 2;
@@ -473,11 +473,11 @@ public class TrackGui implements IScreen {
 		RailRender.get(info).renderRailModel(state);
 		state.translate(-0.5, 0, -0.5);
 		RailRender.get(info).renderRailBase(state);
-		if (!info.settings.railBedFill.isEmpty()) {
+		if (!info.settings.railBedFill().isEmpty()) {
 			StandardModel model = new StandardModel();
 			for (TrackBase base : info.getBuilder(MinecraftClient.getPlayer().getWorld()).getTracksForRender()) {
 				Vec3i basePos = base.getPos();
-				model.addItemBlock(info.settings.railBedFill, new Matrix4()
+				model.addItemBlock(info.settings.railBedFill(), new Matrix4()
 						.translate(basePos.x, basePos.y-1, basePos.z)
 				);
 			}

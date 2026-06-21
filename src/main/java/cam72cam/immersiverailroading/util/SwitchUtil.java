@@ -19,7 +19,7 @@ public class SwitchUtil {
 			return SwitchState.NONE;
 		}
 
-		if (rail.info.settings.type != TrackItems.TURN && rail.info.settings.type != TrackItems.CUSTOM) {
+		if (rail.info.settings.type() != TrackItems.TURN && rail.info.settings.type() != TrackItems.CUSTOM) {
 			return SwitchState.NONE;
 		}
 
@@ -27,7 +27,7 @@ public class SwitchUtil {
 		if (parent == null) {
 			return SwitchState.NONE;
 		}
-		if (parent.info.settings.type != TrackItems.SWITCH) {
+		if (parent.info.settings.type() != TrackItems.SWITCH) {
 			return SwitchState.NONE;
 		}
 
@@ -37,7 +37,7 @@ public class SwitchUtil {
 			double isOnStraight = switchBuilder.offsetFromTrack(parent.info, parent.getPos(), position);
 			double isOnTurn = turnBuilder.offsetFromTrack(rail.info, rail.getPos(), position);
 
-			if (Math.abs(isOnStraight - isOnTurn) > rail.info.settings.gauge.scale() / 16) {
+			if (Math.abs(isOnStraight - isOnTurn) > rail.info.settings.gauge().scale() / 16) {
 				if (isOnStraight > isOnTurn) {
 					return SwitchState.NONE;
 				} else {
@@ -59,8 +59,8 @@ public class SwitchUtil {
 
 	public static boolean isRailPowered(TileRail rail) {
 		Vec3d redstoneOrigin = rail.info.placementInfo.placementPosition.add(rail.getPos());
-		double horiz = rail.info.settings.gauge.scale() * 1.1;
-		if (Config.ConfigDebug.oldNarrowWidth && rail.info.settings.gauge.value() < 1) {
+		double horiz = rail.info.settings.gauge().scale() * 1.1;
+		if (Config.ConfigDebug.oldNarrowWidth && rail.info.settings.gauge().value() < 1) {
 			horiz = horiz/2;
 		}
 		int scale = (int)Math.round(horiz);

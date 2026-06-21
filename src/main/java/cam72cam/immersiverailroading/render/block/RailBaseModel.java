@@ -33,11 +33,11 @@ public class RailBaseModel {
 		if (te instanceof TileRail && ((TileRail) te).info != null) {
 			model.addCustom((state, pt) -> {
 				RailInfo info = ((TileRail) te).info;
-                if (info.settings.type == TrackItems.SWITCH) {
+                if (info.settings.type() == TrackItems.SWITCH) {
                     //TODO render switch and don't render turn
                     info = info.withSettings(b -> b.type = TrackItems.STRAIGHT);
                 }
-                if (info.settings.type.isTable()) {
+                if (info.settings.type().isTable()) {
 					ItemStack held = MinecraftClient.getPlayer().getHeldItem(Player.Hand.PRIMARY);
                 	if (held.is(IRItems.ITEM_TRACK_BLUEPRINT) || held.is(IRItems.ITEM_GOLDEN_SPIKE)) {
 						info = info.with(b -> b.itemHeld = true);
