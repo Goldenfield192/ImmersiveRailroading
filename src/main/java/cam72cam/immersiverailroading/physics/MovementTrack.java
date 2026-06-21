@@ -126,7 +126,6 @@ public class MovementTrack {
 			if (rail.info.settings.type() == TrackItems.TURNTABLE) {
 				angle = (float) tablePos + placementFacing.getAngle();
 				center = new Vec3d(rail.getParentTile().getPos()).add(0.5, 1 + heightOffset, 0.5);
-				distanceToCenter = currentPosition.distanceTo(center);
 			} else {
 				//Must be transfer table
 				int halfGauge = (int) Math.floor((rail.info.settings.gauge().value() * 1.1 + 0.5) / 2);
@@ -154,8 +153,8 @@ public class MovementTrack {
 				angle = -placementFacing.getAngle() + 180;
 				center = center.add(
 						new Vec3d(xValue, 2 + heightOffset, rail.info.settings.length() / 2d).rotateYaw(angle));
-				distanceToCenter = currentPosition.distanceTo(center);
 			}
+			distanceToCenter = currentPosition.distanceTo(center);
 
 			forward = center.add(VecUtil.fromWrongYaw(distanceToCenter, angle));
 			backward = center.add(VecUtil.fromWrongYaw(distanceToCenter, angle + 180));
@@ -183,7 +182,7 @@ public class MovementTrack {
 			}
 			if (positions.size() == 1) {
 				// track with length == 1
-				VecYPR pos = positions.get(0);
+				VecYPR pos = positions.getFirst();
 				Vec3d offset = VecUtil.fromYaw(delta.length(), pos.getYaw());
 				Vec3d result = currentPosition.add(offset);
 				Vec3d resultOpposite = currentPosition.subtract(offset);
