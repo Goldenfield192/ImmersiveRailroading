@@ -74,7 +74,7 @@ public enum ItemComponentType {
 	LIFTING_LINK(AssemblyStep.VALVE_GEAR, CraftingType.CASTING_HAMMER, ModelComponentType.LIFTING_LINK_SIDE),
 	REACH_ROD(AssemblyStep.VALVE_GEAR, CraftingType.CASTING_HAMMER, ModelComponentType.REACH_ROD_SIDE),
 
-	// LEGACY, how do we depricate this??
+	// LEGACY, how do we deprecate this??
 	WALCHERTS_LINKAGE(AssemblyStep.VALVE_GEAR, CraftingType.CASTING_HAMMER, 
 			ModelComponentType.UNION_LINK_SIDE,
 			ModelComponentType.COMBINATION_LEVER_SIDE,
@@ -106,18 +106,16 @@ public enum ItemComponentType {
 	}
 	
 	public boolean isWheelPart() {
-		switch (this) {
-		case BOGEY_FRONT_WHEEL:
-		case BOGEY_FRONT:
-		case BOGEY_REAR_WHEEL:
-		case BOGEY_REAR:
-		case WHEEL_DRIVER:
-		case WHEEL_DRIVER_POS:
-		case FRAME_WHEEL:
-			return true;
-		default:
-			return false;
-		}
+        return switch (this) {
+            case BOGEY_FRONT_WHEEL,
+				 BOGEY_FRONT,
+				 BOGEY_REAR_WHEEL,
+				 BOGEY_REAR,
+				 WHEEL_DRIVER,
+				 WHEEL_DRIVER_POS,
+                 FRAME_WHEEL -> true;
+            default -> false;
+        };
 	}
 
 	public static ItemComponentType from(ModelComponentType renderComponent) {
@@ -141,49 +139,37 @@ public enum ItemComponentType {
 		for (ModelComponentType type : this.render) {
 			List<ModelComponent> components = def.getComponents(type);
 			if (components != null && !components.isEmpty()) {
-				return components.get(0);
+				return components.getFirst();
 			}
 		}
-		throw new RuntimeException(String.format("Something brok in IR for %s : %s", def, this));
+		throw new RuntimeException(String.format("Something broken in IR for %s : %s", def, this));
 	}
 
 	public int getPlateCost(Gauge gauge, EntityRollingStockDefinition definition) {
 		ModelComponent comp = getExampleComponent(definition);
 		
-		double mult = 0;
-		switch(this.crafting) {
-		case PLATE_LARGE:
-			mult = 0.25;
-			break;
-		case PLATE_MEDIUM:
-			mult = 0.5;
-			break;
-		case PLATE_SMALL:
-			mult = 1;
-			break;
-		default:
-			return 0;
-		}
-		
-		// Approximate
+		double mul = switch (this.crafting) {
+            case PLATE_LARGE -> 0.25;
+            case PLATE_MEDIUM -> 0.5;
+            case PLATE_SMALL -> 1;
+            default -> 0;
+        };
+
+        // Approximate
 		double size = comp.width() * comp.height() * 2 + comp.length() * comp.height() * 2 + comp.width() * comp.height() * 2;
 		size *= Math.pow(gauge.scale(), 3);
 		size /= 4;
 		
-		return (int) Math.ceil(size * mult);
+		return (int) Math.ceil(size * mul);
 	}
 
 	public PlateType getPlateType() {
-		switch (this.crafting) {
-		case PLATE_LARGE:
-			return PlateType.LARGE;
-		case PLATE_MEDIUM:
-			return PlateType.MEDIUM;
-		case PLATE_SMALL:
-			return PlateType.SMALL;
-		default:
-			return null;
-		}
+        return switch (this.crafting) {
+            case PLATE_LARGE -> PlateType.LARGE;
+            case PLATE_MEDIUM -> PlateType.MEDIUM;
+            case PLATE_SMALL -> PlateType.SMALL;
+            default -> null;
+        };
 	}
 
 	// TODO average the component sizes instead of just looking at the first element
@@ -192,14 +178,14 @@ public enum ItemComponentType {
 			return ItemCastingCost.BAD_CAST_COST;
 		}
 		ModelComponent comp = getExampleComponent(definition);
-		double densityGues = 0.6;
-		return (int) Math.ceil(comp.width() * comp.height() * comp.length() * densityGues * Math.pow(gauge.scale(), 3));
+		double densityGuess = 0.6;
+		return (int) Math.ceil(comp.width() * comp.height() * comp.length() * densityGuess * Math.pow(gauge.scale(), 3));
 	}
 
 	public int getWoodCost(Gauge gauge, EntityRollingStockDefinition definition) {
 		ModelComponent comp = getExampleComponent(definition);
-		double densityGues = 0.5;
-		return (int) Math.ceil(comp.width() * comp.height() * comp.length() * densityGues * Math.pow(gauge.scale(), 3));
+		double densityGuess = 0.5;
+		return (int) Math.ceil(comp.width() * comp.height() * comp.length() * densityGuess * Math.pow(gauge.scale(), 3));
 	}
 	
 	public boolean isWooden(EntityRollingStockDefinition definition) {

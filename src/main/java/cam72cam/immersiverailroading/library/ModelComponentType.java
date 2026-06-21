@@ -157,7 +157,7 @@ public enum ModelComponentType {
 			case ENGINE_START_X:
 				return TextUtil.translate("part.immersiverailroading:controls." + primary.toLowerCase(Locale.ROOT));
             default:
-				//Unexpected behaviour
+				//Unexpected behavior
 				return "";
 		}
 	}

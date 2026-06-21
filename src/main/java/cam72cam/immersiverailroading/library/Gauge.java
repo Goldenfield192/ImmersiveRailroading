@@ -6,7 +6,6 @@ import cam72cam.mod.text.TextUtil;
 import trackapi.lib.Gauges;
 
 import java.util.ArrayList;
-import java.util.Comparator;
 import java.util.List;
 import java.util.Locale;
 
@@ -49,10 +48,10 @@ public class Gauge {
 	}
 
 
-	private static List<Gauge> gauges = new ArrayList<Gauge>();
+	private static List<Gauge> gauges = new ArrayList<>();
 	
 	public static void reset() {
-		gauges = new ArrayList<Gauge>();
+		gauges = new ArrayList<>();
 	}
 	
 	public static void register(double gauge, String name) {
@@ -60,12 +59,7 @@ public class Gauge {
 		
 		gauges.add(new Gauge(gauge, name));
 
-		gauges.sort(new Comparator<Gauge>() {
-			@Override
-			public int compare(Gauge arg0, Gauge arg1) {
-				return Double.compare(arg1.gauge, arg0.gauge);
-			}
-		});
+		gauges.sort((a, b) -> Double.compare(b.gauge, a.gauge));
 	}
 	
 	public static void remove(double gauge) {
@@ -81,7 +75,7 @@ public class Gauge {
 	 * Returns the closest gauge
 	 */
 	public static Gauge from(double gauge) {
-		Gauge closest = gauges.get(0);
+		Gauge closest = gauges.getFirst();
 		for (Gauge g : gauges) {
 			if (g.gauge == gauge) {
 				return g;

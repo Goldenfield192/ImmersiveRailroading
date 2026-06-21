@@ -44,7 +44,7 @@ public abstract class ValveGear {
         if (config == null) {
             return null;
         }
-        switch (config.type) {
+        switch (config.type()) {
             case WALSCHAERTS:
                 return WalschaertsValveGear.get(wheels, provider, state, pos, angleOffset);
             case STEPHENSON:

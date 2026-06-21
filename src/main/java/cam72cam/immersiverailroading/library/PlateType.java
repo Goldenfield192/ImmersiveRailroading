@@ -17,16 +17,11 @@ public enum PlateType {
 	}
 
 	public int platesPerBlock() {
-		switch (this) {
-			case SMALL:
-				return 8;
-			case MEDIUM:
-				return 4;
-			case LARGE:
-				return 2;
-			case BOILER:
-				return 1;
-		}
-		return 0;
-	}
+        return switch (this) {
+            case SMALL -> 8;
+            case MEDIUM -> 4;
+            case LARGE -> 2;
+            case BOILER -> 1;
+        };
+    }
 }
