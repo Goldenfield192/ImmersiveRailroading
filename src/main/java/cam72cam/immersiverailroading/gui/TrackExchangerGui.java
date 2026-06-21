@@ -14,7 +14,9 @@ import cam72cam.mod.gui.helpers.ItemPickerGUI;
 import cam72cam.mod.gui.screen.Button;
 import cam72cam.mod.gui.screen.IScreen;
 import cam72cam.mod.gui.screen.IScreenBuilder;
+import cam72cam.mod.input.Keyboard;
 import cam72cam.mod.item.ItemStack;
+import cam72cam.mod.render.opengl.RenderState;
 import util.Matrix4;
 
 import java.util.ArrayList;
@@ -49,39 +51,38 @@ public class TrackExchangerGui implements IScreen {
 
 	@Override
 	public void init(IScreenBuilder screen) {
-		trackSelector = new Button(screen, -100, 1 * 22, GuiText.SELECTOR_TRACK.toString(DefinitionManager.getTrack(this.track).name)) {
-			@Override
-			public void onClick(Player.Hand hand) {
-				track = next(DefinitionManager.getTrackIDs(), track, hand);
-				trackSelector.setText(GuiText.SELECTOR_TRACK.toString(DefinitionManager.getTrack(track).name));
-			}
-		};
-		bedTypeButton = new Button(screen, -100, 2 * 22, GuiText.SELECTOR_RAIL_BED.toString(getStackName(railBed))) {
-			@Override
-			public void onClick(Player.Hand hand) {
-				ItemPickerGUI ip = new ItemPickerGUI(oreDict, (ItemStack bed) -> {
-					if (bed != null) {
-						TrackExchangerGui.this.railBed = bed;
-						bedTypeButton.setText(GuiText.SELECTOR_RAIL_BED.toString(getStackName(bed)));
-					}
-					screen.show();
-				});
-				ip.choosenItem = railBed;
-				ip.show();
-			}
-		};
-		gaugeButton = new Button(screen, -100, 3 * 22, GuiText.SELECTOR_GAUGE.toString(gauge)) {
-			@Override
-			public void onClick(Player.Hand hand) {
-				gauge = next(Gauge.values(), gauge, hand);
-				gaugeButton.setText(GuiText.SELECTOR_GAUGE.toString(gauge));
-			}
-		};
+		trackSelector = new Button(screen, -100, 1 * 22,
+								   GuiText.SELECTOR_TRACK.toString(DefinitionManager.getTrack(this.track).name),
+								   (hand, self) -> {
+									   track = next(DefinitionManager.getTrackIDs(), track, hand);
+									   self.setText(GuiText.SELECTOR_TRACK.toString(DefinitionManager.getTrack(track).name));
+								   });
+		bedTypeButton = new Button(screen, -100, 2 * 22,
+								   GuiText.SELECTOR_RAIL_BED.toString(getStackName(railBed)),
+								   (_, self) -> {
+									   ItemPickerGUI ip = new ItemPickerGUI(oreDict, (ItemStack bed) -> {
+										   if (bed != null) {
+											   TrackExchangerGui.this.railBed = bed;
+											   self.setText(GuiText.SELECTOR_RAIL_BED.toString(getStackName(bed)));
+										   }
+										   screen.show();
+									   });
+									   ip.choosenItem = railBed;
+									   ip.show();
+								   });
+		gaugeButton = new Button(screen, -100, 3 * 22,
+								 GuiText.SELECTOR_GAUGE.toString(gauge),
+								 (hand, self) -> {
+									 gauge = next(Gauge.values(), gauge, hand);
+									 self.setText(GuiText.SELECTOR_GAUGE.toString(gauge));
+								 });
 	}
 
 	@Override
-	public void onEnterKey(IScreenBuilder builder) {
-		builder.close();
+	public void onKeyType(IScreenBuilder builder, Keyboard.KeyCode keyCode) {
+		if (Keyboard.KeyCode.NUMPADENTER.equals(keyCode) || Keyboard.KeyCode.RETURN.equals(keyCode)) {
+			builder.close();
+		}
 	}
 
 	@Override
@@ -90,7 +91,7 @@ public class TrackExchangerGui implements IScreen {
 	}
 
 	@Override
-	public void draw(IScreenBuilder builder) {
+	public void draw(IScreenBuilder builder, RenderState state) {
 		int scale = 8;
 		// This could be more efficient...
 		RailSettings settings = new RailSettings(gauge,

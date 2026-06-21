@@ -19,6 +19,7 @@ import cam72cam.mod.MinecraftClient;
 import cam72cam.mod.entity.Player;
 import cam72cam.mod.gui.helpers.GUIHelpers;
 import cam72cam.mod.gui.screen.*;
+import cam72cam.mod.input.Keyboard;
 import cam72cam.mod.item.ItemStack;
 import cam72cam.mod.math.Vec3d;
 import cam72cam.mod.math.Vec3i;
@@ -38,12 +39,11 @@ public class TrackGui implements IScreen {
 	private TileRailPreview te;
 	private Button typeButton;
 	private TextField lengthInput;
-    //TODO How do we handle dynamic range?
-//	private NumberInputer lengthInput;
 	private Slider degreesSlider;
 	private Slider curvositySlider;
 	private CheckBox isPreviewCB;
 	private CheckBox isGradeCrossingCB;
+	private Slider zoomSlider;
 	private Button gaugeButton;
 	private Button trackButton;
 	private Button posTypeButton;
@@ -57,7 +57,7 @@ public class TrackGui implements IScreen {
 
 	private final List<ItemStack> oreDict;
 
-	private final RailSettings.Mutable settings;
+	private RailSettings.Mutable settings;
 
 	private ListSelector<Gauge> gaugeSelector;
 	private ListSelector<TrackItems> typeSelector;
@@ -101,7 +101,7 @@ public class TrackGui implements IScreen {
         this.lengthInput = new TextField(screen, xtop, ytop, width-1, height);
         this.lengthInput.setText("" + settings.length);
         this.lengthInput.setValidator(s -> {
-            if (s == null || s.length() == 0) {
+            if (s == null || s.isEmpty()) {
                 return true;
             }
             int val;
@@ -123,22 +123,10 @@ public class TrackGui implements IScreen {
             return false;
         });
         this.lengthInput.setFocused(true);
-//		this.lengthInput = new NumberInputer(screen, xtop, ytop, width, height, "Length:", "", 10, 1000, settings.length,
-//                                             true, true, val -> {
-//            int max = 1000;
-//            if (settings.type.isTable()) {
-//                max = settings.type == TrackItems.TURNTABLE
-//                      ? BuilderTurnTable.maxLength(settings.gauge)
-//                      : BuilderTransferTable.maxLength(settings.gauge);
-//            }
-//            if (val > 0 && val <= max) {
-//                settings.length = val.intValue();
-//            }
-//        });
 		ytop += height;
 
-		gaugeSelector = new ListSelector<Gauge>(screen, width, 100, height, settings.gauge,
-				Gauge.values().stream().collect(Collectors.toMap(Gauge::toString, g -> g, (u, v) -> u, LinkedHashMap::new))
+		gaugeSelector = new ListSelector<>(screen, width, 100, height, settings.gauge,
+				Gauge.values().stream().collect(Collectors.toMap(Gauge::toString, g -> g, (u, _) -> u, LinkedHashMap::new))
 		) {
 			@Override
 			public void onClick(Gauge gauge) {
@@ -150,23 +138,18 @@ public class TrackGui implements IScreen {
 							  : BuilderTransferTable.maxLength(settings.gauge);
 
                     lengthInput.setText("" + Math.min(Integer.parseInt(lengthInput.getText()), max)); // revalidate
-//					lengthInput.setValue(Math.min((int)lengthInput.getValue(), max)); // revalidate
 				}
 			}
 		};
-		gaugeButton = new Button(screen, xtop, ytop, width, height, GuiText.SELECTOR_GAUGE.toString(settings.gauge)) {
-			@Override
-			public void onClick(Player.Hand hand) {
-				showSelector(gaugeSelector);
-			}
-		};
+		gaugeButton = new Button(screen, xtop, ytop, width, height, GuiText.SELECTOR_GAUGE.toString(settings.gauge),
+								 (_, _) -> showSelector(gaugeSelector));
 		ytop += height;
 
-		typeSelector = new ListSelector<TrackItems>(screen, width, 100, height, settings.type,
+		typeSelector = new ListSelector<>(screen, width, 100, height, settings.type,
 				Arrays.stream(TrackItems.values())
 						.filter(i -> i != TrackItems.CROSSING)
 						.sorted(Comparator.comparingInt(TrackItems::getOrder))
-						.collect(Collectors.toMap(TrackItems::toString, g -> g, (u, v) -> u, LinkedHashMap::new))
+						.collect(Collectors.toMap(TrackItems::toString, g -> g, (u, _) -> u, LinkedHashMap::new))
 		) {
 			@Override
 			public void onClick(TrackItems option) {
@@ -181,80 +164,63 @@ public class TrackGui implements IScreen {
 							  ? BuilderTurnTable.maxLength(settings.gauge)
 							  : BuilderTransferTable.maxLength(settings.gauge);
                     lengthInput.setText("" + Math.min(Integer.parseInt(lengthInput.getText()), max)); // revalidate
-//					lengthInput.setValue(Math.min((int) lengthInput.getValue(), max)); // revalidate
 				}
 				transfertableEntryCountSlider.setVisible(settings.type == TrackItems.TRANSFERTABLE);
 				transfertableEntrySpacingSlider.setVisible(settings.type == TrackItems.TRANSFERTABLE);
 			}
 		};
-		typeButton = new Button(screen, xtop, ytop, width, height, GuiText.SELECTOR_TYPE.toString(settings.type)) {
-			@Override
-			public void onClick(Player.Hand hand) {
-				showSelector(typeSelector);
-			}
-		};
+		typeButton = new Button(screen, xtop, ytop, width, height, GuiText.SELECTOR_TYPE.toString(settings.type),
+								(_, _) -> showSelector(typeSelector));
 		ytop += height;
 
 		//Transfer table doesn't have these property so we can have them overlapped
-		smoothingButton = new Button(screen, xtop, ytop, width, height, GuiText.SELECTOR_SMOOTHING.toString(settings.smoothing)) {
-			@Override
-			public void onClick(Player.Hand hand) {
-				settings.smoothing = next(settings.smoothing, hand);
-				smoothingButton.setText(GuiText.SELECTOR_SMOOTHING.toString(settings.smoothing));
-			}
-		};
+		smoothingButton = new Button(screen, xtop, ytop, width, height, GuiText.SELECTOR_SMOOTHING.toString(settings.smoothing),
+									 (hand, _) -> {
+										 settings.smoothing = next(settings.smoothing, hand);
+										 smoothingButton.setText(GuiText.SELECTOR_SMOOTHING.toString(settings.smoothing));
+									 });
 		smoothingButton.setVisible(settings.type.hasSmoothing());
 
-		transfertableEntryCountSlider = new Slider(screen, 25+xtop, ytop, "", 1, 71, settings.transfertableEntryCount, false) {
-			@Override
-			public void onSlider() {
-				settings.transfertableEntryCount = (int) this.getValue();
-				transfertableEntryCountSlider.setText(
-						GuiText.SELECTOR_TRANSFER_TABLE_ENTRY_COUNT.toString((int) transfertableEntryCountSlider.getValue()));
-			}
-		};
+		transfertableEntryCountSlider = new Slider(screen, 25+xtop, ytop, "", 1, 71, settings.transfertableEntryCount, false,
+												   (self) -> {
+													   settings.transfertableEntryCount = self.getValueInt();
+													   transfertableEntryCountSlider.setText(
+															   GuiText.SELECTOR_TRANSFER_TABLE_ENTRY_COUNT.toString((int) transfertableEntryCountSlider.getValue()));
+												   });
 		transfertableEntryCountSlider.onSlider();
 		ytop += height;
 
-		directionButton = new Button(screen, xtop, ytop, width, height, GuiText.SELECTOR_DIRECTION.toString(settings.direction)) {
-			@Override
-			public void onClick(Player.Hand hand) {
-				settings.direction = next(settings.direction, hand);
-				directionButton.setText(GuiText.SELECTOR_DIRECTION.toString(settings.direction));
-			}
-		};
+		directionButton = new Button(screen, xtop, ytop, width, height, GuiText.SELECTOR_DIRECTION.toString(settings.direction),
+									 (hand, _) -> {
+										 settings.direction = next(settings.direction, hand);
+										 directionButton.setText(GuiText.SELECTOR_DIRECTION.toString(settings.direction));
+									 });
 		directionButton.setVisible(settings.type.hasDirection());
 
-		transfertableEntrySpacingSlider = new Slider(screen, 25+xtop, ytop, "", 1, 15, settings.transfertableEntrySpacing, false) {
-			@Override
-			public void onSlider() {
-				settings.transfertableEntrySpacing = (int) this.getValue();
-				transfertableEntrySpacingSlider.setText(
-						GuiText.SELECTOR_TRANSFER_TABLE_ENTRY_SPACING.toString((int) transfertableEntrySpacingSlider.getValue()));
-			}
-		};
+		transfertableEntrySpacingSlider = new Slider(screen, 25+xtop, ytop, "", 1, 15, settings.transfertableEntrySpacing, false,
+													 (self) -> {
+														 settings.transfertableEntrySpacing = self.getValueInt();
+														 transfertableEntrySpacingSlider.setText(
+																 GuiText.SELECTOR_TRANSFER_TABLE_ENTRY_SPACING.toString((int) transfertableEntrySpacingSlider.getValue()));
+													 });
 		transfertableEntrySpacingSlider.onSlider();
 		ytop += height;
 
 
-		this.degreesSlider = new Slider(screen, 25+xtop,  ytop, "", 1, Config.ConfigBalance.AnglePlacementSegmentation, settings.degrees / 90 * Config.ConfigBalance.AnglePlacementSegmentation, false) {
-			@Override
-			public void onSlider() {
-				settings.degrees = degreesSlider.getValueInt() * (90F/Config.ConfigBalance.AnglePlacementSegmentation);
-				degreesSlider.setText(GuiText.SELECTOR_QUARTERS.toString(this.getValueInt() * (90.0/Config.ConfigBalance.AnglePlacementSegmentation)));
-			}
-		};
+		this.degreesSlider = new Slider(screen, 25+xtop,  ytop, "", 1, Config.ConfigBalance.AnglePlacementSegmentation, settings.degrees / 90 * Config.ConfigBalance.AnglePlacementSegmentation, false,
+										(self) -> {
+											settings.degrees = degreesSlider.getValueInt() * (90F/Config.ConfigBalance.AnglePlacementSegmentation);
+											degreesSlider.setText(GuiText.SELECTOR_QUARTERS.toString(self.getValueInt() * (90.0/Config.ConfigBalance.AnglePlacementSegmentation)));
+										});
 		degreesSlider.onSlider();
 		ytop += height;
 
 
-		this.curvositySlider = new Slider(screen, 25+xtop, ytop, "", 0.25, 1.5, settings.curvosity, true) {
-			@Override
-			public void onSlider() {
-				settings.curvosity = (float) this.getValue();
-				curvositySlider.setText(GuiText.SELECTOR_CURVOSITY.toString(String.format("%.2f", settings.curvosity)));
-			}
-		};
+		this.curvositySlider = new Slider(screen, 25+xtop, ytop, "", 0.25, 1.5, settings.curvosity, true,
+										  self -> {
+											  settings.curvosity = (float) self.getValue();
+											  self.setText(GuiText.SELECTOR_CURVOSITY.toString(String.format("%.2f", settings.curvosity)));
+										  });
 		curvositySlider.onSlider();
 		ytop += height;
 
@@ -274,25 +240,22 @@ public class TrackGui implements IScreen {
 		//ytop = -GUIHelpers.getScreenHeight() / 4;
 		ytop = (int) (GUIHelpers.getScreenHeight() * 0.75 - height * 5);
 
-		trackSelector = new ListSelector<TrackDefinition>(screen, width,  250, height,
+		trackSelector = new ListSelector<>(screen, width,  250, height,
 				DefinitionManager.getTrack(settings.track),
-				DefinitionManager.getTracks().stream().collect(Collectors.toMap(t -> t.name, g -> g, (u, v) -> u, LinkedHashMap::new))) {
+				DefinitionManager.getTracks().stream().collect(Collectors.toMap(t -> t.name, g -> g, (u, _) -> u, LinkedHashMap::new))) {
 			@Override
 			public void onClick(TrackDefinition track) {
 				settings.track = track.trackID;
 				trackButton.setText(GuiText.SELECTOR_TRACK.toString(fitString(DefinitionManager.getTrack(settings.track).name, 24)));
 			}
 		};
-		trackButton = new Button(screen, xtop, ytop, width, height, GuiText.SELECTOR_TRACK.toString(fitString(DefinitionManager.getTrack(settings.track).name, 24))) {
-			@Override
-			public void onClick(Player.Hand hand) {
-				showSelector(trackSelector);
-			}
-		};
+		trackButton = new Button(screen, xtop, ytop, width, height,
+								 GuiText.SELECTOR_TRACK.toString(fitString(DefinitionManager.getTrack(settings.track).name, 24)),
+								 (_, _) -> showSelector(trackSelector));
 		ytop += height;
 
-		railBedSelector = new ListSelector<ItemStack>(screen, width, 250, height, settings.railBed,
-				oreDict.stream().collect(Collectors.toMap(TrackGui::getStackName, g -> g, (u, v) -> u, LinkedHashMap::new))
+		railBedSelector = new ListSelector<>(screen, width, 250, height, settings.railBed,
+				oreDict.stream().collect(Collectors.toMap(TrackGui::getStackName, g -> g, (u, _) -> u, LinkedHashMap::new))
 		) {
 			@Override
 			public void onClick(ItemStack option) {
@@ -300,16 +263,13 @@ public class TrackGui implements IScreen {
 				bedTypeButton.setText(GuiText.SELECTOR_RAIL_BED.toString(getStackName(settings.railBed)));
 			}
 		};
-		bedTypeButton = new Button(screen, xtop, ytop, width, height, GuiText.SELECTOR_RAIL_BED.toString(getStackName(settings.railBed))) {
-			@Override
-			public void onClick(Player.Hand hand) {
-				showSelector(railBedSelector);
-			}
-		};
+		bedTypeButton = new Button(screen, xtop, ytop, width, height,
+								   GuiText.SELECTOR_RAIL_BED.toString(getStackName(settings.railBed)),
+								   (_, _) -> showSelector(railBedSelector));
 		ytop += height;
 
-		railBedFillSelector = new ListSelector<ItemStack>(screen, width, 250, height, settings.railBedFill,
-				oreDict.stream().collect(Collectors.toMap(TrackGui::getStackName, g -> g, (u, v) -> u, LinkedHashMap::new))
+		railBedFillSelector = new ListSelector<>(screen, width, 250, height, settings.railBedFill,
+				oreDict.stream().collect(Collectors.toMap(TrackGui::getStackName, g -> g, (u, _) -> u, LinkedHashMap::new))
 		) {
 			@Override
 			public void onClick(ItemStack option) {
@@ -317,46 +277,30 @@ public class TrackGui implements IScreen {
 				bedFillButton.setText(GuiText.SELECTOR_RAIL_BED_FILL.toString(getStackName(settings.railBedFill)));
 			}
 		};
-		bedFillButton = new Button(screen, xtop, ytop, width, height, GuiText.SELECTOR_RAIL_BED_FILL.toString(getStackName(settings.railBedFill))) {
-			@Override
-			public void onClick(Player.Hand hand) {
-				showSelector(railBedFillSelector);
-			}
-		};
+		bedFillButton = new Button(screen, xtop, ytop, width, height,
+								   GuiText.SELECTOR_RAIL_BED_FILL.toString(getStackName(settings.railBedFill)),
+								   (_, _) -> showSelector(railBedFillSelector));
 		ytop += height;
 
-		posTypeButton = new Button(screen, xtop, ytop, width, height, GuiText.SELECTOR_POSITION.toString(settings.posType)) {
-			@Override
-			public void onClick(Player.Hand hand) {
-				settings.posType = next(settings.posType, hand);
-				posTypeButton.setText(GuiText.SELECTOR_POSITION.toString(settings.posType));
-			}
-		};
+		posTypeButton = new Button(screen, xtop, ytop, width, height,
+								   GuiText.SELECTOR_POSITION.toString(settings.posType),
+								   (hand, self) -> {
+									   settings.posType = next(settings.posType, hand);
+									   self.setText(GuiText.SELECTOR_POSITION.toString(settings.posType));
+								   });
 		ytop += height;
 
-		isPreviewCB = new CheckBox(screen, xtop+2, ytop+2, GuiText.SELECTOR_PLACE_BLUEPRINT.toString(), settings.isPreview) {
-			@Override
-			public void onClick(Player.Hand hand) {
-				settings.isPreview = isPreviewCB.isChecked();
-			}
-		};
-//		ytop += height;
-
-		isGradeCrossingCB = new CheckBox(screen, xtop+102, ytop+2, GuiText.SELECTOR_GRADE_CROSSING.toString(), settings.isGradeCrossing) {
-			@Override
-			public void onClick(Player.Hand hand) {
-				settings.isGradeCrossing = isGradeCrossingCB.isChecked();
-			}
-		};
+		isPreviewCB = new CheckBox(screen, xtop+2, ytop+2,
+								   GuiText.SELECTOR_PLACE_BLUEPRINT.toString(), settings.isPreview,
+								   (_, self) -> settings.isPreview = self.isChecked());
+		isGradeCrossingCB = new CheckBox(screen, xtop+102, ytop+2,
+										 GuiText.SELECTOR_GRADE_CROSSING.toString(), settings.isGradeCrossing,
+										 (_, self) -> settings.isGradeCrossing = self.isChecked());
 		ytop += height;
 
-		Slider zoom_slider = new Slider(screen, GUIHelpers.getScreenWidth() / 2 - 150, (int) (GUIHelpers.getScreenHeight()*0.75 - height),
-										GuiText.SLIDER_ZOOM.toString(), 0.1, 2, 1, true) {
-			@Override
-			public void onSlider() {
-				zoom = this.getValue();
-			}
-		};
+		zoomSlider = new Slider(screen, GUIHelpers.getScreenWidth() / 2 - 150, (int) (GUIHelpers.getScreenHeight()*0.75 - height),
+										GuiText.SLIDER_ZOOM.toString(), 0.1, 2, 1, true,
+										self -> zoom = self.getValue());
 	}
 
 	private void showSelector(ListSelector<?> selector) {
@@ -372,8 +316,10 @@ public class TrackGui implements IScreen {
 	}
 
 	@Override
-	public void onEnterKey(IScreenBuilder builder) {
-		builder.close();
+	public void onKeyType(IScreenBuilder builder, Keyboard.KeyCode keyCode) {
+		if (Keyboard.KeyCode.NUMPADENTER.equals(keyCode) || Keyboard.KeyCode.RETURN.equals(keyCode)) {
+			builder.close();
+		}
 	}
 
 	@Override

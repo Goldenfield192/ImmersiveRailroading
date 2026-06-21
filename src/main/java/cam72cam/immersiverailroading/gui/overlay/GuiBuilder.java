@@ -494,7 +494,7 @@ public class GuiBuilder {
             float closestValue = value;
             double closestDelta = 999999;
 
-            for (float checkValue = 0; checkValue <= 1; checkValue += 0.01) {
+            for (float checkValue = 0; checkValue <= 1; checkValue += 0.01f) {
                 Matrix4 temp = preApply.copy();
                 if (tlx != 0 || tly != 0) {
                     temp.translate(tlx * checkValue, tly * checkValue, 0);
@@ -559,9 +559,9 @@ public class GuiBuilder {
 
             // Same as ClientPartDragging
             if (stock instanceof LocomotiveDiesel && target.readout == Readouts.REVERSER) {
-                value += scroll > 0 ? 0.5 : -0.5;
+                value += scroll > 0 ? 0.5f : -0.5f;
             } else {
-                value += scroll / -50 * ConfigGraphics.ScrollSpeed;
+                value += (float) (scroll / -50 * ConfigGraphics.ScrollSpeed);
             }
 
             if (target.setting != null) {
@@ -711,9 +711,8 @@ public class GuiBuilder {
                         break;
                     default:
                         if (global) {
-                            ((EntityCoupleableRollingStock)stock).mapTrain((EntityCoupleableRollingStock) stock, false, target -> {
-                                target.setControlPosition(controlGroup, value);
-                            });
+                            ((EntityCoupleableRollingStock)stock).mapTrain((EntityCoupleableRollingStock) stock, false,
+                                                                           target -> target.setControlPosition(controlGroup, value));
                         } else {
                             stock.setControlPosition(controlGroup, value);
                         }
@@ -722,9 +721,8 @@ public class GuiBuilder {
             }
             if (readout != null) {
                 if (global) {
-                    ((EntityCoupleableRollingStock)stock).mapTrain((EntityCoupleableRollingStock) stock, false, target -> {
-                        readout.setValue(target, value);
-                    });
+                    ((EntityCoupleableRollingStock)stock).mapTrain((EntityCoupleableRollingStock) stock, false,
+                                                                   target -> readout.setValue(target, value));
                 } else {
                     readout.setValue(stock, value);
                 }

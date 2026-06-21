@@ -14,24 +14,23 @@ import cam72cam.immersiverailroading.multiblock.CastingMultiblock.CastingInstanc
 import cam72cam.immersiverailroading.registry.EntityRollingStockDefinition;
 import cam72cam.immersiverailroading.tile.TileMultiblock;
 import cam72cam.immersiverailroading.util.ItemCastingCost;
-import cam72cam.mod.entity.Player;
 import cam72cam.mod.fluid.Fluid;
 import cam72cam.mod.gui.screen.Button;
 import cam72cam.mod.gui.screen.IScreen;
 import cam72cam.mod.gui.screen.IScreenBuilder;
+import cam72cam.mod.input.Keyboard;
 import cam72cam.mod.item.ItemStack;
+import cam72cam.mod.render.opengl.RenderState;
 import cam72cam.mod.resource.Identifier;
 
+import java.util.Collections;
 import java.util.List;
 
 import static cam72cam.immersiverailroading.gui.ClickListHelper.next;
 
 public class CastingGUI implements IScreen {
     public static final Identifier CASTING_GUI_TEXTURE = new Identifier("immersiverailroading:gui/casting_gui.png");
-
-	private final TileMultiblock tile;
-	private ItemStack currentItem;
-
+    
 	private Button gaugeButton;
 	private Gauge gauge;
 
@@ -39,6 +38,9 @@ public class CastingGUI implements IScreen {
 
 	private Button singleCastButton;
 	private Button repeatCastButton;
+	
+	private TileMultiblock tile;
+	private ItemStack currentItem;
 	
 	public CastingGUI(TileMultiblock te) {
 		this.tile = te;
@@ -57,67 +59,59 @@ public class CastingGUI implements IScreen {
 
 	@Override
 	public void init(IScreenBuilder screen) {
-		pickerButton = new Button(screen, -100, -20 - 10, GuiText.SELECTOR_TYPE.toString("")) {
-			@Override
-			public void onClick(Player.Hand hand) {
-				CraftPicker.showCraftPicker(screen, currentItem, CraftingType.CASTING, (ItemStack item) -> {
-					if (item != null) {
-						currentItem = item;
-						EntityRollingStockDefinition def =
-								currentItem.is(IRItems.ITEM_ROLLING_STOCK_COMPONENT) ?
-										new ItemRollingStockComponent.Data(currentItem).def :
-										new ItemRollingStock.Data(currentItem).def;
-						if (def != null && !gauge.isModel() && gauge.value() != def.recommended_gauge.value()) {
-							gauge = def.recommended_gauge;
-							gaugeButton.setText(GuiText.SELECTOR_GAUGE.toString(gauge));
-						}
-						updatePickerButton();
-						sendItemPacket();
-					}
-				});
-			}
-		};
+		pickerButton = new Button(screen, -100, -20 - 10, GuiText.SELECTOR_TYPE.toString(""),
+								  ((_, _) -> CraftPicker.showCraftPicker(screen, currentItem, CraftingType.CASTING, (ItemStack item) -> {
+                                      if (item != null) {
+                                          currentItem = item;
+                                          EntityRollingStockDefinition def =
+                                                  currentItem.is(IRItems.ITEM_ROLLING_STOCK_COMPONENT) ?
+                                                  new ItemRollingStockComponent.Data(currentItem).def :
+                                                  new ItemRollingStock.Data(currentItem).def;
+                                          if (def != null && !gauge.isModel() && gauge.value() != def.recommended_gauge.value()) {
+                                              gauge = def.recommended_gauge;
+                                              gaugeButton.setText(GuiText.SELECTOR_GAUGE.toString(gauge));
+                                          }
+                                          updatePickerButton();
+                                          sendItemPacket();
+                                      }
+                                  })));
 		updatePickerButton();
 
-		gaugeButton = new Button(screen, 0, -10, 100, 20, GuiText.SELECTOR_GAUGE.toString(gauge)) {
-			@Override
-			public void onClick(Player.Hand hand) {
-				if(!currentItem.isEmpty()) {
-					EntityRollingStockDefinition def = new ItemRollingStockComponent.Data(currentItem).def;
-					if (def != null && ConfigBalance.DesignGaugeLock) {
-						List<Gauge> validGauges = List.of(Gauge.from(def.recommended_gauge.value()));
-						gauge = next(validGauges, gauge, hand);
-					} else {
-						gauge = next(Gauge.values(), gauge, hand);
-					}
-				}
-				gaugeButton.setText(GuiText.SELECTOR_GAUGE.toString(gauge));
-				sendItemPacket();
-			}
-		};
-		singleCastButton = new Button(screen, 0, +20 - 10, 100, 20, GuiText.SELECTOR_CAST_SINGLE.toString()) {
-			@Override
-			public void onClick(Player.Hand hand) {
-				if (tile.getCraftMode() != CraftingMachineMode.SINGLE) {
-					tile.setCraftMode(CraftingMachineMode.SINGLE);
-				} else {
-					tile.setCraftMode(CraftingMachineMode.STOPPED);
-				}
-			}
+		gaugeButton = new Button(screen, 0, -10, 100, 20, GuiText.SELECTOR_GAUGE.toString(gauge),
+								 (hand, self) -> {
+									 if(!currentItem.isEmpty()) {
+										 EntityRollingStockDefinition def = new ItemRollingStockComponent.Data(currentItem).def;
+										 if (def != null && ConfigBalance.DesignGaugeLock) {
+											 List<Gauge> validGauges = Collections.singletonList(Gauge.from(def.recommended_gauge.value()));
+											 gauge = next(validGauges, gauge, hand);
+										 } else {
+											 gauge = next(Gauge.values(), gauge, hand);
+										 }
+									 }
+									 self.setText(GuiText.SELECTOR_GAUGE.toString(gauge));
+									 sendItemPacket();
+								 });
+		singleCastButton = new Button(screen, 0, 20 - 10, 100, 20, GuiText.SELECTOR_CAST_SINGLE.toString(),
+									  (_, _) -> {
+										  if (tile.getCraftMode() != CraftingMachineMode.SINGLE) {
+											  tile.setCraftMode(CraftingMachineMode.SINGLE);
+										  } else {
+											  tile.setCraftMode(CraftingMachineMode.STOPPED);
+										  }
+		}) {
 			@Override
 			public void onUpdate() {
 				singleCastButton.setTextColor(tile.getCraftMode() == CraftingMachineMode.SINGLE ? 0xcc4334 : 0);
 			}
 		};
-		repeatCastButton = new Button(screen, 0, +40 - 10, 100, 20, GuiText.SELECTOR_CAST_REPEAT.toString()) {
-			@Override
-			public void onClick(Player.Hand hand) {
-				if (tile.getCraftMode() != CraftingMachineMode.REPEAT) {
-					tile.setCraftMode(CraftingMachineMode.REPEAT);
-				} else {
-					tile.setCraftMode(CraftingMachineMode.STOPPED);
-				}
-			}
+		repeatCastButton = new Button(screen, 0, 40 - 10, 100, 20, GuiText.SELECTOR_CAST_REPEAT.toString(),
+									  (_, _) -> {
+										  if (tile.getCraftMode() != CraftingMachineMode.REPEAT) {
+											  tile.setCraftMode(CraftingMachineMode.REPEAT);
+										  } else {
+											  tile.setCraftMode(CraftingMachineMode.STOPPED);
+										  }
+		}) {
 			@Override
 			public void onUpdate() {
 				repeatCastButton.setTextColor(tile.getCraftMode() == CraftingMachineMode.REPEAT ? 0xcc4334 : 0);
@@ -126,7 +120,8 @@ public class CastingGUI implements IScreen {
 	}
 
 	@Override
-	public void onEnterKey(IScreenBuilder b) {
+	public void onKeyType(IScreenBuilder builder, Keyboard.KeyCode keyCode) {
+		IScreen.super.onKeyType(builder, keyCode);
 	}
 
 	@Override
@@ -135,7 +130,7 @@ public class CastingGUI implements IScreen {
 	}
 
 	@Override
-	public void draw(IScreenBuilder builder) {
+	public void draw(IScreenBuilder builder, RenderState state) {
 		double fluidPercent = ((CastingInstance) tile.getMultiblock()).getSteelLevel();
 		int progress = this.tile.getCraftProgress();
 		float cost;

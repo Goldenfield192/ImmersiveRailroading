@@ -10,12 +10,9 @@ import cam72cam.immersiverailroading.library.PaintBrushMode;
 import cam72cam.immersiverailroading.model.StockModel;
 import cam72cam.mod.MinecraftClient;
 import cam72cam.mod.entity.Entity;
-import cam72cam.mod.entity.Player;
 import cam72cam.mod.gui.helpers.GUIHelpers;
-import cam72cam.mod.gui.screen.Button;
-import cam72cam.mod.gui.screen.IScreen;
-import cam72cam.mod.gui.screen.IScreenBuilder;
-import cam72cam.mod.gui.screen.Slider;
+import cam72cam.mod.gui.screen.*;
+import cam72cam.mod.input.Keyboard;
 import cam72cam.mod.render.opengl.RenderState;
 import util.Matrix4;
 
@@ -45,16 +42,16 @@ public class PaintBrushPicker implements IScreen {
         }
         this.variant = stock.getTexture();
 
-        int xtop = -GUIHelpers.getScreenWidth() / 2;
-        int ytop = -GUIHelpers.getScreenHeight()/4;
+        int xTop = -GUIHelpers.getScreenWidth() / 2;
+        int yTop = -GUIHelpers.getScreenHeight()/4;
         int width = 200;
         int height = 20;
 
-        new ListSelector<String>(screen, 0, width, height, variant,
-                stock.getDefinition().textureNames.entrySet().stream()
-                        .collect(Collectors.toMap(
-                                Map.Entry::getValue, Map.Entry::getKey,
-                                (u, v) -> u, LinkedHashMap::new))
+        new ListSelector<>(screen, 0, width, height, variant,
+                           stock.getDefinition().textureNames.entrySet()
+                                                             .stream()
+                                                             .collect(Collectors.toMap(Map.Entry::getValue, Map.Entry::getKey,
+                                                                      (u, _) -> u, LinkedHashMap::new))
         ) {
             @Override
             public void onClick(String option) {
@@ -62,45 +59,33 @@ public class PaintBrushPicker implements IScreen {
             }
         }.setVisible(true);
 
-        Slider zoom_slider = new Slider(screen, xtop + width, (int) (GUIHelpers.getScreenHeight()*0.75 - height),
-                                        GuiText.SLIDER_ZOOM.toString(), 0.1, 2, 1, true) {
-            @Override
-            public void onSlider() {
-                zoom = this.getValue();
-            }
-        };
+        Slider zoom_slider = new Slider(screen, xTop + width, (int) (GUIHelpers.getScreenHeight()*0.75 - height),
+                                        GuiText.SLIDER_ZOOM.toString(), 0.1, 2, 1, true,
+                                        self -> zoom = self.getValue());
 
         width = 100;
-        Button random = new Button(screen, GUIHelpers.getScreenWidth() / 2 - width, ytop, width, height,
-                                   GuiText.SELECTOR_PAINTBRUSH_RANDOM.toString()) {
-            @Override
-            public void onClick(Player.Hand hand) {
-                variant = ItemPaintBrush.nextRandomTexture(stock, variant);
-            }
-        };
+        Button random = new Button(screen, GUIHelpers.getScreenWidth() / 2 - width, yTop, width, height,
+                                   GuiText.SELECTOR_PAINTBRUSH_RANDOM.toString(),
+                                   (_, _) -> variant = ItemPaintBrush.nextRandomTexture(stock, variant));
 
         Button apply = new Button(screen, GUIHelpers.getScreenWidth() / 2 - width, (int) (GUIHelpers.getScreenHeight()*0.75 - height*2),
-                                  width, height, GuiText.SELECTOR_PAINTBRUSH_TO_STOCK.toString()) {
-            @Override
-            public void onClick(Player.Hand hand) {
-                new ItemPaintBrush.PaintBrushPacket(stock, PaintBrushMode.GUI, variant, false).sendToServer();
-                screen.close();
-            }
-        };
+                                  width, height, GuiText.SELECTOR_PAINTBRUSH_TO_STOCK.toString(),
+                                  (_, _) -> {
+                                      new ItemPaintBrush.PaintBrushPacket(stock, PaintBrushMode.GUI, variant, false).sendToServer();
+                                      screen.close();});
         Button apply_connected = new Button(screen, GUIHelpers.getScreenWidth() / 2 - width, (int) (GUIHelpers.getScreenHeight()*0.75 - height),
-                                            width, height, GuiText.SELECTOR_PAINTBRUSH_TO_TRAIN.toString()) {
-            @Override
-            public void onClick(Player.Hand hand) {
-                new ItemPaintBrush.PaintBrushPacket(stock, PaintBrushMode.GUI, variant, true).sendToServer();
-                screen.close();
-            }
-        };
+                                            width, height, GuiText.SELECTOR_PAINTBRUSH_TO_TRAIN.toString(),
+                                            (_, _) -> {
+                                                new ItemPaintBrush.PaintBrushPacket(stock, PaintBrushMode.GUI, variant, true).sendToServer();
+                                                screen.close();});
     }
 
     @Override
-    public void onEnterKey(IScreenBuilder builder) {
-        new ItemPaintBrush.PaintBrushPacket(stock, PaintBrushMode.GUI, variant, false).sendToServer();
-        builder.close();
+    public void onKeyType(IScreenBuilder builder, Keyboard.KeyCode keyCode) {
+        if (Keyboard.KeyCode.NUMPADENTER.equals(keyCode) || Keyboard.KeyCode.RETURN.equals(keyCode)) {
+            new ItemPaintBrush.PaintBrushPacket(stock, PaintBrushMode.GUI, variant, false).sendToServer();
+            builder.close();
+        }
     }
 
     @Override
@@ -117,7 +102,7 @@ public class PaintBrushPicker implements IScreen {
         GUIHelpers.drawRect(200, 0, GUIHelpers.getScreenWidth()-200, GUIHelpers.getScreenHeight(), 0xCC000000);
         GUIHelpers.drawRect(0, 0, 200, GUIHelpers.getScreenHeight(), 0xEE000000);
 
-        String current = variant == null ? null : variant + "";
+        String current = variant == null ? null : variant;
         if (current == null || current.isEmpty()) {
             current = stock.getDefinition().textureNames.keySet().stream().findFirst().orElse(null);
         }
