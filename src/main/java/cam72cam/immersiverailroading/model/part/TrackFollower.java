@@ -20,8 +20,6 @@ public class TrackFollower {
     private final float max;
     private final float min;
 
-
-
     private final float offset;
     private final boolean front;
     private Vec3d pos;
@@ -38,8 +36,8 @@ public class TrackFollower {
             this.max = -(float) (wheels.wheels.stream().mapToDouble(w -> w.wheel.center.x).min().getAsDouble() * stock.gauge.scale());
             this.min = -(float) (wheels.wheels.stream().mapToDouble(w -> w.wheel.center.x).max().getAsDouble() * stock.gauge.scale());
         } else if (wheels != null && wheels.wheels.size() == 1) {
-            this.max = -(float) (wheels.wheels.get(0).wheel.min.x * stock.gauge.scale());
-            this.min = -(float) (wheels.wheels.get(0).wheel.max.x * stock.gauge.scale());
+            this.max = -(float) (wheels.wheels.getFirst().wheel.min.x * stock.gauge.scale());
+            this.min = -(float) (wheels.wheels.getFirst().wheel.max.x * stock.gauge.scale());
         } else if (frame != null) {
             this.max = -(float) (frame.min.x * stock.gauge.scale());
             this.min = -(float) (frame.max.x * stock.gauge.scale());

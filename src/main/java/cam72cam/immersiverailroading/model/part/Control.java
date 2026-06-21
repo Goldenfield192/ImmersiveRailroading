@@ -144,8 +144,13 @@ public class Control<T extends EntityMoveableRollingStock> extends Interactable<
                 rotations.put(Axis.Y, (float) rot.normal.y);
                 rotations.put(Axis.Z, (float) rot.normal.z);
 
-                List<Vec3d> nonRotGroups = part.groups().stream().filter(g -> !g.name.contains("_ROT")).map(g -> g.max.add(g.min).scale(0.5)).collect(Collectors.toList());
-                this.center = nonRotGroups.isEmpty() ? part.center : nonRotGroups.stream().reduce(Vec3d.ZERO, Vec3d::add).scale(1.0 / nonRotGroups.size());
+                List<Vec3d> nonRotGroups = part.groups().stream()
+                                               .filter(g -> !g.name.contains("_ROT"))
+                                               .map(g -> g.max.add(g.min).scale(0.5))
+                                               .toList();
+                this.center = nonRotGroups.isEmpty() ? part.center : nonRotGroups.stream()
+                                                                                 .reduce(Vec3d.ZERO, Vec3d::add)
+                                                                                 .scale(1.0 / nonRotGroups.size());
             } else {
                 this.center = part.center;
             }
@@ -186,13 +191,13 @@ public class Control<T extends EntityMoveableRollingStock> extends Interactable<
 
         if (hide) {
             state = state.push(builder ->
-                    builder.add((ModelState.GroupVisibility) (stock, group) -> getValue(stock) != 1)
+                    builder.add((ModelState.GroupVisibility) (stock, _) -> getValue(stock) != 1)
             );
         }
 
         if (!(rotationPoint == null && translations.isEmpty() && scales.isEmpty())) {
             state = state.push(builder -> {
-                builder.add((ModelState.GroupAnimator) (stock, group, partialTicks) -> {
+                builder.add((ModelState.GroupAnimator) (stock, _, _) -> {
                     float valuePercent = getValue(stock);
 
                     Matrix4 m = new Matrix4();
@@ -250,7 +255,7 @@ public class Control<T extends EntityMoveableRollingStock> extends Interactable<
         }
         this.state = state;
         this.state.include(part);
-        this.modelId = part.modelIDs.stream().findFirst().get();
+        this.modelId = part.modelIDs.stream().findFirst().orElseThrow();
     }
 
     @Override

@@ -31,7 +31,7 @@ public class PressureValve {
         this.sndFile = sndFile;
     }
 
-    private final ExpireableMap<UUID, ISound> sounds = new ExpireableMap<>((k, v) -> v.stop());
+    private final ExpireableMap<UUID, ISound> sounds = new ExpireableMap<>((_, v) -> v.stop());
 
     public void effects(EntityMoveableRollingStock stock, boolean isBlowingOff) {
         ISound sound = sounds.get(stock.getUUID());

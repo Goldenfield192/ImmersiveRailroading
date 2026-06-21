@@ -56,7 +56,7 @@ public class PartSound {
         }
     }
 
-    private final ExpireableMap<UUID, Sounds> entitySounds = new ExpireableMap<>((key, value) -> value.terminate());
+    private final ExpireableMap<UUID, Sounds> entitySounds = new ExpireableMap<>((_, v) -> v.terminate());
 
     public void effects(EntityMoveableRollingStock stock, boolean enabled) {
         effects(stock, enabled ? 1 : 0, 1);

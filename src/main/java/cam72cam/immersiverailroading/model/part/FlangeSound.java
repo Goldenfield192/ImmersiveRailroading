@@ -77,7 +77,7 @@ public class FlangeSound {
     private final Map<UUID, Sound> sounds = new HashMap<>();
 
     public void effects(EntityMoveableRollingStock stock) {
-        sounds.computeIfAbsent(stock.getUUID(), uuid -> new Sound(stock)).effects();
+        sounds.computeIfAbsent(stock.getUUID(), _ -> new Sound(stock)).effects();
     }
 
     public void removed(EntityMoveableRollingStock stock) {

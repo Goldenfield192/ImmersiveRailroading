@@ -15,12 +15,12 @@ public class Wheel {
         this.wheel = wheel;
         Vec3d wheelPos = wheel.center;
 
-        state.push(settings -> settings.add((ModelState.Animator) (stock, partialTicks) ->
+        state.push(settings -> settings.add((ModelState.Animator) (stock, _) ->
                 new Matrix4()
                         .translate(wheelPos.x, wheelPos.y, wheelPos.z)
-                        .rotate(Math.toRadians(angle != null ?
-                                        angle.apply(stock) :
-                                        this.angle(stock.distanceTraveled)),
+                        .rotate(Math.toRadians(angle != null
+                                               ? angle.apply(stock)
+                                               : this.angle(stock.distanceTraveled)),
                                 0, 0, 1)
                         .translate(-wheelPos.x, -wheelPos.y, -wheelPos.z))
         ).include(wheel);

@@ -87,12 +87,15 @@ public class WalschaertsValveGear extends StephensonValveGear {
         this.radiusBar = radiusBar;
         this.todo = todo;
 
-        crankWheel = wheels.wheels.stream().map(w -> w.wheel.center).min(Comparator.comparingDouble(w -> w.distanceTo(reverse ? returnCrank.min : returnCrank.max))).get();
+        crankWheel = wheels.wheels.stream()
+                                  .map(w -> w.wheel.center)
+                                  .min(Comparator.comparingDouble(w -> w.distanceTo(reverse ? returnCrank.min : returnCrank.max)))
+                                  .orElseThrow();
 
         state.include(todo);
 
         // This is pretty terrible
-        state = state.push(builder -> builder.add((ModelState.GroupAnimator) (stock, group, partialTicks) -> {
+        state = state.push(builder -> builder.add((ModelState.GroupAnimator) (stock, group, _) -> {
 
             float wheelAngle = super.angle(stock.distanceTraveled);
             float reverser = stock instanceof Locomotive ? ((Locomotive) stock).getReverser() : 0;
@@ -102,13 +105,13 @@ public class WalschaertsValveGear extends StephensonValveGear {
             // Wheel Center is the center of all wheels, may not line up with a wheel directly
             // The difference between these centers is the radius of the connecting rod movement
             double connRodRadius = connRodPos.x - centerOfWheels.x;
-            // Find new connecting rod pos based on the connecting rod rod radius
-            Vec3d connRodMovment = VecUtil.fromWrongYaw(connRodRadius, (float) wheelAngle);
+            // Find new connecting rod pos based on the connecting rods' rod radius
+            Vec3d connRodMovement = VecUtil.fromWrongYaw(connRodRadius, wheelAngle);
 
 
             // Piston movement is rod movement offset by the rotation radius
             // Not 100% accurate, missing the offset due to angled driving rod
-            double pistonDelta = connRodMovment.x - connRodRadius;
+            double pistonDelta = connRodMovement.x - connRodRadius;
 
             // Draw piston rod and cross head
             if (crossHead.modelIDs.contains(group)) {
@@ -118,9 +121,7 @@ public class WalschaertsValveGear extends StephensonValveGear {
             Vec3d returnCrankRotPoint = reverse ?
                     returnCrank.min.add(returnCrank.height() / 2, returnCrank.height() / 2, 0) :
                     returnCrank.max.add(-returnCrank.height() / 2, -returnCrank.height() / 2, 0);
-            Vec3d wheelRotationOffset = reverse ?
-                    VecUtil.fromWrongYaw(returnCrankRotPoint.x - crankWheel.x, (float) wheelAngle) :
-                    VecUtil.fromWrongYaw(returnCrankRotPoint.x - crankWheel.x, (float) wheelAngle);
+            Vec3d wheelRotationOffset = VecUtil.fromWrongYaw(returnCrankRotPoint.x - crankWheel.x, wheelAngle);
 
             Vec3d returnCrankOriginOffset = crankWheel.add(wheelRotationOffset.x, wheelRotationOffset.z, 0);
             double returnCrankAngle = wheelAngle + 90 + 30;
@@ -190,7 +191,7 @@ public class WalschaertsValveGear extends StephensonValveGear {
 
             double forwardMax = (slottedLink.min.y - slottedLinkRotPoint.y) * 0.4;
             double forwardMin = (slottedLink.max.y - slottedLinkRotPoint.y) * 0.65;
-            double throttleSlotPos = 0;
+            double throttleSlotPos;
             if (reverser > 0) {
                 throttleSlotPos = forwardMax * reverser;
             } else {
@@ -202,7 +203,7 @@ public class WalschaertsValveGear extends StephensonValveGear {
             Vec3d radiusBarClose = reverse ? radiusBar.min : radiusBar.max;
             throttleSlotPos += slottedLinkRotPoint.y - radiusBar.max.y;
 
-            float raidiusBarAngle = reverse ?
+            float radiusBarAngle = reverse ?
                     -(VecUtil.toWrongYaw(new Vec3d(radiusBar.length(), 0, throttleSlotPos)) + 90) :
                     VecUtil.toWrongYaw(new Vec3d(radiusBar.length(), 0, throttleSlotPos)) + 90;
 
@@ -213,7 +214,7 @@ public class WalschaertsValveGear extends StephensonValveGear {
                 matrix.translate(radiusBarSliding, 0, 0);
 
                 matrix.translate(radiusBarClose.x, radiusBarClose.y, 0);
-                matrix.rotate(Math.toRadians(raidiusBarAngle), 0, 0, 1);
+                matrix.rotate(Math.toRadians(radiusBarAngle), 0, 0, 1);
                 matrix.translate(-radiusBarClose.x, -radiusBarClose.y, 0);
                 return matrix;
             }

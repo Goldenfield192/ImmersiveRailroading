@@ -58,7 +58,7 @@ public class Whistle {
                 }
             } else {
                 float maxDelta = 1 / 20f;
-                float delta = 0;
+                float delta;
                 if (hornTime > 5) {
                     if (soundDampener < 0.4) {
                         soundDampener = 0.4f;
@@ -123,7 +123,7 @@ public class Whistle {
         }
     }
 
-    private final ExpireableMap<UUID, SoundEffects> sounds = new ExpireableMap<>((k, v) -> v.terminate());
+    private final ExpireableMap<UUID, SoundEffects> sounds = new ExpireableMap<>((_, v) -> v.terminate());
 
     public void effects(EntityMoveableRollingStock stock, int hornTime, float hornPull) {
         // Particles and Sound

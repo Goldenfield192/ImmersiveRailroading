@@ -46,9 +46,8 @@ public class SteamLocomotiveModel extends LocomotiveModel<LocomotiveSteam, Locom
     protected void parseComponents(ComponentProvider provider, LocomotiveSteamDefinition def) {
         firebox = provider.parse(ModelComponentType.FIREBOX);
         rocking.push(builder -> {
-            builder.add((ModelState.Lighter) stock -> {
-                return new ModelState.LightState(null, null, !Config.isFuelRequired(stock.gauge) || ((LocomotiveSteam)stock).getBurnTime().values().stream().anyMatch(x -> x > 1), null);
-            });
+            builder.add((ModelState.Lighter) stock ->
+                    new ModelState.LightState(null, null, !Config.isFuelRequired(stock.gauge) || ((LocomotiveSteam)stock).getBurnTime().values().stream().anyMatch(x -> x > 1), null));
         }).include(firebox);
 
         components = provider.parse(

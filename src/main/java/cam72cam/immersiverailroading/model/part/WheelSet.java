@@ -18,9 +18,9 @@ public class WheelSet {
     }
 
     public static WheelSet get(ComponentProvider provider, ModelState state, ModelComponentType type, ModelPosition pos, float angleOffset) {
-        List<ModelComponent> wheels = (pos == null ?
-                provider.parseAll(type) :
-                provider.parseAll(type, pos)
+        List<ModelComponent> wheels = (pos == null
+                                       ? provider.parseAll(type)
+                                       : provider.parseAll(type, pos)
         );
 
         return wheels.isEmpty() ? null : new WheelSet(state, wheels, angleOffset);
@@ -33,6 +33,6 @@ public class WheelSet {
     }
 
     public float angle(double distance) {
-        return wheels.get(0).angle(distance) + angleOffset;
+        return wheels.getFirst().angle(distance) + angleOffset;
     }
 }

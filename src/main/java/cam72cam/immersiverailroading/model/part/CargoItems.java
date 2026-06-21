@@ -137,7 +137,7 @@ public class CargoItems {
                         if (stack.is(IRItems.ITEM_ROLLING_STOCK)) {
                             ItemRollingStock.Data data = new ItemRollingStock.Data(stack);
                             Vec3d pos = new Vec3d(comp.center.x, comp.min.y, comp.center.z);//.scale(stock.gauge.scale());
-                            model.addCustom((s, pt) -> {
+                            model.addCustom((s, _) -> {
                                 s.translate(pos);
                                 s.scale(1 / stock.gauge.scale(), 1 / stock.gauge.scale(), 1 / stock.gauge.scale());
                                 s.scale(data.gauge.scale(), data.gauge.scale(), data.gauge.scale());
@@ -162,7 +162,7 @@ public class CargoItems {
                                     groups.addAll(mc.get(j).modelIDs);
                                 }
                             }
-                            model.addCustom((s, pt) -> {
+                            model.addCustom((s, _) -> {
                                 s.translate(pos);
                                 s.scale(1 / stock.gauge.scale(), 1 / stock.gauge.scale(), 1 / stock.gauge.scale());
                                 s.scale(data.gauge.scale(), data.gauge.scale(), data.gauge.scale());

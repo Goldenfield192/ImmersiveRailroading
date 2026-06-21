@@ -25,6 +25,7 @@ public class Animatrix {
             String line;
             while ((line = reader.readLine()) != null) {
                 if (line.startsWith("O ")) {
+                    //Object starts, finalize last one
                     for (String name : names) {
                         map.put(name, frames);
                     }
@@ -33,8 +34,10 @@ public class Animatrix {
                     frames = new ArrayList<>();
                     names.add(line.substring(2));
                 } else if (line.startsWith("A ")) {
+                    //Alias of current object
                     names.add(line.substring(2));
                 } else if (line.startsWith("M ")) {
+                    //Matrix of an animation frame
                     String[] mm = line.substring(2).split(",");
                     frames.add(new Matrix4(
                             Double.parseDouble(mm[0]),
@@ -65,7 +68,7 @@ public class Animatrix {
                 }
             }
         }
-        this.frameCount = map.values().stream().mapToInt(List::size).max().getAsInt();
+        this.frameCount = map.values().stream().mapToInt(List::size).max().orElse(0);
     }
 
     public Set<String> groups() {
@@ -79,10 +82,10 @@ public class Animatrix {
         }
         if (!looping) {
             if (percent >= (frames.size()-1f)/frames.size()) {
-                return frames.get(frames.size()-1).copy();
+                return frames.getLast().copy();
             }
             if (percent <= 0){
-                return frames.get(0).copy();
+                return frames.getFirst().copy();
             }
         }
 

@@ -124,11 +124,11 @@ public class SwaySimulator {
     private final Map<UUID, Effect> effects = new HashMap<>();
 
     public double getRollDegrees(EntityMoveableRollingStock stock, float partialTicks) {
-        return effects.computeIfAbsent(stock.getUUID(), uuid -> new Effect(stock)).getRollDegrees(partialTicks);
+        return effects.computeIfAbsent(stock.getUUID(), _ -> new Effect(stock)).getRollDegrees(partialTicks);
     }
 
     public void effects(EntityMoveableRollingStock stock) {
-        effects.computeIfAbsent(stock.getUUID(), uuid -> new Effect(stock)).effects();
+        effects.computeIfAbsent(stock.getUUID(), _ -> new Effect(stock)).effects();
     }
 
     public void removed(EntityMoveableRollingStock stock) {
