@@ -45,8 +45,7 @@ public class ItemRollingStock extends BaseItemRollingStock {
 	}
 
 	@Override
-	public List<ItemStack> getItemVariants(CreativeTab tab)
-    {
+	public List<ItemStack> getItemVariants(CreativeTab tab) {
 		List<ItemStack> items = new ArrayList<>();
     	for (EntityRollingStockDefinition def : DefinitionManager.getDefinitions()) {
     		if (tab != null) {

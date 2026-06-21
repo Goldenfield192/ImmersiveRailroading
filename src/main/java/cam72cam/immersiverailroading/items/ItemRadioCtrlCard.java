@@ -30,7 +30,6 @@ public class ItemRadioCtrlCard extends CustomItem {
         return List.of(ItemTabs.MAIN_TAB);
     }
 
-
     @Override
     public List<String> getTooltip(ItemStack stack) {
         Data d = new Data(stack);

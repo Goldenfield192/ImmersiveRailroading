@@ -87,7 +87,7 @@ public class ItemManual extends CustomItem {
 			if (facing == Facing.UP) {
 				realPos = realPos.up();
 			}
-			current.place(world, player, realPos, Rotation.from(Facing.fromAngle(player.getYawHead()+180)));
+			current.place(world, player, realPos, Rotation.from(Facing.fromAngle(player.getRotationYawHead() + 180)));
 		}
 		return ClickResult.ACCEPTED;
 	}
@@ -113,7 +113,7 @@ public class ItemManual extends CustomItem {
 			super(stack);
 
 			if (multiblock == null) {
-				multiblock = MultiblockRegistry.registered().isEmpty() ? null : MultiblockRegistry.registered().get(0);
+				multiblock = MultiblockRegistry.registered().isEmpty() ? null : MultiblockRegistry.registered().getFirst();
 			}
 		}
 	}

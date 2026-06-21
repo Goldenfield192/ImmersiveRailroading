@@ -19,24 +19,24 @@ public class ItemTabs {
 		MAIN_TAB = new CreativeTab(ImmersiveRailroading.MODID + ".main", () -> new ItemStack(IRItems.ITEM_LARGE_WRENCH, 1));
 		LOCOMOTIVE_TAB = new CreativeTab(ImmersiveRailroading.MODID + ".locomotive", () -> {
 			List<ItemStack> items = IRItems.ITEM_ROLLING_STOCK.getItemVariants(LOCOMOTIVE_TAB);
-			if (items.size() == 0) {
+			if (items.isEmpty()) {
 				return new ItemStack(IRItems.ITEM_LARGE_WRENCH, 1);
 			}
-			return items.get(0);
+			return items.getFirst();
 		});
 		STOCK_TAB = new CreativeTab(ImmersiveRailroading.MODID + ".stock", () -> {
 			List<ItemStack> items = IRItems.ITEM_ROLLING_STOCK.getItemVariants(STOCK_TAB);
-			if (items.size() == 0) {
+			if (items.isEmpty()) {
 				return new ItemStack(IRItems.ITEM_LARGE_WRENCH, 1);
 			}
-			return items.get(0);
+			return items.getFirst();
 		});
 		PASSENGER_TAB = new CreativeTab(ImmersiveRailroading.MODID + ".passenger", () -> {
 			List<ItemStack> items = IRItems.ITEM_ROLLING_STOCK.getItemVariants(PASSENGER_TAB);
-			if (items.size() == 0) {
+			if (items.isEmpty()) {
 				return new ItemStack(IRItems.ITEM_LARGE_WRENCH, 1);
 			}
-			return items.get(0);
+			return items.getFirst();
 		});
 		/*COMPONENT_TAB = new CreativeTab(ImmersiveRailroading.MODID + ".components", () -> {
 			List<ItemStack> items = IRItems.ITEM_ROLLING_STOCK_COMPONENT.getItemVariants(COMPONENT_TAB);

@@ -161,26 +161,19 @@ public class ItemSwitchKey extends CustomItem {
 				data.forcedIntoState = newSwitchForcedState;
 				data.lastUsedAt = System.currentTimeMillis();
 				data.write();
-			}
-
-			if (world.isClient) {
+			} else {
 				player.sendMessage(ChatText.SWITCH_LOCKED.getMessage(newSwitchForcedState.toString()));
 			}
-
-			return ClickResult.ACCEPTED;
-		} else {
+        } else {
 			if (world.isServer) {
 				data.clear();
 				data.write();
-			}
-
-			if (world.isClient) {
+			} else {
 				player.sendMessage(ChatText.SWITCH_UNLOCKED.getMessage());
 			}
-
-			return ClickResult.ACCEPTED;
-		}
-	}
+        }
+        return ClickResult.ACCEPTED;
+    }
 
 	public static class Data extends ItemDataSerializer {
 		@TagField(value = LAST_USED_ON_KEY)

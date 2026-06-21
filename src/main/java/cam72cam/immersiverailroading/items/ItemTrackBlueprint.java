@@ -57,11 +57,11 @@ public class ItemTrackBlueprint extends CustomItem {
 		RailSettings stackInfo = RailSettings.from(stack);
 
 		if (world.isServer && hand == Player.Hand.SECONDARY) {
-			ItemStack blockinfo = world.getItemStack(pos);
+			ItemStack blockInfo = world.getItemStack(pos);
 			if (player.isCrouching()) {
-				stackInfo = stackInfo.with(b -> b.railBedFill = blockinfo);
+				stackInfo = stackInfo.with(b -> b.railBedFill = blockInfo);
 			} else {
-				stackInfo = stackInfo.with(b -> b.railBed = blockinfo);
+				stackInfo = stackInfo.with(b -> b.railBed = blockInfo);
 			}
 			stackInfo.write(stack);
 			return ClickResult.ACCEPTED;
@@ -82,13 +82,13 @@ public class ItemTrackBlueprint extends CustomItem {
 			world.setBlock(pos, IRBlocks.BLOCK_RAIL_PREVIEW);
 			TileRailPreview te = world.getBlockEntity(pos, TileRailPreview.class);
 			if (te != null) {
-				PlacementInfo placementInfo = new PlacementInfo(stack, player.getYawHead(), hit.subtract(0, hit.y, 0));
+				PlacementInfo placementInfo = new PlacementInfo(stack, player.getRotationYawHead(), hit.subtract(0, hit.y, 0));
 				te.setup(stack, placementInfo);
 			}
 			return ClickResult.ACCEPTED;
 		}
 
-		PlacementInfo placementInfo = new PlacementInfo(stack, player.getYawHead(), hit.subtract(0, hit.y, 0));
+		PlacementInfo placementInfo = new PlacementInfo(stack, player.getRotationYawHead(), hit.subtract(0, hit.y, 0));
 		RailInfo info = new RailInfo(stack, placementInfo, null);
 		info.build(player, pos);
 		return ClickResult.ACCEPTED;

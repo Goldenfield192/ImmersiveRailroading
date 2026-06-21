@@ -35,7 +35,7 @@ public class ItemRollingStockComponent extends BaseItemRollingStock {
 
 	@Override
 	public List<CreativeTab> getCreativeTabs() {
-		return Collections.EMPTY_LIST;
+		return Collections.emptyList();
 	}
 
 	@Override
@@ -45,7 +45,7 @@ public class ItemRollingStockComponent extends BaseItemRollingStock {
 
 	@Override
 	public List<ItemStack> getItemVariants(CreativeTab tab) {
-		return Collections.EMPTY_LIST;
+		return Collections.emptyList();
 	}
 	public List<ItemStack> getItemVariants() {
 		List<ItemStack> items = new ArrayList<>();

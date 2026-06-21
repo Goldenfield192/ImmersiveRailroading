@@ -31,7 +31,6 @@ public class ItemPlate extends CustomItem {
 		return List.of(ItemTabs.MAIN_TAB);
 	}
 
-
 	@Override
 	public List<ItemStack> getItemVariants(CreativeTab tab) {
 		List<ItemStack> items = new ArrayList<>();

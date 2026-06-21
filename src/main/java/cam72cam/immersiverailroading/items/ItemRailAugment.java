@@ -37,7 +37,6 @@ public class ItemRailAugment extends CustomItem {
 		return List.of(ItemTabs.MAIN_TAB);
 	}
 
-
 	@Override
 	public ClickResult onClickBlock(Player player, World world, Vec3i pos, Player.Hand hand, Facing facing, Vec3d hit) {
 		if (BlockUtil.isIRRail(world, pos) && player.hasPermission(Permissions.AUGMENT_TRACK)) {
