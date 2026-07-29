@@ -10,10 +10,10 @@ import cam72cam.immersiverailroading.net.SoundPacket;
 import cam72cam.immersiverailroading.physics.TickPos;
 import cam72cam.immersiverailroading.tile.TileRailBase;
 import cam72cam.immersiverailroading.util.MathUtil;
-import cam72cam.immersiverailroading.util.RealBB;
 import cam72cam.immersiverailroading.util.Speed;
 import cam72cam.mod.entity.Entity;
 import cam72cam.mod.entity.Player;
+import cam72cam.mod.entity.boundingbox.IBoundingBox;
 import cam72cam.mod.entity.custom.ICollision;
 import cam72cam.mod.entity.sync.TagSync;
 import cam72cam.mod.math.Vec3d;
@@ -40,7 +40,7 @@ public abstract class EntityMoveableRollingStock extends EntityRidableRollingSto
     @TagField(value = "positions", mapper = TickPos.ListTagMapper.class)
     public List<TickPos> positions = new ArrayList<>();
     public List<SimulationState> states = new ArrayList<>();
-    private RealBB boundingBox;
+    private IBoundingBox boundingBox;
     private float[][] heightMapCache;
     @TagSync
     @TagField("IND_BRAKE")
@@ -98,12 +98,11 @@ public abstract class EntityMoveableRollingStock extends EntityRidableRollingSto
     }
 
     @Override
-    public RealBB getCollision() {
+    public IBoundingBox getCollision() {
         if (this.boundingBox == null) {
-            this.boundingBox = this.getDefinition().getBounds(this.getRotationYaw(), this.gauge)
-                    .offset(getPosition())
-                    .withHeightMap(this.getHeightMap())
-                    .contract(new Vec3d(0, 0.5 * this.gauge.scale(), 0)).offset(new Vec3d(0, 0.5 * this.gauge.scale(), 0));
+            this.boundingBox = this.getDefinition().getBounds(this.getRotationYaw(), this.getRotationPitch(), this.getRotationRoll(), this.gauge)
+                    .offset(getPosition());
+//                    .contract(new Vec3d(0, 0.5 * this.gauge.scale(), 0)).offset(new Vec3d(0, 0.5 * this.gauge.scale(), 0));
         }
         return this.boundingBox;
     }
@@ -349,7 +348,7 @@ public abstract class EntityMoveableRollingStock extends EntityRidableRollingSto
 			}
 	
 			// Riding on top of cars
-			final RealBB bb = this.getCollision().offset(new Vec3d(0, gauge.scale()*2, 0));
+			final IBoundingBox bb = this.getCollision().offset(new Vec3d(0, gauge.scale()*2, 0));
             List<Entity> entitiesAbove = getWorld().getEntities((Entity entity) -> (entity.isLiving() || entity.isPlayer()) && bb.intersects(entity.getBounds()), Entity.class);
 			for (Entity entity : entitiesAbove) {
 				if (entity instanceof EntityMoveableRollingStock) {

@@ -14,6 +14,9 @@ import cam72cam.immersiverailroading.library.*;
 import cam72cam.immersiverailroading.model.StockModel;
 import cam72cam.immersiverailroading.model.components.ModelComponent;
 import cam72cam.mod.entity.EntityRegistry;
+import cam72cam.mod.entity.boundingbox.IBoundingBox;
+import cam72cam.mod.entity.boundingbox.IOrientedBB;
+import cam72cam.mod.entity.boundingbox.OrientedBoundingBox;
 import cam72cam.mod.math.Vec3d;
 import cam72cam.mod.model.obj.OBJGroup;
 import cam72cam.mod.model.obj.VertexBuffer;
@@ -823,9 +826,18 @@ public abstract class EntityRollingStockDefinition {
         return heightmap.apply(stock);
     }
 
-    public RealBB getBounds(float yaw, Gauge gauge) {
-        return new RealBB(gauge.scale() * frontBounds, gauge.scale() * -rearBounds, gauge.scale() * widthBounds,
-                gauge.scale() * heightBounds, yaw);
+//    public RealBB getBounds(float yaw, Gauge gauge) {
+//        return new RealBB(gauge.scale() * frontBounds, gauge.scale() * -rearBounds, gauge.scale() * widthBounds,
+//                gauge.scale() * heightBounds, yaw);
+//    }
+    public IBoundingBox getBounds(float yaw, Gauge gauge) {
+        return getBounds(yaw, 0, 0, gauge);
+    }
+    public IBoundingBox getBounds(float yaw, float pitch, float roll, Gauge gauge) {
+        Vec3d extent = new Vec3d(widthBounds/2, heightBounds/2, (frontBounds + rearBounds)/2).scale(gauge.scale());
+        OrientedBoundingBox box = OrientedBoundingBox.from(extent, Vec3d.ZERO);
+        box.rotation().rotateLocalYaw(-yaw);
+        return box;
     }
 
     public String name() {
