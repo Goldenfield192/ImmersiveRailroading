@@ -836,7 +836,7 @@ public abstract class EntityRollingStockDefinition {
     public IBoundingBox getBounds(float yaw, float pitch, float roll, Gauge gauge) {
         Vec3d extent = new Vec3d(widthBounds/2, heightBounds/2, (frontBounds + rearBounds)/2).scale(gauge.scale());
         OrientedBoundingBox box = OrientedBoundingBox.from(extent, Vec3d.ZERO);
-        box.rotation().rotateLocalYaw(-yaw);
+        box.rotation().rotateLocalYaw(-yaw).rotateLocalPitch(-pitch).rotateLocalRoll(-roll);
         return box;
     }
 
